@@ -1,0 +1,33 @@
+{
+    "tinyESB\\rsapi\\Router": {
+        "properties": {
+            "export_apis":true //是否允许导出接口文档,若为True，可以通过访问 http://host:port/apis/查看接口定义
+            //,"hooks":["HookCommentsForStock"] 设置hook
+        } 
+    },
+    "tinyESB\\rsapi\\Invoker": {
+        "properties": {
+            //"cache":"@invokeCache"	//指定api调用缓存
+        } 
+    }
+    /** 如果 tinyESB\\rsapi\\Invoker 中指定了cache属性，则需启用这块配置
+    ,
+    "invokeCache":{
+    	"singleton":true,
+    	"pass_by_construct":true,
+    	"class":"tinyESB\\util\\CheckableCache",
+    	"properties": {
+            "impl":"@invokeRedisCache"
+        }
+    },
+    //api接口redis缓存地址
+    "invokeRedisCache":{
+    	"class":"utils\\RedisCache",
+		"singleton":true,
+    	"properties":{
+    		"serialize":true,
+    		"host":"127.0.0.1",
+    		"port":"6379"
+    	}
+    }*/
+}	

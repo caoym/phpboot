@@ -1,0 +1,7 @@
+{
+  "name" : "phprs",
+  "repositories" : [ {
+    "type" : "composer",
+    "url" : "https://packagist.org/"
+  } ]
+}

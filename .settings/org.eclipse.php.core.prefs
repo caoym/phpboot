@@ -1,0 +1,4 @@
+eclipse.preferences.version=1
+include_path=0;/phprs\u00055;org.eclipse.dltk.USER_LIBRARY/org.eclipse.php.core.PHPNature\#PHPUnit 4
+phpVersion=php5.4
+use_asp_tags_as_php=false
