@@ -70,6 +70,9 @@ class Tokens
 3. 接口缓存
 4. hook
 
+## 担心可用性？
+此框架目前支持线上亿级PV。有什么问题也欢迎联系我：QQ81603383
+
 ## 手册
 
 请移步[wiki](https://github.com/caoym/phprs/wiki)
