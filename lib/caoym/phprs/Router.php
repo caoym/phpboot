@@ -7,7 +7,7 @@
 /**
  * $Id: Router.php 58820 2015-01-16 16:29:33Z caoyangmin $
  * @author caoyangmin(caoyangmin@baidu.com)
- * @brief RestfulApiRouter
+ * @brief Router
  */
 namespace caoym\phprs;
 use caoym\util\HttpRouterEntries;
@@ -156,11 +156,15 @@ class Router
      */
     private function invokeRoute($routes, $request, &$respond){
         $method = $request['$._SERVER.REQUEST_METHOD'];
+        $path = $request['$.path'];
         $uri = $request['$._SERVER.REQUEST_URI'];
-        Logger::debug("try to find route $method $uri");
+        list(,$params) = explode('?', $uri)+array( null,null );
+	    $params = is_null($params)?null:explode('&', $params);
+	    
+        Logger::debug("try to find route $method ".$uri);
         $match_path = array();
         if(isset($routes[$method])){
-            if(($api = $routes[$method]->find($uri,$match_path)) !== null){
+            if(($api = $routes[$method]->findByArray($path,$params,$match_path)) !== null){
                 Logger::debug("invoke $uri => {$api->getClassName()}::{$api->getMethodName()}");
                 $api($request, $respond);
                 return true;
