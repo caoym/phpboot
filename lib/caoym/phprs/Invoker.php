@@ -15,6 +15,7 @@ namespace caoym\phprs;
 use caoym\util\Verify;
 use caoym\util\Logger;
 use caoym\util\exceptions\BadRequest;
+use caoym\util\CheckableCache;
 
 /**
  * api调用包装
@@ -35,8 +36,11 @@ class Invoker
     {
         $this->ins = $ins;
         if($this->cache === null){
-            $this->cache = $this->factory->create('caoym\util\Cache');
+            $this->checkAbleCache = $this->factory->create('caoym\util\Cache');
+        }else{
+            $this->checkAbleCache = new CheckableCache($this->cache);
         }
+         
         $this->method_name = $method->getName();
         foreach ($method->getParameters() as $param) {
             $this->method_args[] = array(
@@ -135,7 +139,7 @@ class Invoker
             $cache_res->flush();//取出cache参数
             $cache_key = "invoke_{$this->ins->class}_{$this->method_name}_" . sha1(serialize($args).serialize($injected).$cache_ttl);
             $succeeded = false;
-            $data = $this->cache->get($cache_key, $succeeded);
+            $data = $this->checkAbleCache->get($cache_key, $succeeded);
             if ($succeeded && is_array($data)) {
                 $response->setBuffer($data);
                 $response->flush();
@@ -166,7 +170,7 @@ class Invoker
         }
         $this->bind['return']->setReturn($res);
         if ($use_cache) {
-            $this->cache->set($cache_key, $response->getBuffer(), $cache_ttl, $cache_check);
+            $this->checkAbleCache->set($cache_key, $response->getBuffer(), $cache_ttl, $cache_check);
             Logger::info("{$this->ins->class}::{$this->method_name} set response to cache $cache_key, ttl=$cache_ttl, check=".($cache_check===null?'null':get_class($cache_check)));
         }
         $response->flush();
@@ -241,8 +245,12 @@ class Invoker
     // 绑定的变量
     private $bind = array();
 
-    /** @property */
+    /** 
+     * @property 
+     * @var caoym\util\KVCatchInterface
+     */
     private $cache=null;
+    private $checkAbleCache;
     /** @inject("ioc_factory") */
     private $factory;
 }
