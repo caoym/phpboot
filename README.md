@@ -61,7 +61,9 @@ class Tokens
         return ['token'=>$token, 'uid'=>$uid];
     } 
     /**
-     * @property({"default":"@Users"})   依赖的属性，由框架注入
+     * @property({"default":"@Users"})   依赖的属性，由框架注入。
+     * 指定框架在实例化Tokens时，会通过IoCFactory创建Users对象，并赋值给$users。
+     *
      * @var Users
      */
     public $users;
