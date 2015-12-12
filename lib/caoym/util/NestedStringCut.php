@@ -1,6 +1,6 @@
 <?php
 /**$Id$*/
-namespace tinyESB\util;
+namespace caoym\util;
 
 /**
  * 提取字符串内的嵌套字符串

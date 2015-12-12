@@ -42,14 +42,11 @@ class Users
      * @param({"avatar", "$._FILES.avatar.tmp_name"})  头像文件，可选
      * @param({"token", "$._COOKIE.token"}) 验证短信验证码后获取的cookie
      * 
-     * @throws({"caoym\util\exceptions\Forbidden","status", "403 Forbidden"}) cookie失效
-     * @throws({"caoym\util\exceptions\Forbidden","body", {"error":"Forbidden"}}) cookie失效
+     * @throws({"caoym\util\exceptions\Forbidden","res", "403 Forbidden",{"error":"Forbidden"}}) cookie失效
      * 
-     * @throws({"AliasConflict","status", "409 Conflict"}) 昵称冲突
-     * @throws({"AliasConflict","body", {"error":"AliasConflict"}}) 昵称冲突
+     * @throws({"AliasConflict","res", "409 Conflict",{"error":"AliasConflict"}}) 昵称冲突
      * 
-     * @throws({"AccountConflict","status", "409 Conflict"}) 用户名冲突(手机号冲突)
-     * @throws({"AccountConflict","body", {"error":"AccountConflict"}}) 用户名冲突(手机号冲突)
+     * @throws({"AccountConflict","res", "409 Conflict",{"error":"AccountConflict"}}) 用户名冲突(手机号冲突)
      * 
      * @return({"cookie","uid","$uid","+365 days","/"})  uid
      * @return 返回用户id
@@ -111,11 +108,9 @@ class Users
      * @param({"avatar", "$._FILES.avatar.tmp_name"})  头像，需要更新头像时指定，可选
      * @param({"token", "$._COOKIE.token"}) 登录后获取的cookie
      *
-     * @throws({"caoym\util\exceptions\Forbidden","status", "403 Forbidden"}) code验证失败
-     * @throws({"caoym\util\exceptions\Forbidden","body", {"error":"Forbidden"}}) code验证失败
+     * @throws({"caoym\util\exceptions\Forbidden","res", "403 Forbidden", {"error":"Forbidden"}}) code验证失败
      * 
-     * @throws({"AliasConflict","status", "409 Conflict"}) 昵称冲突
-     * @throws({"AliasConflict","body", {"error":"AliasConflict"}}) 昵称冲突
+     * @throws({"AliasConflict","status", "409 Conflict", {"error":"AliasConflict"}}) 昵称冲突
      * 
      */
     public function updateUser($token, $alias=null, $password=null, $avatar=null ){
@@ -328,12 +323,12 @@ class Users
      * @var PDO
      */
     public $db;
-    /** @property({"default":"@utils\ObjectStoreService"}) */
+    /** @property({"default":"@util\ObjectStoreService"}) */
     public $oss;
     
     /**
-     * @property({"default":"@\utils\Curl"})
-     * @var \utils\Curl
+     * @property({"default":"@\util\Curl"})
+     * @var \util\Curl
      */
     private $httpClient;
 }

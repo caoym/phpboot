@@ -9,7 +9,7 @@
  * @author caoyangmin(caoyangmin@gmail.com)
  * @brief
  */
-require_once __DIR__.'/../../../lib/caoym/Autoload.php';
+require_once __DIR__.'/../../../lib/caoym/AutoLoad.php';
 
 class HttpRouterEntriesTest extends PHPUnit_Framework_TestCase {
 	

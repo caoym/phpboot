@@ -1,5 +1,5 @@
 <?php
-namespace tinyESB\util;
+namespace caoym\util;
 
 /**
  * 加强版IoCFactory...
@@ -51,7 +51,7 @@ class IoCFactoryEx extends IoCFactory
  */
 class IoCObjectWrap{
     public function __construct($factory, $id, $construct_args, $properties, $injector, $init){
-        $this->__impl__ = $factory->createRawObject('tinyESB\\util\\IoCContainer', [
+        $this->__impl__ = $factory->createRawObject('caoym\\util\\IoCContainer', [
             'id' => $id,
             'construct_args' => $construct_args,
             'properties' => $properties,

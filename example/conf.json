@@ -1,33 +1,38 @@
 {
-    "tinyESB\\rsapi\\Router": {
+    "caoym\\phprs\\Router": {
         "properties": {
             "export_apis":true //是否允许导出接口文档,若为True，可以通过访问 http://host:port/apis/查看接口定义
-            //,"hooks":["HookCommentsForStock"] 设置hook
+            //,"hooks":["MyHook1,MyHook2"] 设置hook
+            //,"url_begin"=1 //url_begin用于指定路由的从哪一级开始匹配,默认为0
         } 
     },
-    "tinyESB\\rsapi\\Invoker": {
+    "caoym\\phprs\\Invoker": {
         "properties": {
             //"cache":"@invokeCache"	//指定api调用缓存
         } 
     }
-    /** 如果 tinyESB\\rsapi\\Invoker 中指定了cache属性，则需启用这块配置
+    /** 如果 caoym\\phprs\\Router 中指定了cache属性，则需启用这块配置
     ,
-    "invokeCache":{
-    	"singleton":true,
-    	"pass_by_construct":true,
-    	"class":"tinyESB\\util\\CheckableCache",
-    	"properties": {
-            "impl":"@invokeRedisCache"
-        }
-    },
     //api接口redis缓存地址
-    "invokeRedisCache":{
-    	"class":"utils\\RedisCache",
+    "invokeCache":{
+    	"class":"caoym\\util\\RedisCache",
 		"singleton":true,
     	"properties":{
     		"serialize":true,
     		"host":"127.0.0.1",
     		"port":"6379"
+    	}
+    }*/
+    /** 如果使用ezphp(https://github.com/caoym/ezsql),可以这么配置DB
+    //数据库
+    ,"db":{
+		"singleton":true,
+    	"class":"PDO",
+    	"pass_by_construct":true,
+    	"properties":{
+    		"dsn":"mysql:host=127.0.0.1;dbname=xxxxxx;charset=UTF8",
+    		"username":"xxxxxx",
+    		"passwd":"xxxxxx"  		
     	}
     }*/
 }	

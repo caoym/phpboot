@@ -8,7 +8,7 @@ use caoym\util\Logger;
  *
  **************************************************************************/
 
-require_once __DIR__.'/../../../lib/caoym/Autoload.php';
+require_once __DIR__.'/../../../lib/caoym/AutoLoad.php';
 
 Logger::$writer = Logger::$to_echo;
 /**

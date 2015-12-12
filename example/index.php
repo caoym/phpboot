@@ -24,8 +24,8 @@ ClassLoader::addInclude($project_path.'/apis/');
 //Logger::$writer = Logger::$to_void; //日志不输出
 
 //CLI调试时模拟请求
-$_SERVER['REQUEST_METHOD']='GET';
-$_SERVER['REQUEST_URI'] = '/hw';
+//$_SERVER['REQUEST_METHOD']='GET';
+//$_SERVER['REQUEST_URI'] = '/hw';
 
 //依赖注入工厂, 通过此工厂创建的类自动注入配置中指定的属性(如果有的话)
 //设置配置文件的替换字典, 如果配置文件中有用{}符号标记的变量, 配置文件加载时{}将被替换成指定的值
@@ -35,7 +35,6 @@ $factory  = new IoCFactory($project_path.'/conf.json', array(
 ));
 
 //创建路由器,第二个参数可选,表示用指定的属性列表覆盖配置文件中定义的属性列表
-//对于RouterWithCache, 其属性url_begin用于指定路由的从哪一级开始匹配
 //RouterWithCache创建时自动扫描其属性api_path指定的目录下的所有PHP文件(不扫描子目录),然后创建Router对象
 //Router记录路由规则及对应的实现方法,Router将被缓存,当api_path目录下已加载的php文件修改时,缓存失效
 //每次处理请求,api的实现类将被重新创建

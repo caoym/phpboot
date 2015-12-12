@@ -484,7 +484,38 @@ EOT;
             if ($return['doc']) {
                 $res['doc'] = "$value:\r\n {$return['doc']}\r\n\r\n";
             }
-        } elseif($return['name'] === 'header') {
+        } elseif($return['name'] === 'res'){
+            $arg = $return['args'][0];
+            $value = $arg['value'];
+            if ($arg['is_const']) {
+                $res['status'] = "HTTP/1.1 $value\r\n";
+            } else {
+                $res['status'] = "HTTP/1.1 [$value]\r\n";
+            }
+            if ($return['doc']) {
+                $res['doc'] = "$value:\r\n {$return['doc']}\r\n\r\n";
+            }
+            
+            $arg = $return['args'][1];
+            $value = $arg['value'];
+            if ($arg['is_const']) {
+                $res['body'] = $value;
+            } else {
+                if($value){
+                    $res['body'] = "[$value]";
+                }else{
+                    $res['body'] = "[return]";
+                }
+            
+            }
+            if ($return['doc']) {
+                if(is_array($value)){
+                    $value = json_encode($value);
+                }
+                $res['doc'] = "return $value:\r\n {$return['doc']}\r\n\r\n";
+            }
+            
+        }elseif($return['name'] === 'header') {
             $arg = $return['args'][0];
             $value = $arg['value'];
             if ($arg['is_const']) {

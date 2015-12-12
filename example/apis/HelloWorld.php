@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 
  * @author caoym
@@ -11,14 +10,10 @@ class HelloWorld
      * @route({"GET","/"})
      */
     public function doSomething1() {
-        return "Hello World!";
+        return ['msg'=>'Hello World!'];
     }
-    
     /**
-     * @route({"GET","/json"})
-     * 
+     * @property
      */
-    public function doSomething2() {
-        return "Hello World!";
-    }
+    private $db;
 }
