@@ -89,4 +89,4 @@ class Tokens
 
 ## 手册
 
-请移步[wiki](https://github.com/caoym/phprs/wiki)
+请移步[wiki](https://github.com/caoym/phprs-restful/wiki)
