@@ -5,6 +5,7 @@
 要求:PHP5.4+
 
 [![Build Status](https://travis-ci.org/caoym/phprs-restful.svg)](https://travis-ci.org/caoym/phprs-restful)
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/caoym/phprs-restful/master/LICENSE)
 ## 先举个栗子 
 1. 写个HelloWorld.php，放到框架指定的目录下（默认是和index.php同级的apis/目录）
 
