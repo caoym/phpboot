@@ -1,7 +1,34 @@
 {
-  "name" : "phprs",
-  "repositories" : [ {
-    "type" : "composer",
-    "url" : "https://packagist.org/"
-  } ]
+    "name": "caoym/phprs-restful",
+    "description": "A jax-rs like RESTful framework.",
+    "keywords": [
+        "phprs",
+        "phprs-restful",
+        "restful"
+    ],
+    "license": "MIT",
+    "require": {
+        "php":">=5.4"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~4.0"
+    },
+    "authors": [
+        {
+            "name": "caoyangmin",
+            "email": "caoyangmin@gmail.com"
+        }
+    ],
+    "minimum-stability" : "dev",
+    "autoload": {
+        "psr-4": {
+            "caoym\\phprs\\": "lib/caoym/phprs/",
+            "caoym\\util\\": "lib/caoym/util/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "caoym\\phprs\\tests\\": "tests/caoym/phprs/"
+        }
+    }
 }
