@@ -52,7 +52,7 @@ class BindReturns
         }
 
         $to_func = &$this->params[$to][$id];
-        if($this->auto_bind_return && $to == 'body' && isset($this->params['body'][-1])){
+        if($this->auto_bind_return && ($to == 'body'||$to == 'res') && isset($this->params['body'][-1])){
             unset($this->params['body'][-1]);// 指定了body输出, 去掉默认的body输出
         }
         if(0 === count($from)){
