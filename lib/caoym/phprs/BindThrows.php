@@ -57,9 +57,9 @@ class BindThrows
      */
     public function bind($req, &$res, $e)
     {
-        if(!isset($this->params['body'])){
-            $res['body'][0][0] = $e;
-        }
+        //if(!isset($this->params['body'])){
+        //    $res['body'][0][0] = $e;
+        //}
         //先处理完全匹配的
         $matched = false;
         $funcs = array(); //输出方法
