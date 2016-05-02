@@ -71,6 +71,25 @@ class Tokens
     public $users;
 }
 ```
+## 安装部署
+配置webserver，指定所有restful请求rewrite到index.php, 如
+
+- Nginx
+```
+location / {
+  try_files $uri $uri/ /index.php?$args;
+}
+```
+- Apache
+```
+RewriteEngine on
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond $1 !^(index\.php)
+RewriteRule ^(.*)$ /index.php/$1 [L]
+```
+
+
 ## 还能做什么
 1. 依赖管理（依赖注入），
 2. 自动输出接口文档（不是doxgen式的类、方法文档，而是描述http接口的文档）
