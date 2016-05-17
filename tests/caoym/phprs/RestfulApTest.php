@@ -27,6 +27,7 @@ class RestfulApTest extends PHPUnit_Framework_TestCase
                     'api_path' => dirname(__FILE__).'/rest_test',
                     'apis' => 'MyTestApi',
                     'api_method' => 'func',
+                    'ignore_load_error' => false,
                 ),
             ),
         ));
@@ -102,6 +103,7 @@ class RestfulApTest extends PHPUnit_Framework_TestCase
                     'api_path' => dirname(__FILE__).'/rest_test',
                     'apis' => 'MyTestApi',
                     'api_method' => 'funcInvalidBind1',
+                    'ignore_load_error' => false,
                 ),
             ),
         ));
@@ -133,6 +135,7 @@ class RestfulApTest extends PHPUnit_Framework_TestCase
                     'api_path' => dirname(__FILE__).'/rest_test',
                     'apis' => 'MyTestApi',
                     'api_method' => 'funcInvalidBind2',
+                    'ignore_load_error' => false,
                 ),
             ),
         ));
@@ -165,6 +168,7 @@ class RestfulApTest extends PHPUnit_Framework_TestCase
                     'api_path' => dirname(__FILE__).'/rest_test',
                     'apis' => 'MyTestApi',
                     'api_method' => 'funcInvalidBind7',
+                    'ignore_load_error' => false,
                 ),
             ),
         ));
@@ -196,6 +200,7 @@ class RestfulApTest extends PHPUnit_Framework_TestCase
                     'api_path' => dirname(__FILE__).'/rest_test',
                     'apis' => 'MyTestApi',
                     'api_method' => 'funcInvalidBind3',
+                    'ignore_load_error' => false,
                 ),
             ),
         ));
@@ -227,6 +232,7 @@ class RestfulApTest extends PHPUnit_Framework_TestCase
                     'api_path' => dirname(__FILE__).'/rest_test',
                     'apis' => 'MyTestApi',
                     'api_method' => 'funcInvalidBind4',
+                    'ignore_load_error' => false,
                 ),
             ),
         ));
@@ -257,6 +263,7 @@ class RestfulApTest extends PHPUnit_Framework_TestCase
                     'api_path' => dirname(__FILE__).'/rest_test',
                     'apis' => 'MyTestApi',
                     'api_method' => 'funcInvalidBind5',
+                    'ignore_load_error' => false,
                 ),
             ),
         ));
@@ -286,6 +293,7 @@ class RestfulApTest extends PHPUnit_Framework_TestCase
                     'api_path' => dirname(__FILE__) . '/rest_test',
                     'apis' => 'MyTestApi',
                     'api_method' => 'funcWithException1',
+                    'ignore_load_error' => false,
                 )
             )
         ));
@@ -340,6 +348,7 @@ class RestfulApTest extends PHPUnit_Framework_TestCase
                     'api_path' => dirname(__FILE__).'/rest_test',
                     'apis' => 'MyTestApi',
                     'api_method' => 'funcWithException2',
+                    'ignore_load_error' => false,
                 ),
             ),
         ));
@@ -379,6 +388,7 @@ class RestfulApTest extends PHPUnit_Framework_TestCase
                     'api_path' => dirname(__FILE__).'/rest_test',
                     'apis' => 'MyTestApi',
                     'api_method' => 'funReferenceReqParam',
+                    'ignore_load_error' => false,
                 ),
             ),
         ));

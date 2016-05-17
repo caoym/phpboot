@@ -539,7 +539,7 @@ EOT;
             }
             
             $res['header'] = 'Set-Cookie: ' . $args[0]['value'] . '=' . $args[1]['value'] 
-            . (empty($args[2]['value']) ? '' : '; expires=' . gmdate('D, d-M-Y H:i:s', $args[2]['value']) . ' GMT') 
+            . (empty($args[2]['value']) ? '' : '; expires=' . gmdate('D, d-M-Y H:i:s', strtotime($args[2]['value'])) . ' GMT') 
             . (empty($args[3]['value']) ? '' : '; path=' . $args[3]['value']) 
             . (empty($args[4]['value']) ? '' : '; domain=' . $args[4]['value']) 
             . (empty($args[5]['value']) ? '' : '; secure') 

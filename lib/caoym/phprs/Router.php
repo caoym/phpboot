@@ -266,8 +266,20 @@ class Router
     private function loadApi(&$routes, $class_file, $class_name, $method=null){
         Verify::isTrue(is_file($class_file), $class_file.' is not an exist file');
         Logger::debug("attempt to load api: $class_name, $class_file");
+        
         $this->class_loader->addClass($class_name, $class_file);
-        $api = $this->factory->create('caoym\\phprs\\Container', array($class_name, $method), null, null);
+        $api = null;
+        if ($this->ignore_load_error){
+            try {
+                $api = $this->factory->create('caoym\\phprs\\Container', array($class_name, $method), null, null);
+            } catch (\Exception $e) {
+                Logger::warning("load api: $class_name, $class_file failed with ".$e->getMessage());
+                return ;
+            }
+        }else{
+            $api = $this->factory->create('caoym\\phprs\\Container', array($class_name, $method), null, null);
+        }
+        
         foreach ($api->routes as $http_method=>$route){
             if(!isset($routes[$http_method])){
                 $routes[$http_method] = new HttpRouterEntries();
@@ -310,4 +322,9 @@ class Router
      * @property
      */
     public $url_begin=0;
+    /**
+     * @property 忽略类加载时的错误，只是跳过出错的接口。否则抛出异常。
+     */
+    public $ignore_load_error=true;
+    
 }

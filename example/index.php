@@ -21,7 +21,7 @@ $lib_path = $project_path.'/../lib/';
 require_once $lib_path.'/caoym/AutoLoad.php';
 ClassLoader::addInclude($project_path.'/apis/');
 
-//Logger::$writer = Logger::$to_void; //日志不输出
+//Logger::$writer = Logger::$to_void; //to_void表示日志不输出
 
 //CLI调试时模拟请求
 //$_SERVER['REQUEST_METHOD']='GET';
