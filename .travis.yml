@@ -16,7 +16,9 @@ script: phpunit ./tests
 
 install:
   - pip install coverage
-  
+  - pip install .
+  - pip install -r requirements.txt
+
 after_success:
   - bash <(curl -s https://codecov.io/bash)
   
