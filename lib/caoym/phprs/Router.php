@@ -15,6 +15,8 @@ use caoym\util\Verify;
 use caoym\util\AutoClassLoader;
 use caoym\util\Logger;
 use caoym\util\exceptions\NotFound;
+use caoym\util\exceptions\BadRequest;
+use caoym\util\exceptions\Forbidden;
 
 /**
  * 结果保留在内存
@@ -108,7 +110,7 @@ class Router
             }
         }
         $res = new BufferedRespond();
-        if(!$this->catch_exceptions){
+        if(!$catch_exceptions){
             Verify::isTrue($this->invokeRoute($this->routes, $request, $res), new NotFound());
             $respond->append($res->getBuffer());
             $respond->flush();
