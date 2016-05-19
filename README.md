@@ -6,7 +6,7 @@
 
 Lightweight, easy-to-use and jax-rs like RESTful framework.[中文文档](https://github.com/caoym/phprs-restful/blob/master/README.CN.md)
 
-[Wiki](https://github.com/caoym/phprs-restful/wiki)
+[Wiki](https://github.com/caoym/phprs-restful/wiki/English)
 
 
 
@@ -93,46 +93,5 @@ class Tokens
 }
 ```
 
-## Installation
-
-1. Download and copy phprs-restful/lib/* --> your-project-dir/../lib/
-2. new index.php  --> your-project-dir/
-    ```PHP
-    <?php
-    use caoym\util\IoCFactory;
-    use caoym\util\ClassLoader;
-    
-    require_once __DIR__.'/../lib/caoym/AutoLoad.php';
-    ClassLoader::addInclude(__DIR__.'/apis/');
-    
-    
-    $factory  = new IoCFactory(__DIR__.'/conf.json');
-    $router = $factory->create('caoym\\phprs\\RouterWithCache');
-    $router();
-    ```
-3. new conf.json  --> your-project-dir/
-
-    ```JSON
-    {
-    }
-    ```
-4. Mkdir your-project-dir/apis/ and put in your owner api files
-5. Settiing webserver, route RESTful requests to index.php, for example:
-    > Nginx
-    
-    ```
-    location / {
-        try_files $uri $uri/ /index.php?$args;
-    }
-    ```
-    
-    > Apache
-    
-    ```
-    RewriteEngine on
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond $1 !^(index\.php)
-    RewriteRule ^(.*)$ /index.php/$1 [L]
-    ```
-
+## Quick start
+https://github.com/caoym/phprs-restful/wiki/Quick-start
