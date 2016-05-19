@@ -6,6 +6,12 @@ php:
   - '7.0'
   - hhvm
   
+cache:
+  directories:
+  - cldr
+  - "$HOME/.cache/pip"
+  - "$HOME/.pyenv"
+  
 script: phpunit ./tests
 
 install:
