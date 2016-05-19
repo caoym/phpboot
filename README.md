@@ -116,7 +116,7 @@ class Tokens
     {
     }
     ```
-4. Mkdir your-project-dir/apis/ and puy your owner api files
+4. Mkdir your-project-dir/apis/ and put in your owner api files
 5. Settiing webserver, route RESTful requests to index.php, for example:
     > Nginx
     
