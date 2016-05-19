@@ -1,19 +1,18 @@
 {
     "caoym\\phprs\\Router": {
         "properties": {
-            "export_apis":true //是否允许导出接口文档,若为True，可以通过访问 http://host:port/apis/查看接口定义
-            //,"hooks":["MyHook1,MyHook2"] 设置hook
-            //,"url_begin"=1 //url_begin用于指定路由的从哪一级开始匹配,默认为0
+            "export_apis":true //Enable output api documents, if true, visit http://your-host:port/apis/ to get documents
+            //,"hooks":["MyHook1","MyHook2"] //Enable hooks
+            //,"url_begin":1 //Specify url_begin用于指定路由的从哪一级开始匹配, default is  0
         } 
     },
     "caoym\\phprs\\Invoker": {
         "properties": {
-            //"cache":"@invokeCache"	//指定api调用缓存
+            //"cache":"@invokeCache"  //cache result of apis(the apis with @cache)
         } 
     }
-    /** 如果 caoym\\phprs\\Invoker 中指定了cache属性，则需启用这块配置
+    /** if the property "cache" of caoym\\phprs\\Invoker is set
     ,
-    //api接口redis缓存地址
     "invokeCache":{
     	"class":"caoym\\util\\RedisCache",
 		"singleton":true,
@@ -23,8 +22,9 @@
     		"port":"6379"
     	}
     }*/
-    /** 如果使用ezphp(https://github.com/caoym/ezsql),可以这么配置DB
-    //数据库
+    
+    /** 
+    //db config sample, and ezphp(https://github.com/caoym/ezsql) can work with PDO simply
     ,"db":{
 		"singleton":true,
     	"class":"PDO",

@@ -1,6 +1,6 @@
 <?php
 /**
- * 此示例只用于描述接口定义方法，来自其他项目，代码不全，暂无法运行
+ * a sample for showing annotations
  */
 use caoym\util\Verify;
 use caoym\util\exceptions\Forbidden;
@@ -8,17 +8,14 @@ use caoym\util\Logger;
 use caoym\util\exceptions\NotFound;
 use caoym\ezsql\Sql;
 use caoym\util\exceptions\BadRequest;
-use caoym\util\Curl;
 
 /**
- * 昵称冲突
  * @author caoym
  */
 class AliasConflict extends \Exception
 {
 }
 /**
- * 用户名冲突
  * @author caoym
  */
 class AccountConflict extends \Exception
@@ -26,30 +23,29 @@ class AccountConflict extends \Exception
 }
 /**
  * 
- * @author caoym
- * 用户信息管理
+ * users manager
  * @path("/users")
  */
 class Users
 {
 
     /**
-     * 创建用户
-     * @route({"POST","/"}) 新建用户
-     * @param({"account", "$._POST.mobile"})  手机号，必选
-     * @param({"password", "$._POST.password"})  密码，必选
-     * @param({"alias", "$._POST.alias"})  昵称，必选
-     * @param({"avatar", "$._FILES.avatar.tmp_name"})  头像文件，可选
-     * @param({"token", "$._COOKIE.token"}) 验证短信验证码后获取的cookie
+     * create user
+     * @route({"POST","/"}) 
+     * @param({"account", "$._POST.mobile"})  cell-phone number, required
+     * @param({"password", "$._POST.password"})  password, required
+     * @param({"alias", "$._POST.alias"})  user's alias, required
+     * @param({"avatar", "$._FILES.avatar.tmp_name"})  user's avatar, optional
+     * @param({"token", "$._COOKIE.token"})  
      * 
-     * @throws({"caoym\util\exceptions\Forbidden","res", "403 Forbidden",{"error":"Forbidden"}}) cookie失效
+     * @throws({"caoym\util\exceptions\Forbidden","res", "403 Forbidden",{"error":"Forbidden"}}) cookie invalid
      * 
-     * @throws({"AliasConflict","res", "409 Conflict",{"error":"AliasConflict"}}) 昵称冲突
+     * @throws({"AliasConflict","res", "409 Conflict",{"error":"AliasConflict"}}) alias conflict
      * 
-     * @throws({"AccountConflict","res", "409 Conflict",{"error":"AccountConflict"}}) 用户名冲突(手机号冲突)
+     * @throws({"AccountConflict","res", "409 Conflict",{"error":"AccountConflict"}}) account conflict
      * 
      * @return({"cookie","uid","$uid","+365 days","/"})  uid
-     * @return 返回用户id
+     * @return user's id
      * {"uid":"1233"}
      */
     public function createUser(&$uid, $token, $account, $alias, $password, $avatar = null){
@@ -61,18 +57,17 @@ class Users
         if($avatar){
             $avatar = $this->uploadAvatar($avatar);
         }else{
-            $avatar = '';//数据库设置了not null
+            $avatar = '';
         }
         $pdo = $this->db;
         $pdo->beginTransaction();
         try {
-            //检查账号是否重复（用户名、邮箱、手机号任一一项都不能重复）
-            //由于数据库中已近存在重复记录，所以不能设置数据库的唯一性索引、
+            //is account conflict
             $res = Sql::select('uid')->from('uc_members')->where(
                 'username = ? OR email = ? OR mobile = ?', $account,$account,$account
                 )->forUpdate()->get($pdo);
             Verify::isTrue(count($res) ==0, new AccountConflict("account $account conflict"));
-            // 昵称
+            //is avatar conflict
             $res = Sql::select('uid')->from('pre_common_member_profile')->where('realname = ?', $alias)->forUpdate()->get($pdo);
             Verify::isTrue(count($res) ==0, new AliasConflict("alias $alias conflict"));
             
@@ -100,17 +95,17 @@ class Users
     }
     
     /**
-     * 修改用户
+     * modify user's information
      * @route({"POST","/current"}) 
      * 
-     * @param({"password", "$._POST.password"})  密码，可选
-     * @param({"alias", "$._POST.alias"})  昵称，可选
-     * @param({"avatar", "$._FILES.avatar.tmp_name"})  头像，需要更新头像时指定，可选
-     * @param({"token", "$._COOKIE.token"}) 登录后获取的cookie
+     * @param({"password", "$._POST.password"}) modify password, optional
+     * @param({"alias", "$._POST.alias"})  modify alias, optional
+     * @param({"avatar", "$._FILES.avatar.tmp_name"})  modify avatar, optional
+     * @param({"token", "$._COOKIE.token"}) used for auth
      *
-     * @throws({"caoym\util\exceptions\Forbidden","res", "403 Forbidden", {"error":"Forbidden"}}) code验证失败
+     * @throws({"caoym\util\exceptions\Forbidden","res", "403 Forbidden", {"error":"Forbidden"}}) invalid cookie
      * 
-     * @throws({"AliasConflict","status", "409 Conflict", {"error":"AliasConflict"}}) 昵称冲突
+     * @throws({"AliasConflict","status", "409 Conflict", {"error":"AliasConflict"}}) alias conflict
      * 
      */
     public function updateUser($token, $alias=null, $password=null, $avatar=null ){
@@ -130,13 +125,13 @@ class Users
                 $params = array();
                 
                 if($alias){
-                    //昵称不能重复
+           
                     $res = Sql::select('uid')->from('pre_common_member_profile')->where('realname = ? AND uid <> ?', $alias, $uid)->forUpdate()->get($pdo);
                     Verify::isTrue(count($res) ==0, new AliasConflict("alias $alias conflict"));
                     
                     $params['realname'] = $alias;
                 }
-                //TODO 头像
+               
                 if($avatar){
                     $params['avatar'] = $avatar;
                 }
@@ -160,19 +155,16 @@ class Users
     }
     
     /**
-     * 批量获取用户信息
+     * get users info
      * @route({"GET","/"}) 
-     * @param({"uids","$._GET.uids"}) 一组用户id
+     * @param({"uids","$._GET.uids"}) users id
      * @return("body")
-     * 返回用户信息
+     * response like this:
      *  [
      *  {
      *      "uid":"id",
-     *       "avatar":"头像",
-     *       "alias":"昵称",
-     *       "level":2, //0, 普通用户   1,未审核研究员    2,研究员
-     *       "fields":"农林牧渔", //领域 ,level>0时有效
-     *       "company":"公司名", //level>0时有效
+     *      "avatar":"http://xxxxx/avatar.jpg",
+     *      "alias":"caoym",
      *  }
      *  ...
      *  ]
@@ -193,32 +185,20 @@ class Users
             ->where('uc_members.uid IN (?)', $uids)
             ->get($this->db ,$asDict?'uid':null);
 
-        if(is_array($res)){
-            foreach ($res as &$i){
-                $ext = json_decode($i['ext'],true);
-                unset($i['ext']);
-                if(isset($ext['education'])) $i['education'] = $ext['education'];
-                if(isset($ext['company'])) $i['company'] = $ext['company'];
-                if(isset($ext['fields'])) $i['fields'] = $ext['fields']; 
-            }
-        }
         return $res;
     }
     
     /**
-     * 获取当前用户信息
+     * get current user info
      * @route({"GET","/current"})
      * 
-     * @param({"token", "$._COOKIE.token"}) 登录后获取的cookie
+     * @param({"token", "$._COOKIE.token"}) 
      * @return("body")
-     * 返回用户信息
+     * response like this:
      *  {
      *      "uid":"id",
-     *      "avatar":"头像",
-     *      "alias":"昵称",
-     *      "level":2, //0, 普通用户   1,未审核研究员    2,研究员
-     *      "fields":"农林牧渔", //领域 ,level>0时有效
-     *      "company":"公司名", //level>0时有效
+     *      "avatar":"http://xxxxx/avatar.jpg",
+     *      "alias":"caoym"
      *  }
      *  ...
      */
@@ -229,22 +209,16 @@ class Users
         Verify::isTrue($token['uid'] , new Forbidden('invalid uid '.$uid));
         $res = $this->getUserByIds([$uid]);
         Verify::isTrue(count($res) !=0, new NotFound("user $uid not found"));
-        //根据当前uid获取自选股列表
-        $portfolio = $this->factory->create('Portfolio');
-        $stockList = $portfolio->getStockList($uid);
-        $res[0]['stocklist'] = $stockList;
         return $res[0];
     }
     
-    /**
-     * 通过账号获取用户信息
-     */
     public function getUserByAccount($account){
         return $this->getUser(['uc_members.username'=>$account]); 
     }
     public function getUserByAlias($alias){
         return $this->getUser(['pre_common_member_profile.realname'=>$alias]);
     }
+    
     private function getUser($cond){
         $res = Sql::select('uc_members.uid',
             'pre_common_member_profile.realname as alias',
@@ -266,9 +240,7 @@ class Users
         }
         return count($res)>0 ? $res[0]:false;
     }
-    /**
-     * 通过账号获取uid
-     */
+
     public function verifyPassword($account, $password){
         $res = Sql::select('uid, password, salt')->from('uc_members')
         ->where('username = ? or email = ?', $account, $account)
@@ -283,10 +255,7 @@ class Users
         }
         return false;
     }
-    /**
-     * 删除用户
-     * 只用于单元测试
-     */
+
     public function deleteUserByAccount($account){
         $this->db->beginTransaction();
         try {
@@ -306,13 +275,8 @@ class Users
         }
         return true;
     }
-    /**
-     * 上传头像
-     * @param string $file 本地路径
-     * @return string 返回头像url
-     */
+
     private function uploadAvatar($file){
-         //上传头像
         $name = md5_file($file);
         return $this->oss->upload("avatars", $name, $file);
     }
@@ -326,9 +290,4 @@ class Users
     /** @property({"default":"@util\ObjectStoreService"}) */
     public $oss;
     
-    /**
-     * @property({"default":"@\util\Curl"})
-     * @var \util\Curl
-     */
-    private $httpClient;
 }

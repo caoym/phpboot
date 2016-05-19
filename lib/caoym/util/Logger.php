@@ -17,6 +17,7 @@ namespace caoym\util;
  */
 class Logger
 {
+    static $flags = 12; // ERROR|WARNING
     /**
      * echo输出
      */
@@ -47,7 +48,9 @@ class Logger
      * @return void
      */
     public static function debug($msg){
-        call_user_func(Logger::$writer, self::DEBUG, $msg);
+        if(self::$flags&self::DEBUG){
+            call_user_func(Logger::$writer, self::DEBUG, $msg);
+        }
     }
     /**
      * info log
@@ -55,7 +58,9 @@ class Logger
      * @return void
      */
     public static function info($msg){
-        call_user_func(Logger::$writer, self::INFO, $msg);
+        if(self::$flags&self::INFO){
+            call_user_func(Logger::$writer, self::INFO, $msg);
+        }
     }
     /**
      * warning log
@@ -63,7 +68,9 @@ class Logger
      * @return void
      */
     public static function warning($msg){
-        call_user_func(Logger::$writer, self::WARNING, $msg);
+        if(self::$flags&self::WARNING){
+            call_user_func(Logger::$writer, self::WARNING, $msg);
+        }
     }
     /**
      * error log
@@ -71,7 +78,9 @@ class Logger
      * @return void
      */
     public static function error($msg){
-        call_user_func(Logger::$writer, self::ERROR, $msg);
+        if(self::$flags&self::ERROR){
+            call_user_func(Logger::$writer, self::ERROR, $msg);
+        }
     } 
     /**
      * init
