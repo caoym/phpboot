@@ -9,7 +9,8 @@ PHP5.4+
 
 
 ## Features
-1. IoC
+1. @Annotation
+2. IoC
 2. Auto document
 3. Cache
 4. Hook
@@ -88,8 +89,26 @@ class Tokens
 ## Installation
 
 1. Download and copy phprs-restful/lib/* --> your-project-dir/../lib/
-2. Copy phprs-restful/example/index.php  --> your-project-dir/
-3. Copy phprs-restful/example/conf.json  --> your-project-dir/
+2. new index.php  --> your-project-dir/
+    ```PHP
+    <?php
+    use caoym\util\IoCFactory;
+    use caoym\util\ClassLoader;
+    
+    require_once __DIR__.'/../lib/caoym/AutoLoad.php';
+    ClassLoader::addInclude(__DIR__.'/apis/');
+    
+    
+    $factory  = new IoCFactory(__DIR__.'/conf.json');
+    $router = $factory->create('caoym\\phprs\\RouterWithCache');
+    $router();
+    ```
+3. new conf.json  --> your-project-dir/
+
+    ```JSON
+    {
+    }
+    ```
 4. Mkdir your-project-dir/apis/ and puy your owner api files
 5. Settiing webserver, route RESTful requests to index.php, for example:
     > Nginx
