@@ -85,3 +85,28 @@ class Tokens
     public $users;
 }
 ```
+
+## Installation
+
+1. Download and copy phprs-restful/lib/* --> your-project-dir/../lib/
+2. Copy phprs-restful/example/index.php  --> your-project-dir/
+3. Copy phprs-restful/example/conf.json  --> your-project-dir/
+4. Mkdir your-project-dir/apis/ and puy your owner api files
+5. Settiing webserver, route RESTful requests to index.php, for example:
+    > Nginx
+    
+    ```
+    location / {
+        try_files $uri $uri/ /index.php?$args;
+    }
+    ```
+    
+    > Apache
+    
+    ```
+    RewriteEngine on
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond $1 !^(index\.php)
+    RewriteRule ^(.*)$ /index.php/$1 [L]
+    ```
