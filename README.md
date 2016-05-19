@@ -1,7 +1,6 @@
 # phprs 
-Lightweight, easy-to-use and jax-rs like RESTful framework.
+Lightweight, easy-to-use and jax-rs like RESTful framework.[中文文档](https://github.com/caoym/phprs-restful/blob/master/README.CN.md)
 
-[中文文档](https://github.com/caoym/phprs-restful/blob/master/README.CN.md)
 [![Build Status](https://travis-ci.org/caoym/phprs-restful.svg)](https://travis-ci.org/caoym/phprs-restful)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/caoym/phprs-restful/master/LICENSE)
 
