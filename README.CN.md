@@ -110,4 +110,4 @@ RewriteRule ^(.*)$ /index.php/$1 [L]
 
 ## 手册
 
-请移步[wiki](https://github.com/caoym/phprs-restful/wiki)
+请移步[wiki](https://github.com/caoym/phprs-restful/wiki/%E4%B8%AD%E6%96%87)
