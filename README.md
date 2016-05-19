@@ -1,12 +1,13 @@
 # phprs 
 Lightweight, easy-to-use and jax-rs like RESTful framework.
+
 [中文文档](https://github.com/caoym/phprs-restful/blob/master/README.CN.md)
+[![Build Status](https://travis-ci.org/caoym/phprs-restful.svg)](https://travis-ci.org/caoym/phprs-restful)
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/caoym/phprs-restful/master/LICENSE)
 
 # Requirements
 PHP5.4+
 
-[![Build Status](https://travis-ci.org/caoym/phprs-restful.svg)](https://travis-ci.org/caoym/phprs-restful)
-[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/caoym/phprs-restful/master/LICENSE)
 
 ## Features
 1. IoC
@@ -33,11 +34,13 @@ PHP5.4+
     }
     ```
 2. open http://your-domain/hw/
+
     ```JSON
     {
         "msg":"Hello World!"
     }
     ```
+    
 ## What happened
 See HelloWorld.php, the annotations like @path，@route are used to define routers. Phprs also use annotations for two-way parameter binding, dependency injection, etc.  
 
