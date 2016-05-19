@@ -9,7 +9,7 @@ php:
 install:
   - sudo pip install coverage
 
-script: phpunit ./tests
+script: phpunit ./tests --coverage-clover=coverage.xml
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
