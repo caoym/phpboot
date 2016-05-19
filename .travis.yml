@@ -9,7 +9,7 @@ php:
 script: phpunit ./tests
 
 install:
-  - pip install coveralls
+  - pip install coverage
   
 after_success:
   - bash <(curl -s https://codecov.io/bash)
