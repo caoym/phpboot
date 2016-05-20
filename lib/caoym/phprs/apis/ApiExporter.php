@@ -95,7 +95,8 @@ EOT;
     public function exportMainHtml()
     {
         $info = $this->exportJson();
-        $body .= '<html>';
+        
+        $body = '<html>';
         $body .= '<body>';
         $body = '<ol>';
         foreach ($info as $class_name => $apis) {
