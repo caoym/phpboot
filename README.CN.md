@@ -77,7 +77,7 @@ class Tokens
 - Nginx
 ```
 location / {
-  try_files $uri $uri/ /index.php?$args;
+  rewrite ^(/.*)?$ /index.php$1 break;
 }
 ```
 - Apache
