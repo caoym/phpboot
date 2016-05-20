@@ -111,3 +111,9 @@ RewriteRule ^(.*)$ /index.php/$1 [L]
 ## 手册
 
 请移步[wiki](https://github.com/caoym/phprs-restful/wiki/%E4%B8%AD%E6%96%87)
+
+## TODO
+
+1. 支持注入远程服务
+2. 用户自定义 annotation
+3. 更高大上的文档生成
