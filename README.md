@@ -95,3 +95,9 @@ class Tokens
 
 ## Quick start
 https://github.com/caoym/phprs-restful/wiki/Quick-start
+
+## TODO
+
+1. Inject Remote service support
+2. User-defined annotations
+3. Graceful auto document 
