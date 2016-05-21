@@ -132,6 +132,7 @@ class Orders
                                           | $check is set in method, and will be invoked to check cache expired with $check($data, $create_time), for examples use $check = new FileExpiredChecker('file.tmp'); to make cache invalidated if file.tmp modified.
 
 4. **Dependency Injection**
+
     Use `@property` to inject dependency
     phprs create API class and inject dependency from conf.json, which is looks like
     ```JSON
@@ -155,10 +156,12 @@ class Orders
     ```
 
 5. **Document automatic generation**
+
    The document is looked like:
    ![](https://raw.githubusercontent.com/caoym/phprs-restful/master/doc/doc_sample_1.png)
 
 6. **Hook**
+
    The implement of a hook is the same as API.
 
 ## Quick start
