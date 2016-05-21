@@ -4,24 +4,12 @@
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/caoym/phprs-restful/master/LICENSE)
 [![codecov](https://codecov.io/gh/caoym/phprs-restful/branch/master/graph/badge.svg)](https://codecov.io/gh/caoym/phprs-restful)
 
-Lightweight, easy-to-use and jax-rs like RESTful framework.[中文文档](https://github.com/caoym/phprs-restful/blob/master/README.CN.md)
+Lightweight, easy-to-use and jax-rs-like for RESTful Web Services.[中文文档](https://github.com/caoym/phprs-restful/blob/master/README.CN.md)
 
 [Wiki](https://github.com/caoym/phprs-restful/wiki/English)
 
-
-
-
 # Requirements
 PHP5.4+
-
-
-## Features
-1. @Annotation
-2. IoC
-2. Auto document
-3. Cache
-4. Hook
-5. [More...](https://github.com/caoym/phprs-restful/wiki)
 
 ## Hello World
 1. Put HelloWorld.php in your-project-dir/apis/
@@ -49,49 +37,129 @@ PHP5.4+
     ```
     
 ## What happened
-See HelloWorld.php, the annotations like @path，@route are used to define routers. Phprs also use annotations for two-way parameter binding, dependency injection, etc.  
+See HelloWorld.php, the annotations like @path，@route are used to define routers. Phprs also use annotations for two-way parameter binding, dependency injection, etc. 
 
-## Examples
-A login api example
-    
+## Examples 
+"orders manage"
+
 ```PHP
 /**
- * authentication
- * @path("/tokens/") 
+ * @path("/orders/")
  */
-class Tokens
-{ 
-    /**
-     * login
-     * login with password
-     * @route({"POST","/accounts/"}) 
-     * @param({"account", "$._POST.account"}) user's account
-     * @param({"password", "$._POST.password"}) user's password
-     * 
-     * @throws ({"InvalidPassword", "res", "403 Forbidden", {"error":"InvalidPassword"} }) invalid password or account
-     * 
-     * @return({"body"})    
-     * return uid
-     * {"uid" = "xxx"}
-     *
-     * @return({"cookie","token","$token","+365 days","/"})  return token with cookie
-     * @return({"cookie","uid","$uid","+365 days","/"})  return uid  with cookie
+class Orders
+{
+    /** 
+     * @route({"GET","/"})
+     * @return({"body"})
      */
-    public function createTokenByAccounts($account, $password, &$token,&$uid){
-        $uid = $this->users->verifyPassword($account, $password);
-        Verify::isTrue($uid, new InvalidPassword($account));
-        $token = ...;
-        return ['uid'=>$uid];
-    } 
-    /**
-     * @property({"default":"@Users"})  inject an instantiation of 'Users'
-     * that means $this->users will be initialized as 'Users' before __construct() called
-     *
-     * @var Users
+    public function getAllOrders() {
+        return Sql::select('*')->from('orders')->get($this->pdo);
+    }
+    /** 
+     * @route({"GET","/*"})
+     * @param({"id", "$.path[1]"})
+      * @return({"body"})
      */
-    public $users;
+    public function getOrderById($id) {
+        return Sql::select('*')->from('orders')->where('id=?',$id)->get($this->pdo);
+    }
+    
+    /** 
+     * @route({"POST","/*"})
+     * @param({"goods_info", "$._POST.goods"})
+     * @return({"body"})
+     */
+    public function createOrder($goods_info){
+        $order_id = Sql::insertInto('orders')->values($goods_info)->exec($this->pdo)->lastInsertId();
+        return ['order_id'=>$order_id];
+    }
+    /**
+     * Instance of class \PDO
+     * @property 
+     */
+    public $pdo;
 }
 ```
+
+## Features
+
+1.  **Flexible routes**
+
+    PHPRS use `@route` to define routes.
+
+        @route({"GET","/patha"})                  |   GET     | /patha, /patha/...
+        ------------------------------------------+-----------+---------------------
+        @route({"*","/patha"})                    |   GET     | /patha
+                                                  |   POST    |
+                                                  |   PUT     |
+                                                  |   DELETE  |
+                                                  |   HEAD    |
+                                                  |   ...     |
+        ------------------------------------------+-----------+---------------------
+        @route({"GET","\patha\*\pathb"})          |   GET     | /patha/xxx/pathb
+        ------------------------------------------+-----------+---------------------
+        @route({"GET", "func1?param1=1&param2=2"})|   GET     | /func1?param1=1&param2=2&...
+                                                  |           | /myapi/func1?param2=2&param1=1&...
+
+2.  **Two-way parameter binding**
+
+    Annotations: `@param`, `@return`,`@throws` is used to bind variables between function parameters and http request or response.
+
+       
+        ------------------------------------------+-----------------------------
+        @param({"arg0","$._GET.arg0"})            | $arg0 = $_GET['arg0']
+        ------------------------------------------+-----------------------------
+        @param({"arg1","$.path[1]"})              | $arg1 = explode('/', REQUEST_URI)[1]
+        ------------------------------------------+-----------------------------
+        @return({"cookie","token","$arg2"})       | setcookie('token', $arg2)
+        function testCookie(&$arg2)               |
+        ------------------------------------------+-----------------------------
+        @return({"body"})                         | use function return as http response body
+        ------------------------------------------+-----------------------------
+        @throws({"MyException",                   | try{}
+            "res",                                | catch(MyException) {
+            "400 Bad Request",                    |   header("HTTP/1.1 400 Bad Request");body(["error"=>"my exception"]);}
+            {"error":"my exception"}}) 
+
+3. **Api cache**
+
+    Use `@cache` to enable cache for this method. If all params of the method are identical, the following calls will use cache.
+
+        ----------------------------------+-----------------------------
+        @cache({"ttl",3600})              | set cache as fixed time expire, as ttl 1 hour.
+        ------------------------------------------+-----------------------------
+        @cache({"checker", "$checker"})   | Use dynamic strategy to check caches. 
+                                          | $check is set in method, and will be invoked to check cache expired with $check($data, $create_time), for examples use $check = new FileExpiredChecker('file.tmp'); to make cache invalidated if file.tmp modified.
+
+4. **Dependency Injection**
+    Use `@property` to inject dependency
+    phprs create API class and inject dependency from conf.json, which is looks like
+    ```JSON
+    {
+       "Orders":{
+            "properties": {
+                "db":"@db"
+            }
+       },
+       "db":{
+            "singleton":true,
+            "class":"PDO",
+            "pass_by_construct":true,
+            "properties":{
+                "dsn":"mysql:host=127.0.0.1;dbname=testdb;",
+                "username":"test",
+                "passwd":"test"  		
+            }
+       }
+    }
+    ```
+
+5. **Document automatic generation**
+   The document is looked like:
+   ![](https://raw.githubusercontent.com/caoym/phprs-restful/master/doc/doc_sample_1.png)
+
+6. **Hook**
+   The implement of a hook is the same as API.
 
 ## Quick start
 https://github.com/caoym/phprs-restful/wiki/Quick-start
