@@ -2,7 +2,6 @@
 [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/caoym/phprs-restful)
 [![Build Status](https://travis-ci.org/caoym/phprs-restful.svg)](https://travis-ci.org/caoym/phprs-restful)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/caoym/phprs-restful/master/LICENSE)
-[![codecov](https://codecov.io/gh/caoym/phprs-restful/branch/master/graph/badge.svg)](https://codecov.io/gh/caoym/phprs-restful)
 
 Lightweight, easy-to-use and jax-rs-like for RESTful Web Services.[中文文档](https://github.com/caoym/phprs-restful/blob/master/README.CN.md)
 
