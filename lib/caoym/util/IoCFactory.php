@@ -48,7 +48,7 @@ class IoCFactory
             Verify::isTrue(is_file($conf), "$conf is not a valid file");
             Verify::isTrue(false !== ($data = file_get_contents($conf)), "$conf open failed");
             $data = self::clearAnnotation($data);
-            Verify::isTrue($this->conf = json_decode($data,true), "$conf json_decode failed with ".json_last_error());
+            Verify::isTrue(is_array($this->conf = json_decode($data,true)), "$conf json_decode failed with ".json_last_error());
             $this->conf_file = $conf;
         }
         if($dict !== null){
