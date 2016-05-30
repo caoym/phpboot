@@ -41,9 +41,13 @@ class Request implements \ArrayAccess
             $contentType = $data['header']['Content-Type'];
             list($contentType, ) = explode(';', $contentType)+array(null,null);
             if($contentType == 'application/json'){
-                $data['_POST'] = Verify::isTrue(json_decode(file_get_contents('php://input'), true), new BadRequest());
+                $post = file_get_contents('php://input');
+                if($post != ''){
+                    $data['_POST'] = Verify::isTrue(json_decode($post, true), new BadRequest('post unjson data with application/json type'));
+                    $data['_REQUEST'] = array_merge($data['_POST'], $data['_REQUEST'] );
+                }
             }
-            elseif($contentType == 'text/plan'){
+            elseif($contentType == 'text/plain'){
                 $data['_POST'] = Verify::isTrue((file_get_contents('php://input')), new BadRequest());
             }
         }
