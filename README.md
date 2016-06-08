@@ -162,7 +162,11 @@ class Orders
 6. **Hook**
 
    The implement of a hook is the same as API.
+   
+7. **ezsql**
 
+   An easy-to-use and IDE friendly SQL builder. Object-oriented SQL. @see https://github.com/caoym/ezsql
+   
 ## Quick start
 https://github.com/caoym/phprs-restful/wiki/Quick-start
 
