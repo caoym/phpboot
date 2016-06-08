@@ -3,7 +3,7 @@
 namespace caoym\util;
 
 /**
- * 提取字符串内的嵌套字符串
+ * 剪出字符串中的嵌套字符串
  * 既从aaa"bb\"b"ccc中, 取出"bb\"b"
  * @author caoym
  */
@@ -21,24 +21,16 @@ class NestedStringCut{
         };
         return false;
     }
-    /**
-     *  [位置=>子字符串]的数组，如:
-     *  [
-     *      0=>'a',
-     *      4=>'c',
-     *      7=>'dd',
-     *      21=>'g',
-     *   ]
-     */
+    
     public function  getSnippets(){
         return $this->snippets;
     }
-    // 去掉内嵌文本后的文本
+    
     public function  getText(){
         return  implode('', $this->snippets);
     }
     /**
-     * 将提取后的字符串位置转换成原始字符串位置
+     * 将剪切后的字符串位置转换成原始字符串位置
      * @param int $pos 
      * @param int
      */

@@ -6,7 +6,7 @@
  **************************************************************************/
 /**
  * $Id: Verify.php 57435 2014-12-21 15:04:22Z caoyangmin $
- * @author caoyangmin(caoyangmin@baidu.com)
+ * @author caoym(caoyangmin@gmail.com)
  * @brief
  */
 namespace caoym\util;
@@ -30,10 +30,8 @@ class Verify{
     {
         if (!$var) {
             if($msg === null || is_string($msg)){
-                Logger::warning($msg);
                 throw new \Exception($msg);
             }else{
-                Logger::warning($msg->__toString());
                 throw $msg;
             }
         } else {
@@ -47,10 +45,8 @@ class Verify{
      */
     static public function e($e){
         if ($e === null || is_string($e)) {
-            Logger::warning($e);
             throw new \Exception($e);
         } else {
-            Logger::warning($e->__toString());
             throw $e;
         }
     }
