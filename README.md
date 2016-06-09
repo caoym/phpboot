@@ -64,7 +64,7 @@ class Orders
     }
     
     /** 
-     * @route({"POST","/*"})
+     * @route({"POST","/"})
      * @param({"goods_info", "$._POST.goods"})
      * @return({"body"})
      */
@@ -128,7 +128,7 @@ class Orders
         @cache({"ttl",3600})              | set cache as fixed time expire, as ttl 1 hour.
         ------------------------------------------+-----------------------------
         @cache({"checker", "$checker"})   | Use dynamic strategy to check caches. 
-                                          | $check is set in method, and will be invoked to check cache expired with $check($data, $create_time), for examples use $check = new FileExpiredChecker('file.tmp'); to make cache invalidated if file.tmp modified.
+                                          | $checker is set in method, and will be invoked to check cache expired with $checker($data, $create_time), for examples use $check = new FileExpiredChecker('file.tmp'); to make cache invalidated if file.tmp modified.
 
 4. **Dependency Injection**
 
