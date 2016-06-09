@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/caoym/phprs-restful.svg)](https://travis-ci.org/caoym/phprs-restful)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/caoym/phprs-restful/master/LICENSE)
 
-轻量级、类jax-rs、实用的PHP框架，用于快速开发RESTful Web Services.[English](https://github.com/caoym/phprs-restful/blob/master/README.md)
+phprs是一款轻量、类jax-rs、实用的PHP框架，用于快速开发RESTful Web Services.[English](https://github.com/caoym/phprs-restful/blob/master/README.md)
 
 [Wiki](https://github.com/caoym/phprs-restful/wiki/English)
 
@@ -56,7 +56,7 @@ class Orders
         return Sql::select('*')->from('orders')->get($this->db);//数组默认将被转换成json输出
     }
     /** 
-     * 或者指定的订单信息
+     * 获取指定的订单信息
      * @route({"GET","/*"}) *是通配符，匹配任意/orders/的子目录
      * @param({"id", "$.path[1]"})  提取路径中的第二节作为参数$id，如/orders/123中的123
       * @return({"body"})
