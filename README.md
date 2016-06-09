@@ -52,7 +52,7 @@ class Orders
      * @return({"body"})
      */
     public function getAllOrders() {
-        return Sql::select('*')->from('orders')->get($this->pdo);
+        return Sql::select('*')->from('orders')->get($this->db);
     }
     /** 
      * @route({"GET","/*"})
@@ -60,7 +60,7 @@ class Orders
       * @return({"body"})
      */
     public function getOrderById($id) {
-        return Sql::select('*')->from('orders')->where('id=?',$id)->get($this->pdo);
+        return Sql::select('*')->from('orders')->where('id=?',$id)->get($this->db);
     }
     
     /** 
@@ -69,14 +69,14 @@ class Orders
      * @return({"body"})
      */
     public function createOrder($goods_info){
-        $order_id = Sql::insertInto('orders')->values($goods_info)->exec($this->pdo)->lastInsertId();
+        $order_id = Sql::insertInto('orders')->values($goods_info)->exec($this->db)->lastInsertId();
         return ['order_id'=>$order_id];
     }
     /**
      * Instance of class \PDO
      * @property 
      */
-    public $pdo;
+    public $db;
 }
 ```
 
