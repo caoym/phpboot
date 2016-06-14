@@ -1,9 +1,5 @@
 <?php
-/***************************************************************************
- *
-* Copyright (c) 2013 . All Rights Reserved
-*
-**************************************************************************/
+
 /**
  * $Id: AnnotationReader.php 56458 2014-11-29 15:06:20Z caoyangmin $
  * @author caoyangmin(caoyangmin@baidu.com)

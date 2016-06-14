@@ -1,9 +1,4 @@
 <?php
-/***************************************************************************
- *
-* Copyright (c) 2014 . All Rights Reserved
-*
-**************************************************************************/
 /**
  * $Id: AutoClassLoader.php 58820 2015-01-16 16:29:33Z caoyangmin $
  * @author caoyangmin(caoyangmin@baidu.com)

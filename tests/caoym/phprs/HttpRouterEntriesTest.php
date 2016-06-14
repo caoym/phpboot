@@ -1,9 +1,5 @@
 <?php
-/***************************************************************************
- *
- * Copyright (c) 2013 . All Rights Reserved
- *
- **************************************************************************/
+
 /**
  * $Id: HttpRouterEntriesTest.php 58710 2015-01-14 16:08:49Z caoyangmin $
  * @author caoyangmin(caoyangmin@gmail.com)

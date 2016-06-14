@@ -2,11 +2,6 @@
 use caoym\util\IoCFactory;
 use caoym\util\Logger;
 
-/***************************************************************************
- *
- * Copyright (c) 2014 . All Rights Reserved
- *
- **************************************************************************/
 
 require_once __DIR__.'/../../../lib/caoym/AutoLoad.php';
 

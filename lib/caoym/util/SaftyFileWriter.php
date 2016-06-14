@@ -1,9 +1,5 @@
 <?php
-/***************************************************************************
- *
-* Copyright (c) 2013 . All Rights Reserved
-*
-**************************************************************************/
+
 /**
  * $Id: SaftyFileWriter.php 57435 2014-12-21 15:04:22Z caoyangmin $
  * @author caoyangmin(caoyangmin@baidu.com)
