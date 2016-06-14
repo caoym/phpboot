@@ -172,7 +172,7 @@ class Orders
    
 7. **ezsql**
  
-   phprs还包含一个简单的数据库操作类. 详见 https://github.com/caoym/ezsql
+   phprs还包含一个简单的数据库操作类.
    
 ## 快速开始
 

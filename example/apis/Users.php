@@ -2,12 +2,12 @@
 /**
  * a sample for showing annotations
  */
-use caoym\util\Verify;
-use caoym\util\exceptions\Forbidden;
-use caoym\util\Logger;
-use caoym\util\exceptions\NotFound;
-use caoym\ezsql\Sql;
-use caoym\util\exceptions\BadRequest;
+use phprs\util\Verify;
+use phprs\util\exceptions\Forbidden;
+use phprs\util\Logger;
+use phprs\util\exceptions\NotFound;
+use phprs\ezsql\Sql;
+use phprs\util\exceptions\BadRequest;
 
 /**
  * @author caoym
@@ -38,7 +38,7 @@ class Users
      * @param({"avatar", "$._FILES.avatar.tmp_name"})  user's avatar, optional
      * @param({"token", "$._COOKIE.token"})  
      * 
-     * @throws({"caoym\util\exceptions\Forbidden","res", "403 Forbidden",{"error":"Forbidden"}}) cookie invalid
+     * @throws({"phprs\util\exceptions\Forbidden","res", "403 Forbidden",{"error":"Forbidden"}}) cookie invalid
      * 
      * @throws({"AliasConflict","res", "409 Conflict",{"error":"AliasConflict"}}) alias conflict
      * 
@@ -103,7 +103,7 @@ class Users
      * @param({"avatar", "$._FILES.avatar.tmp_name"})  modify avatar, optional
      * @param({"token", "$._COOKIE.token"}) used for auth
      *
-     * @throws({"caoym\util\exceptions\Forbidden","res", "403 Forbidden", {"error":"Forbidden"}}) invalid cookie
+     * @throws({"phprs\util\exceptions\Forbidden","res", "403 Forbidden", {"error":"Forbidden"}}) invalid cookie
      * 
      * @throws({"AliasConflict","status", "409 Conflict", {"error":"AliasConflict"}}) alias conflict
      * 

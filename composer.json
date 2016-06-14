@@ -22,13 +22,12 @@
     "minimum-stability" : "dev",
     "autoload": {
         "psr-4": {
-            "caoym\\phprs\\": "lib/caoym/phprs/",
-            "caoym\\util\\": "lib/caoym/util/"
+            "phprs\\": "lib/phprs/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "caoym\\phprs\\tests\\": "tests/caoym/phprs/"
+            "phprs\\tests\\": "tests/phprs/"
         }
     }
 }

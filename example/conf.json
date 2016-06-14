@@ -1,20 +1,21 @@
 {
-    "caoym\\phprs\\Router": {
+    "phprs\\Router": {
         "properties": {
             "export_apis":true //Enable output api documents, if true, visit http://your-host:port/apis/ to get documents
             //,"hooks":["MyHook1","MyHook2"] //Enable hooks
             //,"url_begin":1 // if url is "/abc/123", then 1st path node "/abc/" will be ignored.
         } 
     },
-    "caoym\\phprs\\Invoker": {
+    "phprs\\Invoker": {
         "properties": {
             //"cache":"@invokeCache"  //cache result of apis(the apis with @cache)
         } 
     }
-    /** if the property "cache" of caoym\\phprs\\Invoker is set
+    
+    /** if the property "cache" of phprs\\Invoker is set
     ,
     "invokeCache":{
-    	"class":"caoym\\util\\RedisCache",
+    	"class":"phprs\\util\\RedisCache",
 		"singleton":true,
     	"properties":{
     		"serialize":true,
@@ -24,7 +25,7 @@
     }*/
     
     /** 
-    //db config sample, and ezphp(https://github.com/caoym/ezsql) can work with PDO simply
+    //db config sample, and ezphp can work with PDO simply
     ,"db":{
 		"singleton":true,
     	"class":"PDO",
