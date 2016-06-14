@@ -1,13 +1,9 @@
 <?php
-/***************************************************************************
- *
-* Copyright (c) 2014 . All Rights Reserved
-*
-**************************************************************************/
+
 /**
  * $Id: IoCFactory.php 64919 2015-06-08 05:48:03Z caoyangmin $
  * TODO: Reflection有性能问题
- * @author caoyangmin(caoyangmin@baidu.com)
+ * @author caoyangmin
  * @brief
  * IoCFactory
  */
@@ -141,23 +137,41 @@ class IoCFactory
         }else{
             $class_refl = new \ReflectionClass($class_name);
         }
-        if (isset($class['pass_by_construct']) && $class['pass_by_construct']){
-            $ins = $class_refl->newInstanceArgs($construct_args);
-            $meta = $this->getMetaInfo($class_refl);
-            $this->injectDependent($class_refl, $ins, $meta, $properties, $injector);
-        }else{
-            $nti = new NewThenInit($class_refl);
-            $ins = $nti->getObject();
-            $meta = $this->getMetaInfo($class_refl);
-            $this->injectDependent($class_refl, $ins, $meta, $properties, $injector);
-            if($init !==null){
-                $init($ins);
+        if(!$is_singleton){
+            if (array_search($id, $this->create_stack) !== false){
+                $tmp = $this->create_stack;
+                Verify::e("create $id failed, cyclic dependencies can only used with singleton. cyclic:".print_r($tmp,true));
             }
-            $nti->initArgs($construct_args);
+            $this->create_stack[] = $id;
         }
-        if ($is_singleton){
-            $this->singletons[$id] = $ins;
+        
+        try {
+            if (isset($class['pass_by_construct']) && $class['pass_by_construct']){
+                $ins = $class_refl->newInstanceArgs($construct_args);
+                $meta = $this->getMetaInfo($class_refl);
+                if ($is_singleton){
+                    $this->singletons[$id] = $ins;
+                }
+                $this->injectDependent($class_refl, $ins, $meta, $properties, $injector);
+            }else{
+                $nti = new NewThenInit($class_refl);
+                $ins = $nti->getObject();
+                $meta = $this->getMetaInfo($class_refl);
+                if ($is_singleton){
+                    $this->singletons[$id] = $ins;
+                }
+                $this->injectDependent($class_refl, $ins, $meta, $properties, $injector);
+                if($init !==null){
+                    $init($ins);
+                }
+                $nti->initArgs($construct_args);
+            }
+        } catch (\Exception $e) {
+            array_pop($this->create_stack);
+            throw $e;
         }
+        array_pop($this->create_stack);
+        
         Logger::info("create {$id}[$class_name] ok");
         return $ins;
     }
@@ -266,12 +280,7 @@ class IoCFactory
                 $args[$key] = $this->getProperty($properties[$param_name]);
             }else{
                 Verify::isTrue($param->isOptional(), "{$class->getName()}::__construct miss required param: $param_name");//参数没有指定, 除非是可选参数
-                try {
-                    $defv = $param->getDefaultValue();
-                    $args[$key] = $defv;
-                } catch (\Exception $e) {
-                }
-                
+                $args[$key] = $param->getDefaultValue();
             }
         }
         return $args;  
@@ -429,4 +438,5 @@ class IoCFactory
     protected $conf = null;
     protected $dict = array();
     protected $conf_file;
+    private $create_stack=array(); // 正在创建的类，用于检测循环依赖
 }
