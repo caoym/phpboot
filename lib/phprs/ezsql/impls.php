@@ -9,20 +9,37 @@ use phprs\util\Verify;
 use phprs\ezsql\SqlConetxt;
 
 class Response{
-    public function __construct($db, $rows){
-        $this->db = $db;
-        $this->rows = $rows;
+    public function __construct($success,$pdo, $st){
+        $this->db = $pdo;
+        $this->st = $st;
+		$this->success = $success;
+        $this->rows = $this->st->rowCount();
     }
     public function lastInsertId($name=null){
-        return $this->db->lastInsertId($name);
+        return $this->pdo->lastInsertId($name);
     }
+	/**
+	 * @var bool 
+	 * true on success or false on failure.
+	 */
+	public $success;
+	/**
+	 * @var int
+	 * the number of rows.
+	 */
     public $rows;
     /**
      * 
      * @var \PDO
      */
-    private $db;
+    public $pdo;
+    
+    /**
+     * @var \PDOStatement
+     */
+    public $st;
 }
+
 class SelectImpl
 {
     static  public function select($context, $columns){
@@ -396,18 +413,18 @@ class ExecImpl
 {
     /**
      * 
-     * @param SqlConetxt $context
-     * @param \PDO $db
-     * @param boolean $errExce whether throw exceptions
+     * @param $context SqlConetxt 
+     * @param $db \PDO 
+     * @param $exceOnError boolean whether throw exceptions
      * @return Response
      */
-    static public function exec($context, $db, $errExce=true) {
-        if($errExce){
+    static public function exec($context, $db, $exceOnError=true) {
+        if($exceOnError){
             $db->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
         }
         $st = $db->prepare($context->sql);
-        $rows = $st->execute($context->params);
-        return new Response($db,$rows);
+        $success = $st->execute($context->params);
+        return new Response($success, $db,$st);
     }
     /**
      * 
