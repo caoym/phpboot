@@ -23,6 +23,9 @@ class DBMock{
         $this->test->assertEquals($this->expectedSql, $sql);
         return $this;
     }
+	public function rowCount(){
+        
+    }
     public function execute($params){
         $this->test->assertEquals($this->expectedParams, $params);
     }
@@ -269,6 +272,19 @@ class EzsqlTest extends \PHPUnit_Framework_TestCase
         // DELETE FROM tab WHERE a=1 ORDER BY b LIMIT 1
         $this->db->setExpected('DELETE FROM tab WHERE a=? ORDER BY b LIMIT 1',1);
         Sql::deleteFrom('tab')->where('a=?',1)->orderBy('b')->limit(1)->exec($this->db);
+    }
+	 
+    public function testForReplace0()
+    {
+        //REPLACE INTO tab VALUES(1,2,3)
+        $this->db->setExpected('REPLACE INTO tab VALUES(?,?,?)', 1,2,3);
+        Sql::replaceInto('tab')->values([1,2,3])->exec($this->db);
+    }
+    public function testForReplace1()
+    {
+        //REPLACE INTO tab VALUES(1,2,now())
+        $this->db->setExpected('REPLACE INTO tab VALUES(?,?,now())', 1,2);
+        Sql::replaceInto('tab')->values([1, 2, Sql::native('now()')])->exec($this->db);
     }
     /**
      * 

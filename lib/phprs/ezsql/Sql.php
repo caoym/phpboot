@@ -9,11 +9,14 @@ use phprs\ezsql\rules\select\SelectRule;
 use phprs\ezsql\rules\insert\InsertRule;
 use phprs\ezsql\rules\update\UpdateRule;
 use phprs\ezsql\rules\delete\DeleteRule;
+use tinyESB\ezsql\rules\basic\BasicRule;
+use tinyESB\ezsql\rules\replace\ReplaceIntoRule;
 
 require_once __DIR__.'/rules/select.php';
 require_once __DIR__.'/rules/insert.php';
 require_once __DIR__.'/rules/update.php';
 require_once __DIR__.'/rules/delete.php';
+require_once __DIR__.'/rules/replace.php';
 
 /**
  * Easy SQL
@@ -101,7 +104,16 @@ class Sql{
         return $obj->deleteFrom($table);
     }
     /**
-     * Splice sql use native string(without escaping)
+     * replaceInto('table') => "REPLACE INTO table"
+     * @param string $table
+     * @return \tinyESB\ezsql\rules\replace\ValuesRule
+     */
+    static public function replaceInto($table){
+        $obj  =  new ReplaceIntoRule(new SqlConetxt());
+        return $obj->replaceInto($table);
+    }
+    /**
+	 * Splice sql use native string(without escaping)
      * for example:
      * where('time>?', 'now()') => " WHERE time > 'now()' "
      * where('time>?', Sql::native('now()')) => " WHERE time > now() "

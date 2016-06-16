@@ -100,7 +100,12 @@ class InsertImpl
         $context->appendSql("INSERT INTO $table");
     }
 }
-
+class ReplaceImpl
+{
+    static public function replaceInto($context, $table) {
+        $context->appendSql("REPLACE INTO $table");
+    }
+}
 class ValuesImpl
 {
     static public function values($context, $values){
