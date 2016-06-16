@@ -9,8 +9,8 @@ use phprs\ezsql\rules\select\SelectRule;
 use phprs\ezsql\rules\insert\InsertRule;
 use phprs\ezsql\rules\update\UpdateRule;
 use phprs\ezsql\rules\delete\DeleteRule;
-use tinyESB\ezsql\rules\basic\BasicRule;
-use tinyESB\ezsql\rules\replace\ReplaceIntoRule;
+use phprs\ezsql\rules\basic\BasicRule;
+use phprs\ezsql\rules\replace\ReplaceIntoRule;
 
 require_once __DIR__.'/rules/select.php';
 require_once __DIR__.'/rules/insert.php';
@@ -106,7 +106,7 @@ class Sql{
     /**
      * replaceInto('table') => "REPLACE INTO table"
      * @param string $table
-     * @return \tinyESB\ezsql\rules\replace\ValuesRule
+     * @return \phprs\ezsql\rules\replace\ValuesRule
      */
     static public function replaceInto($table){
         $obj  =  new ReplaceIntoRule(new SqlConetxt());
