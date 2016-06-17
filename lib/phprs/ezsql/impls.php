@@ -184,18 +184,21 @@ class UpdateSetImpl
 class OrderByImpl
 {
     public function orderByArgs($context, $orders){
+		if(empty($orders)){
+            return $this;
+        }
         $params = array();
         foreach ($orders as $k=>$v){
             if(is_integer($k)){
                 Verify::isTrue(
-                    preg_match('/^[a-zA-Z0-9_]+$/', $v),
+                    preg_match('/^[a-zA-Z0-9_.]+$/', $v),
                     new \InvalidArgumentException("invalid params for orderBy(".json_encode($orders).")"));
                 
                 $params[] = $v;
             }else{
                 $v = strtoupper($v);
                 Verify::isTrue(
-                    preg_match('/^[a-zA-Z0-9_]+$/', $k) &&
+                    preg_match('/^[a-zA-Z0-9_.]+$/', $k) &&
                     ($v =='DESC' || $v =='ASC'), new \InvalidArgumentException("invalid params for orderBy(".json_encode($orders).")"));
     
                 $params[] = "$k $v";
