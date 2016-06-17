@@ -351,7 +351,7 @@ class WhereImpl{
         return self::condition($context, $prefix, implode(' AND ', $exprs), $params);
     }
     static public function condition($context, $prefix, $expr, $args){
-        if($expr){
+        if(!empty($expr)){
             if($args){
                 //因为PDO不支持绑定数组变量, 这里需要手动展开数组
                 //也就是说把 where("id IN(?)", [1,2])  展开成 where("id IN(?,?)", 1,2)
