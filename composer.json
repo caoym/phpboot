@@ -19,10 +19,11 @@
             "email": "caoyangmin@gmail.com"
         }
     ],
-    "minimum-stability" : "dev",
     "autoload": {
         "psr-4": {
-            "phprs\\": "lib/phprs/"
+            "phprs\\": "lib/phprs/",
+            "Peekmo\\":"lib/Peekmo/",
+            "Doctrine\\":"lib/Doctrine/"
         }
     },
     "autoload-dev": {

@@ -10,7 +10,7 @@ use phprs\ezsql\SqlConetxt;
 
 class Response{
     public function __construct($success,$pdo, $st){
-        $this->db = $pdo;
+        $this->pdo = $pdo;
         $this->st = $st;
 		$this->success = $success;
         $this->rows = $this->st->rowCount();
@@ -289,7 +289,10 @@ class WhereImpl{
      * @param array $args
      */
     static public function conditionArgs($context, $prefix, $args=[]){
-        $exprs = array();
+		if($args ===null){
+            return ;
+        }
+		$exprs = array();
         $params = array();
         foreach ($args as $k => $v){
             if(is_array($v)){
