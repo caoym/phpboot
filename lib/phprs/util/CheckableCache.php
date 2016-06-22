@@ -63,7 +63,7 @@ class CheckableCache
                 if ($ttl == 0 || ($create_time + $ttl < time())) {
                     $valid = false;
                     try{
-                        if(is_callable(checker)){
+                        if(is_callable($checker)){
                             $valid = $checker($data, $create_time);
                         }
                     }
