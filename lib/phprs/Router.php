@@ -13,6 +13,7 @@ use phprs\util\Logger;
 use phprs\util\exceptions\NotFound;
 use phprs\util\exceptions\BadRequest;
 use phprs\util\exceptions\Forbidden;
+use phprs\util\ClassLoader;
 
 /**
  * 结果保留在内存
@@ -59,6 +60,7 @@ class Router
     function __construct( ){
         //AutoClassLoader确保序列化后自动加载类文件
         $this->class_loader = new AutoClassLoader();
+        ClassLoader::addInclude($this->api_path);
         //TODO: 支持名字空间
         //TODO: 支持多路径多类名
         $this->load($this->api_path, $this->apis, $this->api_method);
