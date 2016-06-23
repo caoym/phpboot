@@ -80,7 +80,7 @@ class Orders
         return ['order_id'=>$order_id];
     }
     /**
-     * @property 依赖注入点，可通过配置指定$db的示例
+     * @property 依赖注入点，可通过配置指定$db的实例
      */
     public $db;
 }
