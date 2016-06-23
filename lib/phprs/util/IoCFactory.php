@@ -42,9 +42,13 @@ class IoCFactory
             $this->conf = $conf;
         }else{
             Verify::isTrue(is_file($conf), "$conf is not a valid file");
-            Verify::isTrue(false !== ($data = file_get_contents($conf)), "$conf open failed");
-            $data = self::clearAnnotation($data);
-            Verify::isTrue(is_array($this->conf = json_decode($data,true)), "$conf json_decode failed with ".json_last_error());
+            if(strtolower(pathinfo($conf, PATHINFO_EXTENSION)) == 'php'){
+                $this->conf = include($conf);
+            }else{
+                Verify::isTrue(false !== ($data = file_get_contents($conf)), "$conf open failed");
+                $data = self::clearAnnotation($data);
+                Verify::isTrue(is_array($this->conf = json_decode($data,true)), "$conf json_decode failed with ".json_last_error());
+            }
             $this->conf_file = $conf;
         }
         if($dict !== null){
