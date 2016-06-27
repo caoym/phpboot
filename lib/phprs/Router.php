@@ -315,8 +315,9 @@ class Router
             }
             $cur = $routes[$http_method];
             foreach ($route as $entry){
-                $realpath = preg_replace('/\/+/', '/', '/'.$entry[0]);
-                Verify::isTrue($cur->insert($realpath, $entry[1]), "repeated path $realpath");
+                list($uri,$invoke,$strict) = $entry;
+                $realpath = preg_replace('/\/+/', '/', '/'.$uri);
+                Verify::isTrue($cur->insert($realpath, $invoke, $strict), "repeated path $realpath");
                 Logger::debug("api: $http_method $realpath => $class_name::{$entry[1]->method_name} ok");
             }
         }

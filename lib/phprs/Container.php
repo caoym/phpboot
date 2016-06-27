@@ -52,11 +52,11 @@ class Container{
 	        $invoker =  $this->factory->create('phprs\Invoker', array($this, $method) );
 	        foreach ($anns['route'] as $ann){
 	            $route = $ann['value'];
-	            Verify::isTrue(is_array($route) && count($route)==2,
-	            "$class::{$method->getName()} syntax error @route, example: @route({\"GET\" ,\"/api?a=2\"})"
+	            Verify::isTrue(is_array($route) && (count($route)==2 || count($route)==3),
+	            "$class::{$method->getName()} syntax error @route, example: @route({\"GET\" ,\"/api?a=2\"}) or @route({\"GET\" ,\"/api?a=2\",true})"
 	            );
-	            list($http_method, $uri) = $route;
-	            $this->routes[$http_method][] = array($path.'/'.$uri, $invoker);
+	            list($http_method, $uri,$strict) = $route+[null,null,false];
+	            $this->routes[$http_method][] = [$path.'/'.$uri, $invoker,$strict];
 	        }
 	       
 	        foreach ($anns as $type =>$v){

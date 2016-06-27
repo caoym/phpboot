@@ -98,8 +98,8 @@ class Orders
         ------------------------------------------+-----------+---------------------
         @route({"GET","\patha\*\pathb"})          |   GET     | /patha/xxx/pathb
         ------------------------------------------+-----------+---------------------
-        @route({"GET", "func1?param1=1&param2=2"})|   GET     | /func1?param1=1&param2=2&...
-                                                  |           | /myapi/func1?param2=2&param1=1&...
+        @route({"GET","\func1?param1=1&param2=2"})|   GET     | /func1?param1=1&param2=2&...
+                                                  |           | /func1?param2=2&param1=1&...
 
 2.  **Two-way parameter binding**
 
@@ -118,8 +118,9 @@ class Orders
         ------------------------------------------+-----------------------------
         @throws({"MyException",                   | try{}
             "res",                                | catch(MyException) {
-            "400 Bad Request",                    |   header("HTTP/1.1 400 Bad Request");body(["error"=>"my exception"]);}
-            {"error":"my exception"}}) 
+            "400 Bad Request",                    |   header('HTTP/1.1 400 Bad Request');
+            {"error":"my exception"}})            |   body('{"error":"my exception"}');
+                                                  | }
 
 3. **Api cache**
 
@@ -127,7 +128,7 @@ class Orders
 
         ----------------------------------+-----------------------------
         @cache({"ttl",3600})              | set cache as fixed time expire, as ttl 1 hour.
-        ------------------------------------------+-----------------------------
+        ----------------------------------+-----------------------------
         @cache({"checker", "$checker"})   | Use dynamic strategy to check caches. 
                                           | $checker is set in method, and will be invoked to check cache expired with $checker($data, $create_time), for examples use $check = new FileExpiredChecker('file.tmp'); to make cache invalidated if file.tmp modified.
 

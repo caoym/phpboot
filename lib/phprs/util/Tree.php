@@ -139,11 +139,14 @@ class Tree {
 			    if($exact_match){ 
 			        return false;
 			    }
-			    //不要求完全匹配, 尝试匹配通配符
-			    if(!array_key_exists('*', $next)){
+			    if($i == self::$end){ 
 			        return false;
 			    }
-			    $pos = &$next['*'];
+			    //不要求完全匹配, 尝试匹配通配符
+			    if(!array_key_exists(self::$wildcard, $next)){
+			        return false;
+			    }
+			    $pos = &$next[self::$wildcard];
 			}else{
 			    $pos = &$next[$i];
 			}
@@ -193,4 +196,6 @@ class Tree {
 	    }
 	}
 	private  $arr=array();
+	static public $end="\n";
+	static public $wildcard='*';
 }

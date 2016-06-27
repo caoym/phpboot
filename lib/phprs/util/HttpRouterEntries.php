@@ -23,7 +23,7 @@ class HttpRouterEntries{
 	/**
 	 * 
 	 * @param string $q
-	 * @param string $matched_path
+	 * @param string& $matched_path
 	 * @return found object
 	 */
 	function find($q,&$matched_path=null){
@@ -42,6 +42,8 @@ class HttpRouterEntries{
 	function findByArray($paths,$params, &$matched_path =null){
 		$paths = array_filter($paths,function ($i){return $i!== '/' &&!empty($i);});
 		array_unshift($paths, '/');
+		$paths[] = Tree::$end;  //最后总是插入Tree::$end表示路径结束
+		
 		$route=null;
 		$valid_path=null;//最深一个不为空的路径
 		$visited = 0;
@@ -130,11 +132,12 @@ class HttpRouterEntries{
 	}
 	/**
 	 * 增加一条规则
-	 * @param string $query 请求的url形式
-	 * @param mixed $e
-	 * @return boolean 是否插入成功
+	 * @param $query string 请求的url形式
+	 * @param $e mixed
+	 * @param $strict boolean 是否严格匹配
+	 * @returnboolean 是否插入成功
 	 */
-	public function insert($query,$e){
+	public function insert($query,$e,$strict=false){
 	    list($path, $param) = explode('?', $query)+array(  null, null  );
 	    $path = str_replace('\\', '/', $path);
 	    $paths = explode('/', $path);
@@ -142,6 +145,9 @@ class HttpRouterEntries{
 	    $params = null;
 	    if($param !==null && $param !== ""){
 	        $params = explode('&', $param);
+	    }
+	    if($strict || !empty($params)){
+	        $paths[]=Tree::$end; //对于严格匹配的路由规则（有querystring的路由，path部分也需要严格匹配），在路径末尾加入end，偏于匹配
 	    }
 	    return  $this->insertByArray($paths,$params,$e);
 	}
