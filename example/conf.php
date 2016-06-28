@@ -2,10 +2,11 @@
 return [
     "phprs\\Router"=>[
         "properties"=>[
-            "export_apis"=>true //Enable output api documents, if true, visit http://your-host:port/apis/ to get documents
+            "export_apis"=>true, //Enable output api documents, if true, visit http://your-host:port/apis/ to get documents
             //,"hooks":["MyHook1","MyHook2"] //Enable hooks
-            ,"url_begin"=>1 // if url is "/abc/123", then 1st path node "/abc/" will be ignored.
-            ,"api_path"=>__DIR__.'/apis/'
+            "url_begin"=>1, // if url is "/abc/123", then 1st path node "/abc/" will be ignored.
+            "api_path"=>__DIR__.'/apis/',
+            //"default_strict_matching"=>true, //sub path do not match the parent path route in strict mode.
         ]
     ],
     "phprs\\Invoker"=>[

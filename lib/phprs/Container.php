@@ -55,7 +55,7 @@ class Container{
 	            Verify::isTrue(is_array($route) && (count($route)==2 || count($route)==3),
 	            "$class::{$method->getName()} syntax error @route, example: @route({\"GET\" ,\"/api?a=2\"}) or @route({\"GET\" ,\"/api?a=2\",true})"
 	            );
-	            list($http_method, $uri,$strict) = $route+[null,null,false];
+	            list($http_method, $uri,$strict) = $route+[null,null,null];
 	            $this->routes[$http_method][] = [$path.'/'.$uri, $invoker,$strict];
 	        }
 	       
