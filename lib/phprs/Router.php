@@ -315,9 +315,11 @@ class Router
             }
             $cur = $routes[$http_method];
             foreach ($route as $entry){
-                $realpath = preg_replace('/\/+/', '/', '/'.$entry[0]);
-                Verify::isTrue($cur->insert($realpath, $entry[1]), "repeated path $realpath");
-                Logger::debug("api: $http_method $realpath => $class_name::{$entry[1]->method_name} ok");
+                list($uri,$invoke,$strict) = $entry;
+                $realpath = preg_replace('/\/+/', '/', '/'.$uri);
+                $strict = ($strict===null)?$this->default_strict_matching:$strict;
+                Verify::isTrue($cur->insert($realpath, $invoke, $strict), "repeated path $realpath");
+                Logger::debug("api: $http_method $realpath => $class_name::{$entry[1]->method_name} ok, strict:$strict");
             }
         }
         Logger::debug("load api: $class_name, $class_file ok");
@@ -351,6 +353,17 @@ class Router
      * @property
      */
     public $url_begin=0;
+    
+    /**
+     * 指定路由规则默认情况下是否严格匹配path，如果@route中已经指定严格模式，则忽略此默认设置
+     * 严格模式将只允许同级目录匹配，否则父目录和子目录也匹配。
+     * 非严格匹配时
+     * 路由"GET /a" 和请求"GET /a"、"GET /a/b"、"GET /a/b/c"等匹配
+     * 严格匹配时
+     * 路由"GET /a" 和请求"GET /a"匹配、和"GET /a/b"、"GET /a/b/c"等不匹配
+     * @property
+     */
+    public $default_strict_matching=false;
     /**
      * @property 忽略类加载时的错误，只是跳过出错的接口。否则抛出异常。
      */

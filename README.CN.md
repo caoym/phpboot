@@ -2,6 +2,7 @@
 [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/caoym/phprs-restful)
 [![Build Status](https://travis-ci.org/caoym/phprs-restful.svg)](https://travis-ci.org/caoym/phprs-restful)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/caoym/phprs-restful/master/LICENSE)
+[![Package version](http://img.shields.io/packagist/v/caoym/phprs-restful.svg)](https://packagist.org/packages/caoym/phprs-restful)
 
 phprs是一款轻量、类jax-rs、实用的PHP框架，用于快速开发RESTful Web Services.[English](https://github.com/caoym/phprs-restful/blob/master/README.md)
 
@@ -104,7 +105,7 @@ class Orders
         @route({"GET","\patha\*\pathb"})          |   GET     | /patha/xxx/pathb
         ------------------------------------------+-----------+---------------------
         @route({"GET", "func1?param1=1&param2=2"})|   GET     | /func1?param1=1&param2=2&...
-                                                  |           | /myapi/func1?param2=2&param1=1&...
+                                                  |           | /func1?param2=2&param1=1&...
 
 2.  **双向参数绑定**
 
@@ -123,8 +124,9 @@ class Orders
         ------------------------------------------+-----------------------------
         @throws({"MyException",                   | try{}
             "res",                                | catch(MyException) {
-            "400 Bad Request",                    |   header("HTTP/1.1 400 Bad Request");body(["error"=>"my exception"]);}
-            {"error":"my exception"}}) 
+            "400 Bad Request",                    |   header('HTTP/1.1 400 Bad Request');
+            {"error":"my exception"}})            |   body('{"error":"my exception"}');
+                                                  | }
 
 3. **Api 缓存**
 
@@ -132,7 +134,7 @@ class Orders
 
         ----------------------------------+-----------------------------
         @cache({"ttl",3600})              | 固定有效时间缓存
-        ------------------------------------------+-----------------------------
+        ----------------------------------+-----------------------------
         @cache({"checker", "$checker"})   | 动态缓存失效策略的缓存. 
                                           | $checker被用于判断缓存是否任然有效, 当缓存命中时， $checker($data, $create_time)将被调用，起返回false表示缓存失效, $checker的实现可以参考FileExpiredChecker.
 

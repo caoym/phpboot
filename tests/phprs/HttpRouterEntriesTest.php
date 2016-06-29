@@ -18,7 +18,7 @@ class HttpRouterEntriesTest extends PHPUnit_Framework_TestCase {
 		$this->assertTrue($t->insert('/','/'));
 		$this->assertEquals($t->find('/'), '/');
 		$this->assertFalse($t->insert('/','/'));
-		$this->assertFalse($t->insert('/','the /2',true));
+		$this->assertFalse($t->insert('/','the /2'));
 		$this->assertEquals($t->find('/'), '/');
 		
 		$this->assertTrue($t->insert('/a/b/c/d/?x=1&y=2','/a/b/c/d/?x=1&y=2'));
@@ -49,6 +49,16 @@ class HttpRouterEntriesTest extends PHPUnit_Framework_TestCase {
 		
 		$this->assertEquals($t->find('/n?a=1'),('/n?*'));
 		$this->assertEquals($t->find('/n/a'),('/n/*'));
+		
+		
+		$this->assertTrue($t->insert('/x/','/x/',true));
+		$this->assertTrue($t->insert('/x/*','/x/*'));
+		
+		$this->assertEquals($t->find('/x/y'),'/x/*');
+		$this->assertEquals($t->find('/x'), '/x/');
+		$this->assertEquals($t->find('/x?a=1'), '/x/');
+		
+		
 	}
 }
 

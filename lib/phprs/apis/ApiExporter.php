@@ -22,7 +22,6 @@ use phprs\util\Verify;
  */
 class ApiExporter
 {
-    
     /**
      * 导出API信息
      * @route({"GET", "/apis.json"})
@@ -85,7 +84,7 @@ EOT;
      * 简陋的html形式
      *
      * @param Router $router
-     * @route({"GET", "/apis"})
+     * @route({"GET","/apis/",true})
      * @return ({"header", "Content-Type: text/html; charset=UTF-8"})
      */
     public function exportMainHtml()

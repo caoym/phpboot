@@ -77,4 +77,5 @@ class TreeTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals($t->find(array('a','a')), '*/*');
 		$this->assertEquals($t->find(array('a','b')), '*/b');
 	}
+	
 }
