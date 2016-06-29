@@ -81,10 +81,9 @@ class Router
      * 调用路由规则匹配的api
      * @param Request $request
      * @param Response $respond
-     * @param boolean $catch_exceptions whether catch all exceptions of invoke,
      * @return void
      */
-    public function __invoke($request=null, &$respond=null, $catch_exceptions=true){
+    public function __invoke($request=null, &$respond=null){
         if($request === null){
             $request = new Request(null,$this->url_begin);
         }
@@ -107,38 +106,10 @@ class Router
                 return;
             }
         }
-        $res = new BufferedRespond();
-        if(!$catch_exceptions){
-            Verify::isTrue($this->invokeRoute($this->routes, $request, $res), new NotFound());
-            $respond->append($res->getBuffer());
-            $respond->flush();
-        }else{
-            $err = null;
-            $protocol = (isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0');
-            //执行请求
-            try {
-                Verify::isTrue($this->invokeRoute($this->routes, $request, $res), new NotFound());
-                $respond->append($res->getBuffer());
-                $respond->flush();
-            }catch (NotFound $e) {
-                header($protocol . ' 404 Not Found');
-                $err = $e;
-            }catch (BadRequest $e) {
-                header($protocol . ' 400 Bad Request');
-                $err = $e;
-            }catch (Forbidden $e){
-                header($protocol . ' 403 Forbidden');
-                $err = $e;
-            }
-            if($err){
-                header("Content-Type: application/json; charset=UTF-8");
-                $estr = array(
-                    'error' => get_class($err),
-                    'message' => $err->getMessage(),
-                );
-                echo json_encode($estr);
-            }
-        }
+        $res = new BufferedRespond();        
+        Verify::isTrue($this->invokeRoute($this->routes, $request, $res), new NotFound());
+        $respond->append($res->getBuffer());
+        $respond->flush();
     }
    /**
     * 

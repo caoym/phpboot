@@ -9,7 +9,7 @@ use phprs\util\Verify;
 use phprs\ezsql\SqlConetxt;
 
 class Response{
-    public function __construct($success,$pdo, $st){
+    public function __construct($success, $pdo, $st){
         $this->pdo = $pdo;
         $this->st = $st;
 		$this->success = $success;
@@ -289,10 +289,10 @@ class WhereImpl{
      * @param array $args
      */
     static public function conditionArgs($context, $prefix, $args=[]){
-		if($args ===null){
+        if($args ===null){
             return ;
         }
-		$exprs = array();
+        $exprs = array();
         $params = array();
         foreach ($args as $k => $v){
             if(is_array($v)){
@@ -422,6 +422,20 @@ class GroupByImpl{
 
 class ExecImpl
 {
+    static private function get_results($context, $db, $dictAs=null ,$errExce=true) {
+        if($errExce){
+            $db->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        }
+        
+        Logger::info($context->sql. '; ' .json_encode($context->params));
+        
+        $st = $db->prepare($context->sql);
+        if($st->execute($context->params)){
+            return $st->fetchAll(\PDO::FETCH_ASSOC);
+        }else{
+            return false;
+        }
+    }
     /**
      * 
      * @param $context SqlConetxt 
@@ -430,13 +444,14 @@ class ExecImpl
      * @return Response
      */
     static public function exec($context, $db, $exceOnError=true) {
-        if($exceOnError){
+        if($exceOnError) {
             $db->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
         }
         $st = $db->prepare($context->sql);
         $success = $st->execute($context->params);
-        return new Response($success, $db,$st);
+        return new Response($success, $db, $st);
     }
+    
     /**
      * 
      * @param SqlConetxt $context
@@ -446,24 +461,45 @@ class ExecImpl
      * @return false|array
      */
     static public function get($context, $db, $dictAs=null ,$errExce=true){
-        if($errExce){
-            $db->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-        }
-        $st = $db->prepare($context->sql);
-        if($st->execute($context->params)){
-            $res = $st->fetchAll(\PDO::FETCH_ASSOC);
-            if ($dictAs){
-                $dict= [];
-                foreach ($res as $i){
-                    $dict[$i[$dictAs]]=$i;
-                }
-                return $dict;
+        $res = self::get_results($context, $db, $dictAs ,$errExce);
+        if($res && $dictAs) {
+            $dict= [];
+            foreach ($res as $i){
+                $dict[$i[$dictAs]]=$i;
             }
-            return $res;
-        }else{
-            return false;
+            $res = $dict;
         }
-        
+        return $res;
+    }
+    
+    /**
+     * 
+     * @param SqlConetxt $context
+     * @param PDO $db
+     * @param boolean $errExce
+     * @return null|array
+     */
+    static public function get_row($context, $db, $errExce=true){
+        $res = self::get_results($context, $db, $errExce);
+        if($res && count($res) > 0) {
+            return $res[0];
+        }
+        return null;
+    }
+    
+    /**
+     * 
+     * @param SqlConetxt $context
+     * @param PDO $db
+     * @param boolean $errExce
+     * @return false|var
+     */
+    static public function get_var($context, $db, $errExce=true){
+        $res = self::get_results($context, $db, $errExce);
+        if($res && count($res) > 0) {
+            return array_values($res[0])[0];
+        }
+        return null;
     }
 }
 
