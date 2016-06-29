@@ -426,9 +426,7 @@ class ExecImpl
         if($errExce){
             $db->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
         }
-        
-        Logger::info($context->sql. '; ' .json_encode($context->params));
-        
+                
         $st = $db->prepare($context->sql);
         if($st->execute($context->params)){
             return $st->fetchAll(\PDO::FETCH_ASSOC);
