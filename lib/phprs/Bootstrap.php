@@ -45,11 +45,9 @@ class Bootstrap
         if($err){
             header("Content-Type: application/json; charset=UTF-8");                            
             $estr = [
+                'error' => get_class($err),
                 'message' => $err->getMessage(),
-                'logs' => Logger::get_logs()
             ];
-            //  $logs = ;
-            //  if(!empty($logs)) $estr['logs'] = $logs;
                             
             echo json_encode($estr);
         }
