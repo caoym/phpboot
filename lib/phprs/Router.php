@@ -85,6 +85,45 @@ class Router
      * @return void
      */
     public function __invoke($request=null, &$respond=null, $catch_exceptions=true){
+        
+        if(!$catch_exceptions){
+            $this->invokeWithoutCatch($request, $respond);
+        }else{
+            $err = null;
+            $protocol = (isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0');
+            //执行请求
+            try {
+                $this->invokeWithoutCatch($request, $respond);
+            }catch (NotFound $e) {
+                header($protocol . ' 404 Not Found');
+                $err = $e;
+            }catch (BadRequest $e) {
+                header($protocol . ' 400 Bad Request');
+                $err = $e;
+            }catch (Forbidden $e){
+                header($protocol . ' 403 Forbidden');
+                $err = $e;
+            }catch (\Exception $e){
+                header($protocol . ' 500 Internal Server Error');
+                $err = $e;
+            }
+            if($err){
+                header("Content-Type: application/json; charset=UTF-8");
+                $estr = array(
+                    'error' => get_class($err),
+                    'message' => $err->getMessage(),
+                );
+                echo json_encode($estr);
+            }
+        }
+    }
+    /**
+     * invoke without catching exceptions
+     * @param Request $request
+     * @param Response& $respond
+     * @return void
+     */
+    private function invokeWithoutCatch($request, &$respond){
         if($request === null){
             $request = new Request(null,$this->url_begin);
         }
@@ -108,37 +147,10 @@ class Router
             }
         }
         $res = new BufferedRespond();
-        if(!$catch_exceptions){
-            Verify::isTrue($this->invokeRoute($this->routes, $request, $res), new NotFound());
-            $respond->append($res->getBuffer());
-            $respond->flush();
-        }else{
-            $err = null;
-            $protocol = (isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0');
-            //执行请求
-            try {
-                Verify::isTrue($this->invokeRoute($this->routes, $request, $res), new NotFound());
-                $respond->append($res->getBuffer());
-                $respond->flush();
-            }catch (NotFound $e) {
-                header($protocol . ' 404 Not Found');
-                $err = $e;
-            }catch (BadRequest $e) {
-                header($protocol . ' 400 Bad Request');
-                $err = $e;
-            }catch (Forbidden $e){
-                header($protocol . ' 403 Forbidden');
-                $err = $e;
-            }
-            if($err){
-                header("Content-Type: application/json; charset=UTF-8");
-                $estr = array(
-                    'error' => get_class($err),
-                    'message' => $err->getMessage(),
-                );
-                echo json_encode($estr);
-            }
-        }
+        
+        Verify::isTrue($this->invokeRoute($this->routes, $request, $res), new NotFound());
+        $respond->append($res->getBuffer());
+        $respond->flush();
     }
    /**
     * 
