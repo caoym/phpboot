@@ -91,9 +91,9 @@ class CheckableCache
     }
     /**
      * 删除
-     * @param string $key
+     * @param string $name
      */
-    public function del($key){
+    public function del($name){
         $name = $this->tag.$name;
         return  $this->impl->del($name);
     }

@@ -37,7 +37,7 @@ class FileCache implements KVCatchInterface
     /**
      * 删除key
      * @param string $key
-     * @return void
+     * @return boolean Returns true on success or false on failure.  
      */
     public function del($key){
         $path = $this->cache_dir.'/'.sha1($key);
@@ -47,7 +47,7 @@ class FileCache implements KVCatchInterface
      * 模拟apc, 只在没有apc的开发环境使用
      * @param string $key
      * @param boolean $succeeded
-     * @return boolean
+     * @return mixed object on success or false on failure
      */
     public function get($key, &$succeeded=null){
         $succeeded = false;

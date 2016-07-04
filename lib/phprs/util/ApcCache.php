@@ -36,7 +36,7 @@ class ApcCache implements KVCatchInterface
     }
     /**
      * @param string $key 
-     * @return boolean
+     * @return boolean mixed Returns true on success or false on failure.  
      */
     public function del($key)
     {
