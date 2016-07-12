@@ -38,18 +38,20 @@ class Request implements \ArrayAccess
             if($contentType == 'application/json'){
                 $post = file_get_contents('php://input');
                 if($post != ''){
-                    $data['_POST'] = Verify::isTrue(json_decode($post, true), new BadRequest('post unjson data with application/json type'));
+					$post = json_decode($post, true);
+					Verify::isTrue(is_array($post), new BadRequest('post unjson data with application/json type'));
+                    $data['_POST'] = $post;
                     $data['_REQUEST'] = array_merge($data['_POST'], $data['_REQUEST'] );
                 }
             }
             elseif($contentType == 'text/plain'){
-                $data['_POST'] = Verify::isTrue((file_get_contents('php://input')), new BadRequest());
+                $data['_POST'] = file_get_contents('php://input');
             }
         }
         //TODO: 支持put请求
         if(isset($data['_SERVER']['REQUEST_METHOD']) &&  'PUT' == $data['_SERVER']['REQUEST_METHOD']){
            if($contentType == 'application/x-www-form-urlencoded'){
-               $queryString = Verify::isTrue((file_get_contents('php://input')), new BadRequest());
+               $queryString = file_get_contents('php://input');
                $query = array();
                parse_str($queryString, $query);
                $data['_POST'] = $query;

@@ -51,7 +51,7 @@ class Response implements \ArrayAccess
                 },
                 'body' => function ($var)
                 {
-                    if (is_array($var)) {
+                    if (is_array($var) || is_object($var)) {
                         header("Content-Type: application/json; charset=UTF-8");
                         echo json_encode($var); // TODO 自定义适配方法
                     } else {

@@ -1,4 +1,11 @@
 <?php
+
+class Message{
+    public  function __construct($msg){
+        $this->msg = $msg;
+    }
+    public $msg;
+}
 /**
  * 
  * @author caoym
@@ -11,7 +18,7 @@ class HelloWorld
      * @route({"GET","/"})
      */
     public function doSomething1() {
-        return ['msg'=>'Hello World!'];
+        return new Message('Hello World!');
     }
     /**
      * @property

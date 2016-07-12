@@ -70,9 +70,13 @@ class Sql{
      * @param $param0 columns
      * @return \phprs\ezsql\rules\select\FromRule
      */
-    static public function select($param0, $_=null){
+    static public function select($param0='*', $_=null){
         $obj = new SelectRule(new SqlConetxt());
-        return $obj->select(implode(',', func_get_args()));
+        $args = func_get_args();
+        if(empty($args)){
+            $args = ['*'];
+        }
+        return $obj->select(implode(',', $args));
     }
     /** 
      * insertInto('table') => "INSERT INTO table"

@@ -71,6 +71,9 @@ class EzsqlTest extends \PHPUnit_Framework_TestCase
         // SELECT c=1
         $this->db->setExpected('SELECT c=1');
         Sql::select('c=1')->get($this->db);  
+        
+        $this->db->setExpected('SELECT *');
+        Sql::select()->get($this->db);
     }
     public function testSelect1()
     {
