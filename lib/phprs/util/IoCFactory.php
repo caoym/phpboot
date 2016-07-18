@@ -284,7 +284,7 @@ class IoCFactory
                 $args[$key] = $this->getProperty($properties[$param_name]);
             }else{
                 Verify::isTrue($param->isOptional(), "{$class->getName()}::__construct miss required param: $param_name");//参数没有指定, 除非是可选参数
-                $args[$key] = $param->getDefaultValue();
+                break;
             }
         }
         return $args;  

@@ -41,6 +41,9 @@ class Request implements \ArrayAccess
 					$post = json_decode($post, true);
 					Verify::isTrue(is_array($post), new BadRequest('post unjson data with application/json type'));
                     $data['_POST'] = $post;
+                    if(!isset($data['_REQUEST'])){
+                        $data['_REQUEST'] = [];
+                    }
                     $data['_REQUEST'] = array_merge($data['_POST'], $data['_REQUEST'] );
                 }
             }

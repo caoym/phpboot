@@ -1,5 +1,6 @@
 <?php
 
+use phprs\ezsql\Sql;
 class Message{
     public  function __construct($msg){
         $this->msg = $msg;
@@ -13,15 +14,15 @@ class Message{
  */
 class HelloWorld
 {
-    
     /** 
      * @route({"GET","/"})
      */
     public function doSomething1() {
         return new Message('Hello World!');
     }
+    
     /**
-     * @property
+     * @property({"default":"@db"}) 注入pdo实例
      */
-    private $db;
+    //private $db;
 }
