@@ -66,7 +66,7 @@ class Request implements \ArrayAccess
         list($full_path,) = explode('?', $full_path);
         
         $paths = explode('/', $full_path);
-        $paths = array_filter($paths,function ($i){return !empty($i);});
+        $paths = array_filter($paths,function ($i){return $i !== '';});
         $paths = array_slice($paths, $this->url_begin);
         $data['path'] = $paths;
         $this->data = new JsonStore($data);
