@@ -70,7 +70,7 @@ class MetaInfo
     }
     
     static function testAnnotation(){
-        Verify::isTrue(!empty(self::get(new AnnotationTest(),true)), 'Annotation dose not work! If opcache is enable, please set opcache.save_comments=1 and opcache.load_comments=1');
+        Verify::isTrue(count(self::get(new AnnotationTest(),true)), 'Annotation dose not work! If opcache is enable, please set opcache.save_comments=1 and opcache.load_comments=1');
     }
     /**
      * 有效的元信息
