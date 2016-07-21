@@ -249,6 +249,7 @@ class IoCFactory
         if($succeeded){
             return $data;
         }
+        MetaInfo::testAnnotation();
         $data = MetaInfo::get($name);
         $files = [$refl->getFileName()];
         $parent = $refl->getParentClass();

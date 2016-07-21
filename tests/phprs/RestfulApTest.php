@@ -81,7 +81,7 @@ class RestfulApTest extends PHPUnit_Framework_TestCase
             array('cookie',array('token','test arg1','3000','return $arg2')),
             array('body',array(array('arg0'=>'test arg0', 'arg1'=>'test arg1', 'arg2'=>'return $arg2', 'arg3'=>'arg3 default'))),
             );
-        $route($req, $res,false);
+        $route($req, $res);
        
         $this->assertEquals($check, $res_buffer);
     }
@@ -115,7 +115,7 @@ class RestfulApTest extends PHPUnit_Framework_TestCase
         $res= new \phprs\Response();    //替换默认的输出方式, 以便记录输出结果
         $req = new \phprs\Request($req_buffer);
         
-        $route($req, $res,false);
+        $route($req, $res);
     }
     
     /**
@@ -147,7 +147,7 @@ class RestfulApTest extends PHPUnit_Framework_TestCase
         $res= new \phprs\Response();    //替换默认的输出方式, 以便记录输出结果
         $req = new \phprs\Request($req_buffer);
     
-        $route($req, $res,false);
+        $route($req, $res);
     }
     
     /**
@@ -179,7 +179,7 @@ class RestfulApTest extends PHPUnit_Framework_TestCase
         $res= new \phprs\Response();    //替换默认的输出方式, 以便记录输出结果
         $req = new \phprs\Request($req_buffer);
     
-        $route($req, $res,false);
+        $route($req, $res);
     }
     
     /**
@@ -211,7 +211,7 @@ class RestfulApTest extends PHPUnit_Framework_TestCase
         $res= new \phprs\Response();    //替换默认的输出方式, 以便记录输出结果
         $req = new \phprs\Request($req_buffer);
     
-        $route($req, $res,false);
+        $route($req, $res);
     }
     
     /**
@@ -243,7 +243,7 @@ class RestfulApTest extends PHPUnit_Framework_TestCase
         $res= new \phprs\Response();    //替换默认的输出方式, 以便记录输出结果
         $req = new \phprs\Request($req_buffer);
     
-        $route($req, $res,false);
+        $route($req, $res);
     }
     
     /**
@@ -274,7 +274,7 @@ class RestfulApTest extends PHPUnit_Framework_TestCase
         $res= new \phprs\Response();    //替换默认的输出方式, 以便记录输出结果
         $req = new \phprs\Request($req_buffer);
     
-        $route($req, $res,false);
+        $route($req, $res);
     }
     
     /**
@@ -327,7 +327,7 @@ class RestfulApTest extends PHPUnit_Framework_TestCase
             array('status', array('500')),
             array('body',array('MyException')),
         );
-        $route($req, $res,false);
+        $route($req, $res);
          
         $this->assertEquals($check, $res_buffer);
     }
@@ -368,7 +368,7 @@ class RestfulApTest extends PHPUnit_Framework_TestCase
         $check = array(
             array('body', array('Exception')),
         );
-        $route($req, $res,false);
+        $route($req, $res);
         
         $this->assertEquals($check, $res_buffer);
     }
@@ -404,7 +404,7 @@ class RestfulApTest extends PHPUnit_Framework_TestCase
         );
         $res= new \phprs\Response($sender); //替换默认的输出方式, 以便记录输出结果
         $req = new \phprs\Request($req_buffer);
-        $route($req, $res,false);
+        $route($req, $res);
         
         $check_buffer = [
             '_SERVER' => [

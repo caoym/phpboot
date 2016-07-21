@@ -57,8 +57,8 @@ class RouterWithCache
      * @param Response $respond
      * @return mixed
      */
-    function __invoke($request=null, &$respond=null, $catch_exceptions=true){
-        return $this->impl->__invoke($request, $respond, $catch_exceptions);
+    function __invoke($request=null, &$respond=null){
+        return $this->impl->__invoke($request, $respond);
     }
 
     /** @property({"default":"@phprs\util\Cache"})  */

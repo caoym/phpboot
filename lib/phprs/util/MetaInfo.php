@@ -1,5 +1,17 @@
 <?php
 namespace phprs\util;
+
+/**
+ * @author caoym
+ */
+class AnnotationTest{
+    /**
+     * @return void
+     */
+    public function test(){
+        
+    }
+}
 /**
  * 元信息
  * 处理注释中的@annotation, 生成以@annotation为key的数组
@@ -55,6 +67,10 @@ class MetaInfo
         }
         
         return $info;
+    }
+    
+    static function testAnnotation(){
+        Verify::isTrue(!empty(self::get(new AnnotationTest(),true)), 'Annotation dose not work! If opcache is enable, please set opcache.save_comments=1 and opcache.load_comments=1');
     }
     /**
      * 有效的元信息
