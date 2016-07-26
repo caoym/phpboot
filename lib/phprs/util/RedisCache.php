@@ -58,6 +58,9 @@ class RedisCache implements KVCatchInterface
         if(!$this->redis->isConnected()){
             $this->redis->connect($this->host, $this->port);
         }
+        if(!empty($this->user) && !empty($this->pwd)){
+            Verify::isTrue($this->redis->auth($this->user . ":" . $this->pwd), $this->redis->getLastError());
+        }
         return $this->redis;
     }
     /** 
@@ -70,6 +73,17 @@ class RedisCache implements KVCatchInterface
      * 服务器端口
      */
     private $port;
+
+    /**
+     * @property
+     * 服务器实例Id
+     */
+    private $user;
+    /**
+     * @property
+     * 服务器实例密码
+     */
+    private $pwd;
     /**
      * @var \Redis
      */
