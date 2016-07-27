@@ -174,7 +174,19 @@ class Orders
    
 7. **ezsql**
  
-   phprs还包含一个简单的数据库操作类.
+   phprs还包含一个简单的数据库操作库. 详见https://github.com/caoym/ezsql
+   ```PHP
+   $db = new \PDO($dsn, $username, $passwd);
+   $res = Sql::select('a, b')
+   ->from('table')
+   ->leftJoin('table1')->on('table.id=table1.id')
+   ->where('a=?',1)
+   ->groupBy('b')->having('sum(b)=?', 2)
+   ->orderBy('c', Sql::$ORDER_BY_ASC)
+   ->limit(0,1)
+   ->forUpdate()->of('d')
+   ->get($db);
+   ```
    
 ## 快速开始
 
