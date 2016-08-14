@@ -259,7 +259,7 @@ class JoinOnRule extends BasicRule
     /**
      * join('table1')->on('table0.id=table1.id') => "JOIN table1 ON table0.id=table1.id"
      * @param string $condition
-     * @return \phprs\ezsql\rules\select\WhereRule
+     * @return \phprs\ezsql\rules\select\JoinRule
      */
     public function on($condition){
         JoinOnImpl::on($this->context, $condition);
