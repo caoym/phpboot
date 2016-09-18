@@ -4,6 +4,8 @@ use phprs\util\IoCFactory;
 use phprs\util\exceptions\NotFound;
 use phprs\util\exceptions\BadRequest;
 use phprs\util\exceptions\Forbidden;
+use phprs\util\exceptions\AuthenticationTimeout;
+use phprs\util\exceptions\ExceptionWithHttpStatus;
 
 class Bootstrap
 {
@@ -26,7 +28,13 @@ class Bootstrap
         }catch (Forbidden $e){
             header($protocol . ' 403 Forbidden');
             $err = $e;
-        }catch (\Exception $e){
+        }catch (AuthenticationTimeout $e){
+            header($protocol . ' 419 Authentication Timeout');
+            $err = $e;
+        }catch (ExceptionWithHttpStatus $e){
+            header($protocol . ' '.$e->status);
+            $err = $e;
+        }catch(\Exception $e){
             header($protocol . ' 500 Internal Server Error');
             $err = $e;
         }

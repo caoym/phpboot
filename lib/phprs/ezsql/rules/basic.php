@@ -16,7 +16,7 @@ class BasicRule
     public function __construct($context){
         $this->context = $context;
     }
-    protected $context;
+    public $context;
 }
 
 class ExecRule extends BasicRule

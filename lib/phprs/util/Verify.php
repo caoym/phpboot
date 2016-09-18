@@ -6,13 +6,8 @@
  * @brief
  */
 namespace phprs\util;
-/**
- * if(false) throw ;
- * @param boolen $var 判断条件
- * @param string $msg 异常消息
- * @throws Exception
- * @return unknown
- */
+use phprs\util\Logger;
+
 class Verify{
     /**
      * 如果判断不为true,抛出异常
@@ -22,12 +17,14 @@ class Verify{
      * @throws \Exception
      * @return unknown
      */
-	static public function isTrue($var, $msg = null)
+    static public function isTrue($var, $msg = null)
     {
         if (!$var) {
             if($msg === null || is_string($msg)){
+                Logger::warning($msg);
                 throw new \Exception($msg);
             }else{
+                Logger::warning($msg->__toString());
                 throw $msg;
             }
         } else {
@@ -35,14 +32,16 @@ class Verify{
         }
     }
     /**
-     * 
+     *
      * @param \Exception|string $e
      * @throws unknown
      */
     static public function e($e){
         if ($e === null || is_string($e)) {
+            Logger::warning($e);
             throw new \Exception($e);
         } else {
+            Logger::warning($e->__toString());
             throw $e;
         }
     }

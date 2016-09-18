@@ -15,7 +15,7 @@ class DB extends \PDO
         $dsn, 
         $username, 
         $passwd, 
-        $options = [\PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES'utf8';"]){
+        $options = [\PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES'utf8';",\PDO::MYSQL_ATTR_FOUND_ROWS => true]){
         parent::__construct($dsn, $username, $passwd, $options);
         $this->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
     }

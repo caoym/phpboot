@@ -1,5 +1,4 @@
 # phprs 
-[![Codewake](https://www.codewake.com/badges/codewake2.svg)](https://www.codewake.com/p/caoym-phprs-restful)
 [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/caoym/phprs-restful)
 [![Build Status](https://travis-ci.org/caoym/phprs-restful.svg)](https://travis-ci.org/caoym/phprs-restful)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/caoym/phprs-restful/master/LICENSE)
@@ -169,18 +168,6 @@ class Orders
 7. **ezsql**
 
    An easy-to-use and IDE friendly SQL builder. Object-oriented SQL. @see https://github.com/caoym/ezsql
-   ```PHP
-   $db = new \PDO($dsn, $username, $passwd);
-   $res = Sql::select('a, b')
-   ->from('table')
-   ->leftJoin('table1')->on('table.id=table1.id')
-   ->where('a=?',1)
-   ->groupBy('b')->having('sum(b)=?', 2)
-   ->orderBy('c', Sql::$ORDER_BY_ASC)
-   ->limit(0,1)
-   ->forUpdate()->of('d')
-   ->get($db);
-   ```
    
 ## Quick start
 https://github.com/caoym/phprs-restful/wiki/Quick-start

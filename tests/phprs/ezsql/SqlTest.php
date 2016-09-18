@@ -223,6 +223,26 @@ class EzsqlTest extends \PHPUnit_Framework_TestCase
         $this->db->setExpected('INSERT INTO tab(a,b,c) VALUES(?,?,now())', 1,2);
         Sql::insertInto('tab')->values(['a'=>1, 'b'=>2, 'c'=>Sql::native('now()')])->exec($this->db);
     }
+    public function testForInsert3()
+    {
+        //INSERT INTO tab(a,b,c)VALUES(1,2,now())
+        $this->db->setExpected('INSERT INTO tab(a,b,c) VALUES(?,?,now()) ON DUPLICATE KEY UPDATE a=a+1', 1,2);
+        Sql::insertInto('tab')
+            ->values(['a'=>1, 'b'=>2, 'c'=>Sql::native('now()')])
+            ->onDuplicateKeyUpdate('a',Sql::native('a+1'))
+            ->exec($this->db);
+
+        Sql::insertInto('tab')
+            ->values(['a'=>1, 'b'=>2, 'c'=>Sql::native('now()')])
+            ->onDuplicateKeyUpdateArgs(['a'=>Sql::native('a+1')])
+            ->exec($this->db);
+
+        Sql::insertInto('tab')
+            ->values(['a'=>1, 'b'=>2, 'c'=>Sql::native('now()')])
+            ->onDuplicateKeyUpdateExpr('a=a+1')
+            ->exec($this->db);
+    }
+
     public function testUpdate0()
     {
         //UPDATE tab SET a=1,b='2',c=now()

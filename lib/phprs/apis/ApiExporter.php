@@ -16,7 +16,7 @@ use phprs\util\HttpRouterEntries;
 use phprs\util\Verify;
 
 /**
- * 导出AP描述信息
+ * Export api doc
  * @author caoym
  * @path("/")
  */
@@ -25,10 +25,11 @@ class ApiExporter
     /**
      * 导出API信息
      * @route({"GET", "/apis.json"})
+     * @param({"class","$._GET.class"})
      * @return({"header", "Content-Type: application/json; charset=UTF-8"})
      * @return({"body"}) array
      */
-    public function exportJson()
+    public function exportJson($class=null)
     {
         $apis = array();
         // 导出hook信息
@@ -37,6 +38,9 @@ class ApiExporter
                 $entries = $hook->export();
                 foreach ($entries as $entry) {
                     list ($uri, $invoker) = $entry;
+                    if($class && $class != $invoker->getClassName()){
+                        continue;
+                    }
                     $info['type'] = 'hook';
                     $info['uri'] = array(
                         $method,
@@ -52,6 +56,9 @@ class ApiExporter
             $entries = $route->export();
             foreach ($entries as $entry) {
                 list ($uri, $invoker) = $entry;
+                if($class && $class != $invoker->getClassName()){
+                    continue;
+                }
                 $info['type'] = 'api';
                 $info['uri'] = array(
                     $method,

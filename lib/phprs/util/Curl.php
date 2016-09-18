@@ -85,6 +85,15 @@ class Curl
     public function PUT($url, $content, $headers=null,$followLoc=true){
         return $this->execCurl($url, __FUNCTION__, $content, $headers,$followLoc);
     }
+
+    /**
+     * @param $url
+     * @param string $method
+     * @param null $content
+     * @param null $headers
+     * @param bool $followLoc
+     * @return CurlResponse
+     */
     private function execCurl($url, $method='GET', $content=null,  $headers=null,$followLoc=true){
         $res = new CurlResponse();
         
@@ -92,7 +101,7 @@ class Curl
 		    curl_setopt($this->ch, CURLOPT_CUSTOMREQUEST, $method);
 		}
 		curl_setopt($this->ch, CURLOPT_URL,$url);
-		curl_setopt($this->ch, CURLOPT_TIMEOUT, 60);
+		curl_setopt($this->ch, CURLOPT_TIMEOUT, $this->timeout);
 		if(!empty($headers)){
 		    curl_setopt($this->ch, CURLOPT_HTTPHEADER, $headers);
 		}
@@ -135,6 +144,12 @@ class Curl
 
 		return $res;
     }
+
+    /**
+     * @var int
+     * request time out in second
+     */
+    public $timeout = 60;
     /** curl handle */
     private $ch;
   

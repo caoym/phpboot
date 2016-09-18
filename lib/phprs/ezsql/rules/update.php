@@ -52,6 +52,18 @@ class UpdateSetRule extends WhereRule
         $this->impl->setArgs($this->context, $values);
         return $this;
     }
+
+    /**
+     * update('table')->setExpr('a=a+?',1)
+     * @param string $expr
+     * @param mixed $_
+     * @return \phprs\ezsql\rules\update\UpdateSetRule
+     */
+    public function setExpr($expr, $_=null) {
+        $this->impl->setExpr($this->context, $expr, array_slice(func_get_args(), 1));
+        return $this;
+    }
+
     private $impl;
 }
 

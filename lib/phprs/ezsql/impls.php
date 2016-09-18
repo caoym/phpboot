@@ -4,6 +4,7 @@
  * @author caoym(caoyangmin@gmail.com)
  */
 namespace phprs\ezsql\impls;
+use phprs\ezsql\rules\basic\BasicRule;
 use phprs\util\NestedStringCut;
 use phprs\util\Verify;
 use phprs\ezsql\SqlConetxt;
@@ -49,8 +50,16 @@ class SelectImpl
 
 class FromImpl
 {
-    static public function from($context, $tables){
-        $context->appendSql("FROM $tables");
+    static public function from($context, $tables,$as=null){
+        if($tables instanceof BasicRule){
+            $context->appendSql("FROM (".$tables->context->sql.')');
+            $context->params = array_merge($context->params,$tables->context->params);
+        }else {
+            $context->appendSql("FROM $tables");
+        }
+        if($as){
+            $context->appendSql("as $as");
+        }
     }
 }
 
@@ -158,6 +167,20 @@ class UpdateSetImpl
             $context->appendSql("$prefix$column=?",$prefix == 'SET ');
             $context->appendParams([$value]);
         }
+    }
+
+    public function setExpr($context, $expr, $args){
+        $prefix = '';
+        if($this->first){
+            $this->first = false;
+            $prefix = 'SET ';
+        }else{
+            $prefix = ',';
+        }
+
+        $context->appendSql("$prefix$expr",$prefix == 'SET ');
+        $context->appendParams($args);
+
     }
     public function setArgs($context, $values){
         $set = [];
@@ -433,6 +456,7 @@ class ExecImpl
         if($exceOnError){
             $db->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
         }
+        $db->setAttribute(\PDO::MYSQL_ATTR_FOUND_ROWS,true);
         $st = $db->prepare($context->sql);
         $success = $st->execute($context->params);
         return new Response($success, $db,$st);
@@ -449,6 +473,7 @@ class ExecImpl
         if($errExce){
             $db->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
         }
+        $db->setAttribute(\PDO::MYSQL_ATTR_FOUND_ROWS ,true);
         $st = $db->prepare($context->sql);
         if($st->execute($context->params)){
             $res = $st->fetchAll(\PDO::FETCH_ASSOC);
@@ -466,4 +491,56 @@ class ExecImpl
         
     }
 }
+class OnDuplicateKeyUpdateImpl
+{
+    public function set($context, $column, $value){
+        $prefix = '';
+        if($this->first){
+            $this->first = false;
+            $prefix = 'ON DUPLICATE KEY UPDATE ';
+        }else{
+            $prefix = ',';
+        }
+        if(is_a($value, 'phprs\\ezsql\\Native')){
+            $context->appendSql("$prefix$column=$value",$prefix == 'ON DUPLICATE KEY UPDATE ');
+        }else{
+            $context->appendSql("$prefix$column=?",$prefix == 'ON DUPLICATE KEY UPDATE ');
+            $context->appendParams([$value]);
+        }
+    }
 
+    public function setExpr($context, $expr, $args){
+        $prefix = '';
+        if($this->first){
+            $this->first = false;
+            $prefix = 'ON DUPLICATE KEY UPDATE ';
+        }else{
+            $prefix = ',';
+        }
+
+        $context->appendSql("$prefix$expr",$prefix == 'ON DUPLICATE KEY UPDATE ');
+        $context->appendParams($args);
+
+    }
+    public function setArgs($context, $values){
+        $set = [];
+        $params = [];
+        foreach ($values as $k=>$v){
+            if(is_a($v, 'phprs\\ezsql\\Native')){//直接拼接sql，不需要转义
+                $set[]= "$k=".$v->get();
+            }else{
+                $set[]= "$k=?";
+                $params[]=$v;
+            }
+        }
+        if($this->first){
+            $this->first = false;
+            $context->appendSql('ON DUPLICATE KEY UPDATE '.implode(',', $set));
+            $context->appendParams($params);
+        }else{
+            $context->appendSql(','.implode(',', $set),false);
+            $context->appendParams($params);
+        }
+    }
+    private $first=true;
+}

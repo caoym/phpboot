@@ -45,6 +45,16 @@ class GetRule extends BasicRule
     public function get($db, $asDict=false,$errExce=true) {
         return ExecImpl::get($this->context, $db, $asDict,$errExce);
     }
+
+    /**
+     * Execute sql and get one response
+     * @param $db
+     * @param bool $errExce
+     * @return mixed
+     */
+    public function getOnce($db,$errExce=true){
+        return ExecImpl::get($this->context, $db, false,$errExce)[0];
+    }
 }
 class FromRule extends GetRule
 {
@@ -53,8 +63,8 @@ class FromRule extends GetRule
      * @param string $table
      * @return \phprs\ezsql\rules\select\JoinRule
      */
-    public function from($table){
-        FromImpl::from($this->context, $table);
+    public function from($table,$as=null){
+        FromImpl::from($this->context, $table,$as);
         return new JoinRule($this->context);
     }
 }
