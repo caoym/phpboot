@@ -1,10 +1,10 @@
 {
-    "name": "caoym/phprs-restful",
-    "description": "A jax-rs like RESTful framework.",
+    "name": "caoym/phpboot",
+    "description": "A Spring Boot like PHP framework.",
     "keywords": [
-        "phprs",
-        "phprs-restful",
-        "restful"
+        "boot",
+        "restful",
+        "phpboot"
     ],
     "license": "MIT",
     "require": {
@@ -21,14 +21,33 @@
     ],
     "autoload": {
         "psr-4": {
-            "phprs\\": "lib/phprs/",
-            "Peekmo\\":"lib/Peekmo/",
-            "Doctrine\\":"lib/Doctrine/"
-        }
+            "PhpBoot\\": "src/",
+            "PhpBoot\\Tests\\": "tests/"
+        },
+        "files": [
+
+        ]
     },
     "autoload-dev": {
-        "psr-4": {
-            "phprs\\tests\\": "tests/phprs/"
+        "classmap": [
+            "tests/"
+        ]
+    },
+    "config": {
+        "preferred-install": "dist",
+        "secure-http": false
+    },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "http://composer.intra.ffan.com/repo/private/"
+        },
+        {
+            "type": "composer",
+            "url": "http://composer.intra.ffan.com/repo/packagist/"
+        },
+        {
+            "packagist": false
         }
-    }
+    ]
 }
