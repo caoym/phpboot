@@ -1,5 +1,4 @@
 # phprs 
-[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/caoym/phprs-restful)
 [![Build Status](https://travis-ci.org/caoym/phprs-restful.svg)](https://travis-ci.org/caoym/phprs-restful)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/caoym/phprs-restful/master/LICENSE)
 [![Package version](http://img.shields.io/packagist/v/caoym/phprs-restful.svg)](https://packagist.org/packages/caoym/phprs-restful)
