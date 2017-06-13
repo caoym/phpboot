@@ -2,13 +2,14 @@
     "name": "caoym/phpboot",
     "description": "A Spring Boot like PHP framework.",
     "keywords": [
-        "boot",
+        "phpboot",
         "restful",
-        "phpboot"
+        "boot"
     ],
     "license": "MIT",
     "require": {
-        "php":">=5.4"
+        "php":">=5.4",
+        "monolog/monolog": "~1.0"
     },
     "require-dev": {
         "phpunit/phpunit": "~4.0"
@@ -25,7 +26,7 @@
             "PhpBoot\\Tests\\": "tests/"
         },
         "files": [
-
+            "src/Utils/fail.php"
         ]
     },
     "autoload-dev": {
