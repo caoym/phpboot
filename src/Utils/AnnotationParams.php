@@ -1,7 +1,5 @@
 <?php
 namespace PhpBoot\Utils;
-use phprs\util\Verify;
-
 /**
  * Class AnnotationParams
  */
