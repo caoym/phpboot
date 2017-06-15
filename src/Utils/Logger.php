@@ -11,7 +11,7 @@ class Logger
      *
      * @return void
      */
-    public function emergency($message, array $context = array())
+    static public function emergency($message, array $context = array())
     {
         self::getDefaultLogger()->{__FUNCTION__}($message, $context);
     }
@@ -27,7 +27,7 @@ class Logger
      *
      * @return void
      */
-    public function alert($message, array $context = array())
+    static public function alert($message, array $context = array())
     {
         self::getDefaultLogger()->{__FUNCTION__}($message, $context);
     }
@@ -42,7 +42,7 @@ class Logger
      *
      * @return void
      */
-    public function critical($message, array $context = array())
+    static public function critical($message, array $context = array())
     {
         self::getDefaultLogger()->{__FUNCTION__}($message, $context);
     }
@@ -56,7 +56,7 @@ class Logger
      *
      * @return void
      */
-    public function error($message, array $context = array())
+    static public function error($message, array $context = array())
     {
         self::getDefaultLogger()->{__FUNCTION__}($message, $context);
     }
@@ -72,7 +72,7 @@ class Logger
      *
      * @return void
      */
-    public function warning($message, array $context = array())
+    static public function warning($message, array $context = array())
     {
         self::getDefaultLogger()->{__FUNCTION__}($message, $context);
     }
@@ -85,7 +85,7 @@ class Logger
      *
      * @return void
      */
-    public function notice($message, array $context = array())
+    static public function notice($message, array $context = array())
     {
         self::getDefaultLogger()->{__FUNCTION__}($message, $context);
     }
@@ -113,7 +113,7 @@ class Logger
      *
      * @return void
      */
-    public function debug($message, array $context = array())
+    static public function debug($message, array $context = array())
     {
         self::getDefaultLogger()->{__FUNCTION__}($message, $context);
     }
@@ -127,7 +127,7 @@ class Logger
      *
      * @return void
      */
-    public function log($level, $message, array $context = array())
+    static public function log($level, $message, array $context = array())
     {
         self::getDefaultLogger()->log($level, $message, $context);
     }
@@ -135,7 +135,7 @@ class Logger
     /**
      * @param \Monolog\Logger $defaultLogger
      */
-    public static function setDefaultLogger($defaultLogger)
+    static public function setDefaultLogger($defaultLogger)
     {
         self::$defaultLogger = $defaultLogger;
     }
@@ -143,16 +143,16 @@ class Logger
     /**
      * @return \Monolog\Logger
      */
-    public static function getDefaultLogger()
+    static public function getDefaultLogger()
     {
         if(!self::$defaultLogger){
-            self::$defaultLogger = new Monolog\Logger('default');
+            self::$defaultLogger = new \Monolog\Logger('default');
         }
         return self::$defaultLogger;
     }
 
     /**
-     * @var Monolog\Logger
+     * @var \Monolog\Logger
      */
     static private $defaultLogger;
 }

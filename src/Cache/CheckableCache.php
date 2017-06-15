@@ -1,5 +1,6 @@
 <?php
-namespace  PhpBoot\Utils;
+namespace  PhpBoot\Cache;
+use PhpBoot\Utils\SerializableFunc;
 use Psr\SimpleCache\CacheInterface;
 
 /**
@@ -25,7 +26,7 @@ class CheckableCache
      * 如checker($got_var, $time)
      *
      */
-    public function set($name, $var, $ttl = 0, $expireCheck = null)
+    public function set($name, $var, $ttl = 0, SerializableFunc $expireCheck = null)
     {
         $res = $this->impl->set($name, array(
             $var,

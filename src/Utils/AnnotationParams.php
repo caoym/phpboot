@@ -155,7 +155,7 @@ class AnnotationParams
                 if($ignoreError){
                     return $text;
                 }else{
-                    fail(json_last_error_msg());
+                    fail('json_decode failed with '.json_last_error_msg(), [$text]);
                 }
             }
             return $decoded;
