@@ -18,10 +18,9 @@ use Symfony\Component\Cache\Simple\ApcuCache;
  */
 class MetaLoader
 {
-
     const DEFAULT_ANNOTATIONS=[
         [RouteGroupMeta::class, '$.class'],
-        [RouteMeta::class,  '$.method'],
+        [RouteMeta::class,  '$.method.route'],
         [PropertyMeta::class,   '$.property'],
 
     ];
@@ -78,10 +77,15 @@ class MetaLoader
         $doc = $this->createDocBlockFactory();
 
         if($rfl->getDocComment()) {
-            $docblock = $doc->create($rfl->getDocComment());
-            $tags = $docblock->getTags();
-
+            $docBlock = $doc->create($rfl->getDocComment());
+            $tags = $docBlock->getTags();
+            //class annotations;
             foreach ($tags as $tag) {
+                $h = $this->getAnnotationHandler($tag->getName(), '$.class');
+                if($h){
+                    $doc = $tag->getDescription();
+                    $doc->handle
+                }
                 $visitor(self::TYPE_CLASS, $className, $tag->getName(), strval($tag->getDescription()));
             }
         }

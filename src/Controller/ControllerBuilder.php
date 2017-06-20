@@ -1,44 +1,20 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: caoyangmin
- * Date: 16/9/27
- * Time: 下午3:43
- */
 
-namespace Once\Container;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Laravel\Lumen\Application;
-use Once\Utils\AnnotationsVisitor;
-use Once\Utils\Verify;
+namespace PhpBoot\Container;
+use PhpBoot\Application;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Class ControllerContainer
- * @package once
- *
- * ControllerContainer 和 Annotations 的关系:
- * ControllerContainer提供原始的能力和扩展点, Annotations负责组织这些能力和扩展, 每一个Annotation应该是独立的, 不依赖与其他Annotation
- * TODO * 支持自定义Annotation
+ * Class ControllerBuilder
  */
-class ControllerContainer extends ClassAnnotations
+class ControllerBuilder
 {
-
-    /**
-     * ControllerContainer constructor.
-     * @param $className
-     */
-    public function __construct($className)
+    public function __construct(Application $app, $className)
     {
         $this->className = $className;
-        //TODO 缓存
-        $refl = new \ReflectionClass($className);
-        $docFactory  = AnnotationsVisitor::createDocBlockFactory();
-        if($refl->getDocComment()){
-            $docblock = $docFactory->create($refl->getDocComment());
-            $this->doc = $docblock->getSummary()."\n".$docblock->getDescription();
-        }
-        $this->fileName = $refl->getFileName();
+        $rfl = new \ReflectionClass($className);
+        $this->fileName = $rfl->getFileName();
     }
 
     /**
@@ -63,7 +39,7 @@ class ControllerContainer extends ClassAnnotations
      * @return void
      */
     public function addRoute($actionName, Route $route){
-        !array_has($this->routes, $actionName) or Verify::fail("repeated @route for {$this->className}::$actionName");
+        !array_key_exists($actionName, $this->routes) or fail("repeated @route for {$this->className}::$actionName");
         $this->routes[$actionName] = $route;
     }
     /**
@@ -81,15 +57,13 @@ class ControllerContainer extends ClassAnnotations
     public function setRoutes($routes){
         $this->routes = $routes;
     }
-
-
     /**
      * 获取指定名称的路由
      * @param $actionName
      * @return Route|null
      */
     public function getRoute($actionName){
-        if (array_has($this->routes, $actionName)){
+        if (array_key_exists($actionName, $this->routes)){
             return $this->routes[$actionName];
         }
         return null;
@@ -101,7 +75,7 @@ class ControllerContainer extends ClassAnnotations
      * @param ActionInvoker $action
      * @return Response
      */
-    public function dispatchAction(Application $app, Request $request, ActionInvoker $action){
+    public function dispatch(Application $app, Request $request){
         $context = new Context($app, $request);
         $action->invoke($this->getControllerInstance($app), $context);
         return $context->getResponse();
@@ -199,4 +173,6 @@ class ControllerContainer extends ClassAnnotations
      * @var string
      */
     private $fileName;
+
+    private $app;
 }
