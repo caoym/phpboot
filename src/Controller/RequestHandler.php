@@ -4,7 +4,10 @@ namespace PhpBoot\Container;
 
 
 use PhpBoot\Metas\ParamMeta;
+use PhpBoot\Utils\ObjectAccess;
+use PhpBoot\Validator\Validator;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class RequestHandler
 {
@@ -25,25 +28,20 @@ class RequestHandler
     public function buildParams(Request $request, array &$params, array &$refbuf){
 
         $vldData = [];
-        $vld = new Validator($context->getApp());
-        foreach ($this->paramsMeta as $meta){
+        $acc = new ObjectAccess($request);
+        $vld = new Validator();
+        foreach ($this->paramMetas as $meta){
             $src = $meta->source;
-            if ($context->hasPath($src)){
-                if($meta->isPassedByReference){
+            if ($acc->has($src)){
+                if(!$meta->isPassedByReference){
 
                 }else{
-                    $value = $context->getByPath($src); //TODO 到处都是这种代码
-                    if(is_string($value) && TypeHint::isArray($meta->type)){
-                        $ori = $value;
-                        $value = json_decode($value, true);
-                        !json_last_error() or Verify::fail(new BadRequestHttpException("param $src required {$meta->type}, data $ori given, ".json_last_error_msg()));
-                    }
+                    $value = $acc->get($src);
                     $vldData[$meta->name] = $value;
                 }
-
-                $vld->addRule($meta->name, $meta->type, $meta->validation);
+                $vld->rule($meta->type, $meta->name, $meta->validation);
             }else{
-                $meta->isOptional or Verify::fail(new BadRequestHttpException("param $src is required"));
+                $meta->isOptional or fail(new BadRequestHttpException("param $src is required"));
                 $vldData[$meta->name] = $meta->default;
             }
         }
@@ -51,7 +49,7 @@ class RequestHandler
         try{
             $vldData = $vld->validate($vldData);
         }catch (\Exception $e){
-            Verify::fail(new BadRequestHttpException($e->getMessage()), $e);
+            fail(new BadRequestHttpException($e->getMessage()), $e);
         }
         $pos = 0;
         foreach ($this->paramsMeta as $meta){

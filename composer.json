@@ -1,6 +1,6 @@
 {
     "name": "caoym/phpboot",
-    "description": "A Spring Boot like PHP framework.",
+    "description": "PHP RESTful API framework.",
     "keywords": [
         "phpboot",
         "restful",
@@ -11,7 +11,8 @@
         "php":">=5.5.9",
         "monolog/monolog": "~1.0",
         "symfony/cache": "^3.3",
-        "symfony/http-foundation": "^3.3"
+        "symfony/http-foundation": "^3.3",
+        "vlucas/valitron": "^1.4"
     },
     "require-dev": {
         "phpunit/phpunit": "~4.0"

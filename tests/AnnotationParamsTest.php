@@ -3,6 +3,7 @@
 namespace  PhpBoot\Tests;
 
 use PhpBoot\Utils\AnnotationParams;
+use PhpBoot\Validator\Validator;
 
 class AnnotationParamsTest extends \PHPUnit_Framework_TestCase
 {

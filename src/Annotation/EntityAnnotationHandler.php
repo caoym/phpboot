@@ -2,11 +2,12 @@
 
 namespace PhpBoot\Annotation;
 
-use PhpBoot\Container\ControllerBuilder;
 
-class ControllerAnnotationHandler implements AnnotationHandler
+use PhpBoot\Entity\EntityBuilder;
+
+class EntityAnnotationHandler implements AnnotationHandler
 {
-    public function __construct(ControllerBuilder $builder, ControllerAnnotationHandler $parent=null){
+    public function __construct(EntityBuilder $builder, ControllerAnnotationHandler $parent=null){
         $this->builder = $builder;
         $this->parent = $parent;
     }
@@ -42,7 +43,7 @@ class ControllerAnnotationHandler implements AnnotationHandler
     }
 
     /**
-     * @var ControllerBuilder
+     * @var EntityBuilder
      */
     protected $builder;
 
