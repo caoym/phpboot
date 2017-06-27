@@ -22,7 +22,6 @@ class MetaLoader
         [RouteGroupMeta::class, '$.class'],
         [RouteMeta::class,  '$.method.route'],
         [PropertyMeta::class,   '$.property'],
-
     ];
     /**
      * MetaLoader constructor.

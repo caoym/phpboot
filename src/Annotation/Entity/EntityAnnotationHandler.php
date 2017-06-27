@@ -1,13 +1,13 @@
 <?php
 
-namespace PhpBoot\Annotation;
+namespace PhpBoot\Annotation\Entity;
 
-
+use PhpBoot\Annotation\AnnotationHandler;
 use PhpBoot\Entity\EntityBuilder;
 
 class EntityAnnotationHandler implements AnnotationHandler
 {
-    public function __construct(EntityBuilder $builder, ControllerAnnotationHandler $parent=null){
+    public function __construct(EntityBuilder $builder, EntityAnnotationHandler $parent=null){
         $this->builder = $builder;
         $this->parent = $parent;
     }
@@ -30,15 +30,18 @@ class EntityAnnotationHandler implements AnnotationHandler
         }
     }
 
-    protected function handleClass($target, $name, $value){
+    protected function handleClass($target, $name, $value)
+    {
 
     }
 
-    protected function handleMethod($target, $name, $value){
+    protected function handleMethod($target, $name, $value)
+    {
 
     }
 
-    protected function handleProperty($target, $name, $value){
+    protected function handleProperty($target, $name, $value)
+    {
 
     }
 
@@ -48,7 +51,7 @@ class EntityAnnotationHandler implements AnnotationHandler
     protected $builder;
 
     /**
-     * @var ControllerAnnotationHandler
+     * @var EntityAnnotationHandler
      */
     protected $parent;
 }
