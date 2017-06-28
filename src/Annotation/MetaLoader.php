@@ -3,12 +3,12 @@
 namespace PhpBoot\Annotation;
 
 
+use Doctrine\Common\Cache\ApcuCache;
 use PhpBoot\Cache\CheckableCache;
 use PhpBoot\Cache\FileExpiredChecker;
 use PhpBoot\Lock\LocalAutoLock;
 use PhpBoot\Utils\Logger;
 use PhpBoot\Utils\ObjectAccess;
-use Symfony\Component\Cache\Simple\ApcuCache;
 
 abstract class MetaLoader
 {
@@ -16,31 +16,31 @@ abstract class MetaLoader
      * MetaLoader constructor.
      * @param array $annotations 需加载的注释和顺序
      *
+     * 语法 http://jmespath.org/tutorial.html
+     *
      *  [
-     *      [PropertyMeta::class,   '$.property'],
+     *      [PropertyAnnotationHandler::class,   'property'],
      *      ...
      *  ];
      *
      */
     public function __construct(array $annotations)
     {
-        $acc = new ObjectAccess($this->annotations);
-        foreach ($annotations as $i){
-            $acc->set($i[1], $i[0]);
-        };
+        $this->annotations = $annotations;
         $this->cache = new CheckableCache(new ApcuCache());
     }
 
     /**
      * load from class with local cache
      * @param string $className
-     * @return object|false
+     * @return object
      */
     public function loadFromClass($className)
     {
+        //TODO【重要】 使用全局的缓存版本号, 而不是针对每个文件判断缓存过期与否
         $rfl = new \ReflectionClass($className) or fail("load class $className failed");
         $fileName = $rfl->getFileName();
-        $key = get_class($this).md5($fileName);
+        $key = get_class($this).md5(serialize($this->annotations).$fileName);
         $oldData = null;
         $res = $this->cache->get($key, null, $oldData, false);
         if($res === null){
@@ -54,13 +54,15 @@ abstract class MetaLoader
                         return $meta;
                     }catch (\Exception $e){
                         Logger::warning(__METHOD__.' failed with '.$e->getMessage());
-                        $this->cache->set($key, false, 0, new FileExpiredChecker($fileName));
-                        return false;
+                        $this->cache->set($key, $e->getMessage(), 0, new FileExpiredChecker($fileName));
+                        throw $e;
                     }
                 },
                 function () use($oldData){
                     return $oldData;
                 });
+        }elseif(is_string($res)){
+            fail($res);
         }else{
             return $res;
         }
@@ -78,17 +80,21 @@ abstract class MetaLoader
      */
     public function loadFromClassWithoutCache($className)
     {
-        $rfl = new \ReflectionClass($className);
         $builder = $this->createBuilder($className);
-        //class annotations;
-        $this->handleAnnotation($builder, AnnotationHandler::TYPE_CLASS, $className, $rfl->getDocComment());
-        //method annotations
-        foreach ($rfl->getMethods() as $i){
-            $this->handleAnnotation($builder, AnnotationHandler::TYPE_METHOD, $i->getName(), $i->getDocComment());
-        }
-        //property annotations
-        foreach ($rfl->getProperties() as $i){
-            $this->handleAnnotation($builder, AnnotationHandler::TYPE_PROPERTY, $i->getName(), $i->getDocComment());
+        $anns = AnnotationReader::read($className);
+        foreach ($this->annotations as $i){
+            list($class, $target) = $i;
+
+            $handler = new $class($builder);
+            /** @var $handler AnnotationHandler*/
+            $found = \JmesPath\search($target, $anns);
+            if(is_array($found)){
+                foreach ($found as $f){
+                    $handler->handle($f);
+                }
+            }else{
+                $handler->handle($found);
+            }
         }
         return $builder;
     }

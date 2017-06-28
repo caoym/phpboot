@@ -1,17 +1,18 @@
 <?php
 
-namespace PhpBoot\Annotation;
+namespace PhpBoot\Annotation\Entity;
 
 
 use PhpBoot\Annotation\Entity\Annotations\PropertyAnnotationHandler;
+use PhpBoot\Annotation\MetaLoader;
 use PhpBoot\Entity\EntityBuilder;
 use PhpBoot\Metas\PropertyMeta;
 
 class EntityMetaLoader extends MetaLoader
 {
     const DEFAULT_ANNOTATIONS=[
-        [PropertyAnnotationHandler::class, '$.property'],
-        [PropertyMeta::class, '$.property.var'],
+        [PropertyAnnotationHandler::class, 'properties'],
+        [PropertyMeta::class, 'properties[*].var'],
     ];
 
     /**

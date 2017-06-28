@@ -12,32 +12,40 @@ class ControllerAnnotationHandler implements AnnotationHandler
     }
 
     /**
-     * @param string $type
+     * @param string $type TYPE_CLASS/TYPE_METHOD/TYPE_PROPERTY
      * @param string $target the name of the class or method or property
-     * @param string $name tag name
-     * @param string $value
-     * @return boolean
+     * @param AnnotationBlock $block
+     * @return void
      */
-    public function handle($type, $target, $name, $value)
+    public function handle($type, $target, $block)
     {
         if ($type == self::TYPE_CLASS){
-            $this->handleClass($target, $name, $value);
+            $this->handleClass($target, $block);
         }elseif ($type == self::TYPE_METHOD){
-            $this->handleMethod($target, $name, $value);
+            $this->handleMethod($target, $block);
         }elseif ($type == self::TYPE_PROPERTY){
-            $this->handleProperty($target, $name, $value);
+            $this->handleProperty($target, $block);
         }
     }
-
-    protected function handleClass($target, $name, $value){
+    /**
+     * @param string $target the name of the class or method or property
+     * @param AnnotationBlock $block
+     */
+    protected function handleClass($target, $block){
 
     }
-
-    protected function handleMethod($target, $name, $value){
+    /**
+     * @param string $target the name of the class or method or property
+     * @param AnnotationBlock $block
+     */
+    protected function handleMethod($target, $block){
 
     }
-
-    protected function handleProperty($target, $name, $value){
+    /**
+     * @param string $target the name of the class or method or property
+     * @param AnnotationBlock $block
+     */
+    protected function handleProperty($target, $block){
 
     }
 

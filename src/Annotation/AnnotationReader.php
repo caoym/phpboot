@@ -1,20 +1,38 @@
 <?php
 
 namespace PhpBoot\Annotation;
-
-
+use Doctrine\Common\Cache\ApcuCache;
 use PhpBoot\Cache\CheckableCache;
 use PhpBoot\Cache\FileExpiredChecker;
 use PhpBoot\Lock\LocalAutoLock;
 use PhpBoot\Utils\Logger;
 use phpDocumentor\Reflection\DocBlock\DescriptionFactory;
 use phpDocumentor\Reflection\DocBlock\StandardTagFactory;
+use phpDocumentor\Reflection\DocBlock\Tag;
+use phpDocumentor\Reflection\DocBlock\Tags\Formatter;
+use phpDocumentor\Reflection\DocBlock\Tags\Generic;
 use phpDocumentor\Reflection\DocBlockFactory;
 use phpDocumentor\Reflection\FqsenResolver;
 use phpDocumentor\Reflection\TypeResolver;
-use Symfony\Component\Cache\Simple\ApcuCache;
 
-class AnnotationReader
+
+class AnnotationTagsOutput implements Formatter
+{
+    /**
+     * Formats a tag into a string representation according to a specific format, such as Markdown.
+     *
+     * @param Tag $tag
+     *
+     * @return string
+     */
+    public function format(Tag $tag)
+    {
+        $this->tags[] = $tag;
+        return strval($tag);
+    }
+    public $tags = [];
+}
+class AnnotationReader implements \ArrayAccess
 {
     static public function createDocBlockFactory(){
         $fqsenResolver = new FqsenResolver();
@@ -28,16 +46,16 @@ class AnnotationReader
     /**
      * load from class with local cache
      * @param string $className
-     * @return object|false
+     * @return object
      */
     static public function read($className)
     {
         $rfl = new \ReflectionClass($className) or fail("load class $className failed");
         $fileName = $rfl->getFileName();
-        $key = self::class.md5($fileName);
+        $key = str_replace('\\','.',self::class).md5($fileName);
         $oldData = null;
         $cache = new CheckableCache(new ApcuCache());
-        $res = $cache->get($key, null, $oldData, false);
+        $res = $cache->get('lock.'.$key, null, $oldData, false);
         if($res === null){
             return LocalAutoLock::lock(
                 $key,
@@ -48,14 +66,15 @@ class AnnotationReader
                         $cache->set($key, $meta, 0, new FileExpiredChecker($fileName));
                         return $meta;
                     }catch (\Exception $e){
-                        Logger::warning(__METHOD__.' failed with '.$e->getMessage());
-                        $cache->set($key, false, 0, new FileExpiredChecker($fileName));
-                        return false;
+                        $cache->set($key, $e->getMessage(), 0, new FileExpiredChecker($fileName));
+                        throw $e;
                     }
                 },
                 function () use($oldData){
                     return $oldData;
                 });
+        }elseif(is_string($res)){
+            fail($res);
         }else{
             return $res;
         }
@@ -70,15 +89,18 @@ class AnnotationReader
 
         $rfl = new \ReflectionClass($className);
         $reader->class = self::readAnnotationBlock($rfl->getDocComment());
+        $reader->class->name = $className;
 
         //method annotations
         foreach ($rfl->getMethods() as $i){
             $block = self::readAnnotationBlock($i->getDocComment());
+            $block->name = $i->getName();
             $reader->methods[$i->getName()]=$block;
         }
         //property annotations
         foreach ($rfl->getProperties() as $i){
             $block = self::readAnnotationBlock($i->getDocComment());
+            $block->name = $i->getName();
             $reader->properties[$i->getName()]=$block;
         }
         return $reader;
@@ -87,27 +109,34 @@ class AnnotationReader
     static private function readAnnotationBlock($doc)
     {
         $annBlock = new AnnotationBlock();
+        if(empty($doc)){
+            return $annBlock;
+        }
         $docFactory = AnnotationReader::createDocBlockFactory();
         $docBlock = $docFactory->create($doc);
-
         $annBlock->summary = $docBlock->getSummary();
-        $annBlock->description = $docBlock->getDescription();
+        $annBlock->description = strval($docBlock->getDescription());
         $annBlock->children = [];
         $tags = $docBlock->getTags();
         foreach ($tags as $tag) {
-            $block = new AnnotationBlock();
-            $block->description = $tag->getDescription();
-            $block->name = $tag->getName();
-            $block->children=[];
-                $childBlock = $docFactory->create($block->description);
-                $childTags = $childBlock->getTags();
-                foreach ($childTags as $child) {
-                    $childBlock = new AnnotationBlock();
-                    $childBlock->name = $child->getName();
-                    $childBlock->description = $child->getDescription();
-                    $block->children[] = $childBlock;
+            $annTag = new AnnotationTag();
+            $desc = $tag->getDescription();
+            $annTag->parent = $annBlock;
+            $annTag->description = strval($desc);
+            $annTag->name = $tag->getName();
+            $annTag->children=[];
+            if($desc){
+                $output = new AnnotationTagsOutput();
+                $desc->render($output);
+                foreach ($output->tags as $child) {
+                    $childTag = new AnnotationTag();
+                    $childTag->parent = $annTag;
+                    $childTag->name = $child->getName();
+                    $childTag->description = strval($child->getDescription());
+                    $annTag->children[] = $childTag;
                 }
-            $annBlock->children[] = $block;
+            }
+            $annBlock->children[] = $annTag;
         }
         return $annBlock;
     }
@@ -126,4 +155,23 @@ class AnnotationReader
      */
     public $properties=[];
 
+    public function offsetExists($offset)
+    {
+        return isset($this->$offset);
+    }
+
+    public function offsetGet($offset)
+    {
+        return $this->$offset;
+    }
+
+    public function offsetSet($offset, $value)
+    {
+        $this->$offset = $value;
+    }
+
+    public function offsetUnset($offset)
+    {
+        unset($this->$offset);
+    }
 }

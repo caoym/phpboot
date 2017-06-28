@@ -1,7 +1,7 @@
 <?php
 namespace  PhpBoot\Cache;
+use Doctrine\Common\Cache\Cache;
 use PhpBoot\Utils\SerializableFunc;
-use Psr\SimpleCache\CacheInterface;
 
 /**
  * 可检查缓存是否失效的缓存
@@ -10,7 +10,7 @@ use Psr\SimpleCache\CacheInterface;
  */
 class CheckableCache
 {
-    function __construct(CacheInterface $impl){
+    function __construct(Cache $impl){
         $this->impl = $impl;
     }
    
@@ -20,20 +20,20 @@ class CheckableCache
      * @param string $name
      * @param mixed $var
      * @param int
-     * @param SerializableFunc $expireCheck
+     * @param callable $expireCheck
      * @return boolean
      * 缓存过期检查方法, 缓存过期(超过ttl)后, get时调用, 返回true表示缓存继续可用.
      * 如checker($got_var, $time)
      *
      */
-    public function set($name, $var, $ttl = 0, SerializableFunc $expireCheck = null)
+    public function set($name, $var, $ttl = 0, callable $expireCheck = null)
     {
-        $res = $this->impl->set($name, array(
+        $res = $this->impl->save($name, json_encode(array(
             $var,
             $ttl,
             $expireCheck,
             time(),
-        ), is_null($expireCheck) ? $ttl : 0);
+        )), is_null($expireCheck) ? $ttl : 0);
         return $res;
     }
 
@@ -47,9 +47,9 @@ class CheckableCache
     public function get($name, $default = null, &$expiredData=null, $deleteExpiredData=true)
     {
         $expiredData = null;
-        $res = $this->impl->get($name);
+        $res = $this->impl->fetch($name);
         if ($res !== null) {
-            list ($data, $ttl, $checker, $createdTime) = $res;
+            list ($data, $ttl, $checker, $createdTime) = json_decode($res);
             // 如果指定了checker, ttl代表每次检查的间隔时间, 0表示每次get都需要经过checker检查
             // 如果没有指定checker, ttl表示缓存过期时间, 为0表示永不过期
             if ($checker !== null) {
@@ -80,7 +80,7 @@ class CheckableCache
         return  $this->impl->delete($name);
     }
     /**
-     * @var CacheInterface
+     * @var Cache
      */
     private $impl;
 }

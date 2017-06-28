@@ -1,8 +1,6 @@
 <?php
 namespace PhpBoot\Lock;
 
-use Psr\SimpleCache\CacheInterface;
-
 /**
  * 自动加锁
  *

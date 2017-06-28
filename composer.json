@@ -10,9 +10,11 @@
     "require": {
         "php":">=5.5.9",
         "monolog/monolog": "~1.0",
-        "symfony/cache": "^3.3",
         "symfony/http-foundation": "^3.3",
-        "vlucas/valitron": "^1.4"
+        "vlucas/valitron": "^1.4",
+        "doctrine/cache": "^1.6",
+        "phpdocumentor/reflection-docblock": "^3.1",
+        "mtdowling/jmespath.php": "^2.4"
     },
     "require-dev": {
         "phpunit/phpunit": "~4.0"
@@ -36,22 +38,5 @@
         "classmap": [
             "tests/"
         ]
-    },
-    "config": {
-        "preferred-install": "dist",
-        "secure-http": false
-    },
-    "repositories": [
-        {
-            "type": "composer",
-            "url": "http://composer.intra.ffan.com/repo/private/"
-        },
-        {
-            "type": "composer",
-            "url": "http://composer.intra.ffan.com/repo/packagist/"
-        },
-        {
-            "packagist": false
-        }
-    ]
+    }
 }
