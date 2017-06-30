@@ -12,7 +12,7 @@ class VarAnnotationHandler extends EntityAnnotationHandler
     {
         $params = new AnnotationParams($ann->description, 2);
         if($params->count()){
-            $type = $params[0];
+            $type = $params->getParam(0);
             //TODO 校验type类型
             $target = $ann->parent->name;
             $property = $this->builder->getProperty($target);

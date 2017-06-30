@@ -3,7 +3,9 @@
 namespace PhpBoot\Annotation\Entity;
 
 
+use PhpBoot\Annotation\Entity\Annotations\ClassAnnotationHandler;
 use PhpBoot\Annotation\Entity\Annotations\PropertyAnnotationHandler;
+use PhpBoot\Annotation\Entity\Annotations\VarAnnotationHandler;
 use PhpBoot\Annotation\MetaLoader;
 use PhpBoot\Entity\EntityBuilder;
 use PhpBoot\Metas\PropertyMeta;
@@ -11,8 +13,9 @@ use PhpBoot\Metas\PropertyMeta;
 class EntityMetaLoader extends MetaLoader
 {
     const DEFAULT_ANNOTATIONS=[
+        [ClassAnnotationHandler::class, 'class'],
         [PropertyAnnotationHandler::class, 'properties'],
-        [PropertyMeta::class, 'properties[*].var'],
+        [VarAnnotationHandler::class, "properties.*.children[?name=='var'][]"],
     ];
 
     /**
@@ -39,7 +42,7 @@ class EntityMetaLoader extends MetaLoader
      */
     public function loadFromClassWithoutCache($className)
     {
-        parent::loadFromClassWithoutCache($className);
+        return parent::loadFromClassWithoutCache($className);
     }
 
     /**

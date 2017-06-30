@@ -40,7 +40,7 @@ abstract class MetaLoader
         //TODO【重要】 使用全局的缓存版本号, 而不是针对每个文件判断缓存过期与否
         $rfl = new \ReflectionClass($className) or fail("load class $className failed");
         $fileName = $rfl->getFileName();
-        $key = get_class($this).md5(serialize($this->annotations).$fileName);
+        $key = str_replace('\\','.',get_class($this)).md5(serialize($this->annotations).$fileName);
         $oldData = null;
         $res = $this->cache->get($key, null, $oldData, false);
         if($res === null){

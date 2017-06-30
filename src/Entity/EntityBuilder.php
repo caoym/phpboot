@@ -44,11 +44,49 @@ class EntityBuilder
     }
 
     /**
+     * @param string $fileName
+     */
+    public function setFileName($fileName)
+    {
+        $this->fileName = $fileName;
+    }
+
+    /**
+     * @param string $className
+     */
+    public function setClassName($className)
+    {
+        $this->className = $className;
+    }
+    /**
      * @return string
      */
-    public function getFileName()
+    public function getDescription()
     {
-        return $this->fileName;
+        return $this->description;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSummary()
+    {
+        return $this->summary;
+    }
+
+    /**
+     * @param string $description
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+    }
+    /**
+     * @param string $summary
+     */
+    public function setSummary($summary)
+    {
+        $this->summary = $summary;
     }
     /**
      * @var PropertyMeta[]
@@ -63,7 +101,11 @@ class EntityBuilder
     /**
      * @var string
      */
-    private $doc='';
+    private $description='';
+    /**
+     * @var string
+     */
+    private $summary='';
 
     /**
      * @var string

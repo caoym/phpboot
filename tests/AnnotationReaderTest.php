@@ -28,6 +28,7 @@ class TestClass{
     }
 
     /**
+     * property1 summary
      * @propertyAnn1
      */
     public $property1;
@@ -66,7 +67,7 @@ class AnnotationReaderTest extends \PHPUnit_Framework_TestCase
         $expected->methods['method1']->children[0]->parent = $expected->methods['method1'];
 
         $expected->properties = [
-            'property1'=>new AnnotationBlock('property1', '', '', [
+            'property1'=>new AnnotationBlock('property1', 'property1 summary', '', [
                 new AnnotationTag('propertyAnn1')
             ]),
             'property2'=>new AnnotationBlock('property2'),
