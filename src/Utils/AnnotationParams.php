@@ -43,6 +43,7 @@ class AnnotationParams
         if(!preg_match('/[\s"\']/', $todo, $found, PREG_OFFSET_CAPTURE) ||
             count($found)==0){
             $this->rawParams[] = substr($text,$this->prePos);
+            $this->prePos = strlen($text);
             return false;
         }
         list($chars, $offset) = $found[0];

@@ -16,8 +16,10 @@ if (! function_exists('fail')) {
         }
         if($error instanceof \Exception){
             $e = $error;
+            $message = "exception '".get_class($error)."' with message {$error->getMessage()}";
         }else{
-            $e = new \Exception($error);
+            $e = new \RuntimeException($error);
+            $message = $error;
         }
         $trace = $e->getTrace();
 
@@ -29,7 +31,7 @@ if (! function_exists('fail')) {
             $line = $e->getLine();
         }
         if($level){
-           Logger::$level($error, $context +['@file'=>$file, '@line'=>$line]);
+           Logger::$level($message, $context +['@file'=>$file, '@line'=>$line]);
         }
         throw $e;
     }

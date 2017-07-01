@@ -20,6 +20,7 @@ class MetaLoaderTest{
 
     /**
      * @var string
+     * @vld email
      */
     public $property2='default0';
 
@@ -39,7 +40,7 @@ class EntityMetaLoaderTest extends \PHPUnit_Framework_TestCase
         $expected->setSummary('Class MetaLoaderTest');
         $expected->setFileName(__FILE__);
         $expected->setProperty('property1', new PropertyMeta('property1', 'string', null,null,null,'property1'));
-        $expected->setProperty('property2', new PropertyMeta('property2', 'string', true,'default0'));
+        $expected->setProperty('property2', new PropertyMeta('property2', 'string', true,'default0', 'email'));
         $expected->setProperty('property3', new PropertyMeta('property3', null, true,1));
         self::assertEquals($expected, $actual);
     }

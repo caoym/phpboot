@@ -2,6 +2,8 @@
 
 namespace PhpBoot\Metas;
 
+use PhpBoot\Entity\EntityBuilder;
+
 class PropertyMeta
 {
     /**
@@ -11,9 +13,11 @@ class PropertyMeta
      * @param boolean $isOptional
      * @param mixed|null $default
      * @param string $validation
-     * @param string $doc
+     * @param string $summary
+     * @param string $description
+     * @param EntityBuilder $builder
      */
-    public function __construct($name, $type=null, $isOptional=false,$default=null, $validation=null, $summary='', $description=''){
+    public function __construct($name, $type=null, $isOptional=false,$default=null, $validation=null, $summary='', $description='', $builder = null){
         $this->name = $name;
         $this->type = $type;
         $this->default = $default;
@@ -21,7 +25,13 @@ class PropertyMeta
         $this->validation = $validation;
         $this->summary = $summary;
         $this->description = $description;
+        $this->builder = $builder;
     }
+
+    /**
+     * @var EntityBuilder
+     */
+    public $builder;
     public $name;
     public $type;
     public $default;

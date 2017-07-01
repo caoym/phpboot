@@ -2,13 +2,12 @@
 
 namespace PhpBoot\Annotation\Entity;
 
-
 use PhpBoot\Annotation\Entity\Annotations\ClassAnnotationHandler;
 use PhpBoot\Annotation\Entity\Annotations\PropertyAnnotationHandler;
+use PhpBoot\Annotation\Entity\Annotations\ValidatorAnnotationHandler;
 use PhpBoot\Annotation\Entity\Annotations\VarAnnotationHandler;
 use PhpBoot\Annotation\MetaLoader;
 use PhpBoot\Entity\EntityBuilder;
-use PhpBoot\Metas\PropertyMeta;
 
 class EntityMetaLoader extends MetaLoader
 {
@@ -16,6 +15,7 @@ class EntityMetaLoader extends MetaLoader
         [ClassAnnotationHandler::class, 'class'],
         [PropertyAnnotationHandler::class, 'properties'],
         [VarAnnotationHandler::class, "properties.*.children[?name=='var'][]"],
+        [ValidatorAnnotationHandler::class, "properties.*.children[?name=='".PHPBOOT_ANN_VLD."'][]"],
     ];
 
     /**
@@ -29,7 +29,7 @@ class EntityMetaLoader extends MetaLoader
     /**
      * load from class with local cache
      * @param string $className
-     * @return EntityBuilder|false
+     * @return EntityBuilder
      */
     public function loadFromClass($className)
     {

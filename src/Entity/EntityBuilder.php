@@ -3,6 +3,7 @@
 namespace  PhpBoot\Entity;
 
 use PhpBoot\Metas\PropertyMeta;
+use PhpBoot\Validator\Validator;
 
 class EntityBuilder
 {
@@ -11,8 +12,29 @@ class EntityBuilder
         $this->className = $className;
     }
 
-    public function build()
+    public function build($data, $validate = true)
     {
+        $obj = new ($this->getClassName())();
+        $vld = new Validator();
+        foreach ($this->properties as $p){
+            if(!$p->isOptional){
+                $vld->rule('required', $p->name);
+            }
+            $vld->rule($p->validation, $p->name);
+        }
+        $vld->withData($data)->validate() or fail(
+            new \InvalidArgumentException(
+                json_encode(
+                    $vld->errors(),
+                    JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
+                )
+            )
+        );
+        foreach ($this->properties as $p){
+            if($p->builder && isset($properties[$p->name])){
+                $properties[$p->name] = $p->builder->build($properties[$p->name]);
+            }
+        }
 
     }
 
@@ -30,9 +52,6 @@ class EntityBuilder
      */
     public function getProperties(){
         return $this->properties;
-    }
-    public function getDoc(){
-        return $this->doc;
     }
 
     /**
