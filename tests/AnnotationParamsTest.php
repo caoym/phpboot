@@ -4,12 +4,11 @@ namespace  PhpBoot\Tests;
 
 use PhpBoot\Utils\AnnotationParams;
 
-class AnnotationParamsTest extends \PHPUnit_Framework_TestCase
+class AnnotationParamsTest extends TestCase
 {
     public function testSplit()
     {
         $testStr = ' a b"bb ccc   \"  c"c  ddd "e e ';
-
         $params = new AnnotationParams($testStr, 0);
         self::assertEquals($params->count(), 0);
 
@@ -71,19 +70,5 @@ class AnnotationParamsTest extends \PHPUnit_Framework_TestCase
 
 
     }
-    private static function assertException(callable  $fun, $expectedClass = null, $expectedMessage = null){
-        $throw = false;
-        try{
-            $fun();
-        }catch (\Exception $e){
-            $throw = true;
-            if($expectedClass){
-                self::assertInstanceOf($expectedClass, $e);
-            }
-            if($expectedMessage !== null){
-                self::assertEquals($expectedMessage, $e->getMessage());
-            }
-        }
-        self::assertTrue($throw);
-    }
+
 }

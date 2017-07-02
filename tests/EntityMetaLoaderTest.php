@@ -28,7 +28,7 @@ class MetaLoaderTest{
 
 }
 
-class EntityMetaLoaderTest extends \PHPUnit_Framework_TestCase
+class EntityMetaLoaderTest extends TestCase
 {
 
     public function testAll()
@@ -39,7 +39,7 @@ class EntityMetaLoaderTest extends \PHPUnit_Framework_TestCase
         $expected = new EntityBuilder(MetaLoaderTest::class);
         $expected->setSummary('Class MetaLoaderTest');
         $expected->setFileName(__FILE__);
-        $expected->setProperty('property1', new PropertyMeta('property1', 'string', null,null,null,'property1'));
+        $expected->setProperty('property1', new PropertyMeta('property1', 'string', false,null,null,'property1'));
         $expected->setProperty('property2', new PropertyMeta('property2', 'string', true,'default0', 'email'));
         $expected->setProperty('property3', new PropertyMeta('property3', null, true,1));
         self::assertEquals($expected, $actual);

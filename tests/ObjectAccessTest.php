@@ -14,7 +14,7 @@ class GetMethodTest{
  * Date: 16/11/13
  * Time: 下午3:13
  */
-class ObjectAccessTest extends \PHPUnit_Framework_TestCase
+class ObjectAccessTest extends TestCase
 {
     public function testArrayAccess(){
 

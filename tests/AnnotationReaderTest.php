@@ -36,7 +36,7 @@ class TestClass{
     public $property2;
 }
 
-class AnnotationReaderTest extends \PHPUnit_Framework_TestCase
+class AnnotationReaderTest extends TestCase
 {
     public function testAll()
     {

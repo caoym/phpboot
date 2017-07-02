@@ -5,7 +5,7 @@ namespace  PhpBoot\Entity;
 use PhpBoot\Metas\PropertyMeta;
 use PhpBoot\Validator\Validator;
 
-class EntityBuilder
+class EntityBuilder implements BuilderInterface
 {
     public function __construct($className)
     {
@@ -14,7 +14,8 @@ class EntityBuilder
 
     public function build($data, $validate = true)
     {
-        $obj = new ($this->getClassName())();
+        $className = $this->getClassName();
+        $obj = new $className();
         $vld = new Validator();
         foreach ($this->properties as $p){
             if(!$p->isOptional){
@@ -32,9 +33,10 @@ class EntityBuilder
         );
         foreach ($this->properties as $p){
             if($p->builder && isset($properties[$p->name])){
-                $properties[$p->name] = $p->builder->build($properties[$p->name]);
+                $obj->{$p->name} = $p->builder->build($properties[$p->name]);
             }
         }
+        return $obj;
 
     }
 

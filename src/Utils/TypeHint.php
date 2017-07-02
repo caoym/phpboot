@@ -34,11 +34,7 @@ class TypeHint
             'bool',
             'int',
             'float',
-            'string',
-            'array',
-            'void',
-            'null',
-            'mixed'
+            'string'
         ]);
     }
 
@@ -56,9 +52,9 @@ class TypeHint
      * @return string|null
      */
     static function getArrayType($type){
-        self::isArray($type) or Verify::fail(new \InvalidArgumentException("$type is not array"));
+        self::isArray($type) or fail(new \InvalidArgumentException("$type is not array"));
         if($type == 'array') {
-            return null;
+            return 'mixed';
         }else{
             return substr($type,0,-2);
         }
