@@ -1,6 +1,10 @@
 <?php
 
 namespace PhpBoot\Metas;
+use PhpBoot\Entity\ArrayBuilder;
+use PhpBoot\Entity\BuilderInterface;
+use PhpBoot\Entity\EntityBuilder;
+use PhpBoot\Entity\ScalarTypeBuilder;
 
 /**
  * Class ParamMeta
@@ -12,15 +16,16 @@ class ParamMeta{
     /**
      * ParamMeta constructor.
      * @param string $name
-     * @param string $source 来源, 使用jsonpath描述 @see peekmo/jsonpath
+     * @param string $source
      * @param string $type
      * @param boolean $isOptional 是否可选, 如果可选, 则
      * @param mixed|null $default
      * @param boolean $isPassedByReference
      * @param string $validation
-     * @param string $doc
+     * @param string $description
+     * @param BuilderInterface|null $builder
      */
-    public function __construct($name, $source, $type, $isOptional ,$default, $isPassedByReference,$validation, $doc=""){
+    public function __construct($name, $source, $type, $isOptional ,$default, $isPassedByReference,$validation, $description="", $builder=null){
         $this->name = $name;
         $this->source = $source;
         $this->type = $type;
@@ -28,7 +33,8 @@ class ParamMeta{
         $this->isOptional = $isOptional;
         $this->isPassedByReference = $isPassedByReference;
         $this->validation = $validation;
-        $this->doc = $doc;
+        $this->description = $description;
+        $this->builder = $builder;
     }
     public $name;
     public $source;
@@ -38,4 +44,9 @@ class ParamMeta{
     public $doc;
     public $isPassedByReference;
     public $validation;
+    public $description;
+    /**
+     * @var BuilderInterface|null
+     */
+    public $builder;
 }

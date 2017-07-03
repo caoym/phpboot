@@ -28,7 +28,7 @@ class CheckableCache
      */
     public function set($name, $var, $ttl = 0, callable $expireCheck = null)
     {
-        $res = $this->impl->save($name, json_encode(array(
+        $res = $this->impl->save($name, serialize(array(
             $var,
             $ttl,
             $expireCheck,
@@ -49,7 +49,7 @@ class CheckableCache
         $expiredData = null;
         $res = $this->impl->fetch($name);
         if ($res !== null) {
-            list ($data, $ttl, $checker, $createdTime) = json_decode($res);
+            list ($data, $ttl, $checker, $createdTime) = unserialize($res);
             // 如果指定了checker, ttl代表每次检查的间隔时间, 0表示每次get都需要经过checker检查
             // 如果没有指定checker, ttl表示缓存过期时间, 为0表示永不过期
             if ($checker !== null) {

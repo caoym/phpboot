@@ -14,14 +14,25 @@ class EntityBuilder implements BuilderInterface
 
     public function build($data, $validate = true)
     {
+        is_array($data) or fail(new \InvalidArgumentException("array is required by param 0"));
         $className = $this->getClassName();
         $obj = new $className();
         $vld = new Validator();
         foreach ($this->properties as $p){
+            if($p->builder && isset($data[$p->name])){
+                $data[$p->name] = $p->builder->build($data[$p->name]);
+            }
             if(!$p->isOptional){
                 $vld->rule('required', $p->name);
             }
-            $vld->rule($p->validation, $p->name);
+            if($p->validation){
+                if(is_array($p->validation)){
+                    $vld->rule($p->validation[0], $p->name.'.'.$p->validation[1]);
+                }else{
+                    $vld->rule($p->validation, $p->name);
+                }
+
+            }
         }
         $vld->withData($data)->validate() or fail(
             new \InvalidArgumentException(
@@ -32,8 +43,8 @@ class EntityBuilder implements BuilderInterface
             )
         );
         foreach ($this->properties as $p){
-            if($p->builder && isset($properties[$p->name])){
-                $obj->{$p->name} = $p->builder->build($properties[$p->name]);
+            if(isset($data[$p->name])){
+                $obj->{$p->name} = $data[$p->name];
             }
         }
         return $obj;

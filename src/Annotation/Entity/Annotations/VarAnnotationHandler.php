@@ -28,27 +28,20 @@ class VarAnnotationHandler extends EntityAnnotationHandler
                 // TODO 判断$type是否匹配
                 $property->type = TypeHint::normalize($type, $this->builder->getClassName());
 
-                $class = $property->type;
-                $loops = 0;
-                while(TypeHint::isArray($class)){
-                    $class = TypeHint::getArrayType($class);
-                    $loops++;
-                }
-                if($class == 'mixed'){
-                    $builder = new MixedTypeBuilder();
-                }else if(!TypeHint::isScalarType($class)){
-                    class_exists($class) or fail(new AnnotationSyntaxException(
-                        "{$this->builder->getClassName()}::{$ann->parent->name} @{$ann->name} error, class $class not exist"
-                    ));
-                    $loader = new EntityMetaLoader();
-                    $builder = $loader->loadFromClass($class);
-                }else{
-                    $builder = new ScalarTypeBuilder($class);
-                }
-
-                while($loops--){
-                    $builder = new ArrayBuilder($builder);
-                }
+                $builder = ArrayBuilder::create($property->type, function($class)use($ann){
+                    if($class == 'mixed'){
+                        $builder = new MixedTypeBuilder();
+                    }else if(!TypeHint::isScalarType($class)){
+                        class_exists($class) or fail(new AnnotationSyntaxException(
+                            "{$this->builder->getClassName()}::{$ann->parent->name} @{$ann->name} error, class $class not exist"
+                        ));
+                        $loader = new EntityMetaLoader();
+                        $builder = $loader->loadFromClass($class);
+                    }else{
+                        $builder = new ScalarTypeBuilder($class);
+                    }
+                    return $builder;
+                });
                 $property->builder = $builder;
             }
         }else{

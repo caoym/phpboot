@@ -2,7 +2,10 @@
 
 namespace PhpBoot\Metas;
 
+use PhpBoot\Entity\ArrayBuilder;
+use PhpBoot\Entity\BuilderInterface;
 use PhpBoot\Entity\EntityBuilder;
+use PhpBoot\Entity\ScalarTypeBuilder;
 
 class PropertyMeta
 {
@@ -15,7 +18,7 @@ class PropertyMeta
      * @param string $validation
      * @param string $summary
      * @param string $description
-     * @param EntityBuilder $builder
+     * @param BuilderInterface|null $builder
      */
     public function __construct($name, $type=null, $isOptional=false,$default=null, $validation=null, $summary='', $description='', $builder = null){
         $this->name = $name;
@@ -29,13 +32,20 @@ class PropertyMeta
     }
 
     /**
-     * @var EntityBuilder
+     * @var BuilderInterface|null
      */
     public $builder;
     public $name;
     public $type;
     public $default;
     public $isOptional;
+    /**
+     * 如
+     * "in:0,1,2"
+     * [*.num, "in:0,1,2"]
+     *
+     * @var array|string
+     */
     public $validation;
     /**
      * @var string

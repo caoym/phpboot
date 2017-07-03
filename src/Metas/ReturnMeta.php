@@ -4,18 +4,18 @@ namespace PhhBoot\Metas;
 
 class ReturnMeta
 {
-    public function __construct($source, $type, $doc)
+    public function __construct($source, $type, $description)
     {
         $this->source = $source;
         $this->type = $type;
-        $this->doc = $doc;
+        $this->doc = $description;
     }
 
     /**
      * @var string
-     * 返回值来源, 使用jsonpath描述 @see peekmo/jsonpath
+     * 返回值来源,语法 http://jmespath.org/tutorial.html
      * 目前支持的返回值来源包括: return的返回值, &引用变量的输出, 常量
-     * 分别用$.return 和$.params, 和不带$前缀的文本
+     * 分别用return 和params, `常量`
      */
     public $source;
 
@@ -27,5 +27,5 @@ class ReturnMeta
     /**
      * @var string
      */
-    public $doc;
+    public $description;
 }

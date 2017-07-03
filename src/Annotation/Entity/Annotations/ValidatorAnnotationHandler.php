@@ -11,19 +11,22 @@ class ValidatorAnnotationHandler extends EntityAnnotationHandler
 {
     public function handle($ann)
     {
-        $params = new AnnotationParams($ann->description, 2);
+        $params = new AnnotationParams($ann->description, 3);
         if($params->count()){
-            $expr = $params->getParam(0);
-            //TODO 校验type类型
+
             $target = $ann->parent->name;
             $property = $this->builder->getProperty($target);
             $property or fail($this->builder->getClassName()." property $target not exist ");
+            if($params->count()>1){
+                $expr = [$params->getParam(0), $params->getParam(1)];
+            }else{
+                $expr = $params->getParam(0);
+            }
             $property->validation = $expr;
         }else{
             fail(new AnnotationSyntaxException(
                 "The annotation @{$ann->name} of {$this->builder->getClassName()}::{$ann->parent->name} require 1 param, 0 given"
             ));
         }
-
     }
 }

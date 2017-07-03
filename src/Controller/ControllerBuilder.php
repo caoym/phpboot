@@ -10,32 +10,14 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class ControllerBuilder
 {
-    public function __construct(Application $app, $className)
+    public function __construct($className)
     {
         $this->className = $className;
-        $rfl = new \ReflectionClass($className);
-        $this->fileName = $rfl->getFileName();
-    }
-
-    /**
-     * @return string
-     */
-    public function getDoc()
-    {
-        return $this->doc;
-    }
-
-    /**
-     * @param string $doc
-     */
-    public function setDoc($doc)
-    {
-        $this->doc = $doc;
     }
     /**
      * 添加路由
      * @param Route $route
-     * @param $actionName class method
+     * @param string $actionName class method
      * @return void
      */
     public function addRoute($actionName, Route $route){
@@ -87,15 +69,14 @@ class ControllerBuilder
      * @param Application $app
      */
     public function applyRoutes(Application $app){
-        $thiz = $this;
         foreach ($this->routes as $route){
             $app->addRoute(
                 $route->getMethod(),
                 rtrim($this->path, '/').'/'.ltrim($route->getUri(),'/'),
                 [
                     'middleware'=>$route->getMiddlewares(),
-                    function(Request $request)use($thiz, $app, $route){
-                        return $thiz->dispatchAction($app, $request, $route->getActionInvoker());
+                    function(Request $request)use($app, $route){
+                        return $this->dispatchAction($app, $request, $route->getActionInvoker());
                     }
                 ]
             );
@@ -136,6 +117,46 @@ class ControllerBuilder
     {
         return $this->fileName;
     }
+
+    /**
+     * @param string $fileName
+     */
+    public function setFileName($fileName)
+    {
+        $this->fileName = $fileName;
+    }
+
+    /**
+     * @param string $description
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSummary()
+    {
+        return $this->summary;
+    }
+
+    /**
+     * @param string $summary
+     */
+    public function setSummary($summary)
+    {
+        $this->summary = $summary;
+    }
     /**
      * @param Application $app
      * @return object return instance of $this->className
@@ -155,8 +176,14 @@ class ControllerBuilder
      */
     private $path;
 
+    /**
+     * @var string
+     */
     private $className;
 
+    /**
+     * @var mixed
+     */
     private $instance;
 
     /**
@@ -167,12 +194,14 @@ class ControllerBuilder
     /**
      * @var string
      */
-    private $doc = "";
+    private $description='';
+    /**
+     * @var string
+     */
+    private $summary='';
 
     /**
      * @var string
      */
     private $fileName;
-
-    private $app;
 }

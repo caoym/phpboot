@@ -52,7 +52,7 @@ class AnnotationReader implements \ArrayAccess
     {
         $rfl = new \ReflectionClass($className) or fail("load class $className failed");
         $fileName = $rfl->getFileName();
-        $key = str_replace('\\','.',self::class).md5($fileName);
+        $key = str_replace('\\','.',self::class).md5($fileName.$className);
         $oldData = null;
         $cache = new CheckableCache(new ApcuCache());
         $res = $cache->get('lock.'.$key, null, $oldData, false);

@@ -3,8 +3,14 @@
 namespace PhpBoot\Container;
 
 
+use PhpBoot\Annotation\Entity\EntityMetaLoader;
+use PhpBoot\Entity\ArrayBuilder;
+use PhpBoot\Entity\MixedTypeBuilder;
+use PhpBoot\Entity\ScalarTypeBuilder;
 use PhpBoot\Metas\ParamMeta;
+use PhpBoot\Utils\ArrayAdaptor;
 use PhpBoot\Utils\ObjectAccess;
+use PhpBoot\Utils\TypeHint;
 use PhpBoot\Validator\Validator;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -27,32 +33,40 @@ class RequestHandler
      */
     public function buildParams(Request $request, array &$params, array &$refbuf){
 
-        $vldData = [];
-        $acc = new ObjectAccess($request);
         $vld = new Validator();
-        foreach ($this->paramMetas as $meta){
-            $src = $meta->source;
-            if ($acc->has($src)){
-                if(!$meta->isPassedByReference){
-
+        $requestArray = new ArrayAdaptor($request);
+        $inputs = [];
+        foreach ($this->paramMetas as $k=>$meta){
+            if($meta->isPassedByReference){
+                // param PassedByReference is used to output
+                continue;
+            }
+            $source = \JmesPath\search($meta->source, $requestArray);
+            if ($source !== null){
+                if($meta->builder){
+                    $inputs[$meta->name] = $meta->builder->build($source);
                 }else{
-                    $value = $acc->get($src);
-                    $vldData[$meta->name] = $value;
+                    $inputs[$meta->name] = $source;
                 }
-                $vld->rule($meta->type, $meta->name, $meta->validation);
+                if($meta->validation){
+                    $vld->rule($meta->validation, $meta->name);
+                }
             }else{
-                $meta->isOptional or fail(new BadRequestHttpException("param $src is required"));
-                $vldData[$meta->name] = $meta->default;
+                $meta->isOptional or fail(new BadRequestHttpException("param $source is required"));
+                $inputs[$meta->name] = $meta->default;
             }
         }
+        $vld->withData($inputs)->validate() or fail(
+            new \InvalidArgumentException(
+                json_encode(
+                    $vld->errors(),
+                    JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
+                )
+            )
+        );
 
-        try{
-            $vldData = $vld->validate($vldData);
-        }catch (\Exception $e){
-            fail(new BadRequestHttpException($e->getMessage()), $e);
-        }
         $pos = 0;
-        foreach ($this->paramsMeta as $meta){
+        foreach ($this->paramMetas as $meta){
             if($meta->isPassedByReference){
                 $refbuf[$pos] = null;
                 $params[$pos] = &$refbuf[$pos];
@@ -151,6 +165,7 @@ class RequestHandler
         }
         return null;
     }
+
     /**
      * @var ParamMeta[]
      */
