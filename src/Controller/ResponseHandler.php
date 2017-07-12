@@ -1,6 +1,6 @@
 <?php
 
-namespace PhpBoot\Container;
+namespace PhpBoot\Controller;
 
 use PhhBoot\Metas\ReturnMeta;
 

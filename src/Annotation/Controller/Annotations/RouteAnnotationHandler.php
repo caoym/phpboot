@@ -1,6 +1,6 @@
 <?php
 
-namespace PhpBoot\Annotation\Annotations;
+namespace PhpBoot\Annotation\Controller\Annotations;
 
 
 use FastRoute\RouteParser\Std;
@@ -32,7 +32,7 @@ class RouteAnnotationHandler extends ControllerAnnotationHandler
     public function handle($ann)
     {
         $params = new AnnotationParams($ann->description, 3);
-        $params->count()>=2 or fail(new AnnotationSyntaxException("The annotation @{$ann->name} of {$this->builder->getClassName()}::{$ann->parent->name} require 2 params"));
+        $params->count()>=2 or fail(new AnnotationSyntaxException("The annotation @{$ann->name} of {$this->builder->getClassName()}::{$ann->parent->name} require 2 params, {$params->count()} given"));
 
         //TODO 错误判断: METHOD不支持, path不规范等
         $httpMethod = strtoupper($params->getParam(0));

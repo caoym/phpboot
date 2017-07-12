@@ -1,12 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: caoyangmin
- * Date: 16/11/9
- * Time: 上午10:49
- */
-
-namespace Once\Container;
+namespace Once\Controller;
 use Once\Exceptions\AnnotationSyntaxExceptions;
 use Once\Metas\ReturnMeta;
 use Once\Utils\ObjectAccess;

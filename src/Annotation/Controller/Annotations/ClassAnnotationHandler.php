@@ -1,6 +1,6 @@
 <?php
 
-namespace PhpBoot\Annotation\Annotations;
+namespace PhpBoot\Annotation\Controller\Annotations;
 
 
 use PhpBoot\Annotation\AnnotationBlock;

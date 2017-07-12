@@ -1,5 +1,7 @@
 <?php
-namespace PhpBoot\Container;
+namespace PhpBoot\Controller;
+
+use Symfony\Component\HttpFoundation\Request;
 
 class Route
 {
@@ -19,6 +21,19 @@ class Route
         $this->description = $description;
     }
 
+    /**
+     * @param callable $function
+     * @param Request $request
+     */
+    public function invoke(callable $function, Request $request)
+    {
+        $this->requestHandler or fail('undefined requestHandler');
+        $this->responseHandler or fail('undefined responseHandler');
+        $params = [];
+        $this->requestHandler->handle($request, $params);
+        $res = call_user_func_array($function, $params);
+        return $this->responseHandler->handle($res);
+    }
     /**
      * @return string
      */

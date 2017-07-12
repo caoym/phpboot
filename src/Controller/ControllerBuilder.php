@@ -1,6 +1,6 @@
 <?php
 
-namespace PhpBoot\Container;
+namespace PhpBoot\Controller;
 use PhpBoot\Application;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -51,16 +51,15 @@ class ControllerBuilder
         return null;
     }
 
-    /**
-     * @param Application $app
-     * @param Request $request
-     * @param ActionInvoker $action
-     * @return Response
-     */
-    public function dispatch(Application $app, Request $request){
-        $context = new Context($app, $request);
-        $action->invoke($this->getControllerInstance($app), $context);
-        return $context->getResponse();
+    static public function dispatch(
+        Application $app,
+        $className,
+        $actionName,
+        Route $route,
+        Request $request){
+
+        $ctrl = $app->make($className);
+        return $route->invoke($ctrl, $request);
     }
 
 
