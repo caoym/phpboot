@@ -1,7 +1,9 @@
 <?php
 
 namespace PhpBoot\Controller;
+use FastRoute\RouteCollector;
 use PhpBoot\Application;
+use PhpBoot\Utils\SerializableFunc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -20,7 +22,8 @@ class ControllerBuilder
      * @param string $actionName class method
      * @return void
      */
-    public function addRoute($actionName, Route $route){
+    public function addRoute($actionName, Route $route)
+    {
         !array_key_exists($actionName, $this->routes) or fail("repeated @route for {$this->className}::$actionName");
         $this->routes[$actionName] = $route;
     }
@@ -28,7 +31,8 @@ class ControllerBuilder
      * 获取路由列表
      * @return Route[]
      */
-    public function getRoutes(){
+    public function getRoutes()
+    {
         return $this->routes;
     }
 
@@ -36,7 +40,8 @@ class ControllerBuilder
      * 获取路由列表
      * @params Route[] $routes
      */
-    public function setRoutes($routes){
+    public function setRoutes($routes)
+    {
         $this->routes = $routes;
     }
     /**
@@ -44,7 +49,8 @@ class ControllerBuilder
      * @param $actionName
      * @return Route|null
      */
-    public function getRoute($actionName){
+    public function getRoute($actionName)
+    {
         if (array_key_exists($actionName, $this->routes)){
             return $this->routes[$actionName];
         }
@@ -52,35 +58,32 @@ class ControllerBuilder
     }
 
     static public function dispatch(
-        Application $app,
         $className,
         $actionName,
         Route $route,
-        Request $request){
-
+        Application $app,
+        Request $request)
+    {
         $ctrl = $app->make($className);
-        return $route->invoke($ctrl, $request);
+        return $route->invoke([$ctrl, $actionName], $request);
     }
 
 
     /**
      * 应用路由, 使路由生效
-     * @param Application $app
+     * @param RouteCollector $r
+     * @return RouteCollector
      */
-    public function applyRoutes(Application $app){
-        foreach ($this->routes as $route){
-            $app->addRoute(
+    public function build(RouteCollector $r)
+    {
+        foreach ($this->routes as $actionName=>$route){
+            $r->addRoute(
                 $route->getMethod(),
-                rtrim($this->path, '/').'/'.ltrim($route->getUri(),'/'),
-                [
-                    'middleware'=>$route->getMiddlewares(),
-                    function(Request $request)use($app, $route){
-                        return $this->dispatchAction($app, $request, $route->getActionInvoker());
-                    }
-                ]
+                rtrim($this->prefix, '/').'/'.ltrim($route->getUri(),'/'),
+                new SerializableFunc(self::class.'::dispatch', $this->className, $actionName, $route)
             );
         }
-
+        return $r;
     }
 
     /**
@@ -97,7 +100,7 @@ class ControllerBuilder
      */
     public function getPathPrefix()
     {
-        return $this->path;
+        return $this->prefix;
     }
 
     /**
@@ -106,7 +109,7 @@ class ControllerBuilder
      */
     public function setPathPrefix($prefix)
     {
-        $this->path = $prefix;
+        $this->prefix = $prefix;
     }
 
     /**
@@ -156,34 +159,17 @@ class ControllerBuilder
     {
         $this->summary = $summary;
     }
-    /**
-     * @param Application $app
-     * @return object return instance of $this->className
-     */
-    private function getControllerInstance(Application $app){
-        if($this->instance){
-            return $this->instance;
-        }
-        //inject dependency
-        $this->instance = $app->make($this->className);
-        return $this->instance;
-    }
 
     /**
      * @var string
      * the prefix path for all routes of the controller
      */
-    private $path;
+    private $prefix;
 
     /**
      * @var string
      */
     private $className;
-
-    /**
-     * @var mixed
-     */
-    private $instance;
 
     /**
      * @var Route[]

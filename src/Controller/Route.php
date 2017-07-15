@@ -2,6 +2,7 @@
 namespace PhpBoot\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class Route
 {
@@ -24,6 +25,7 @@ class Route
     /**
      * @param callable $function
      * @param Request $request
+     * @return Response
      */
     public function invoke(callable $function, Request $request)
     {
