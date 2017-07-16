@@ -28,7 +28,7 @@ class VarAnnotationHandler extends EntityAnnotationHandler
                 // TODO 判断$type是否匹配
                 $property->type = TypeHint::normalize($type, $this->builder->getClassName());
 
-                $builder = ArrayBuilder::create($property->type, function($class)use($ann){
+                $getBuilder = function($class)use($ann){
                     if($class == 'mixed'){
                         $builder = new MixedTypeBuilder();
                     }else if(!TypeHint::isScalarType($class)){
@@ -41,7 +41,13 @@ class VarAnnotationHandler extends EntityAnnotationHandler
                         $builder = new ScalarTypeBuilder($class);
                     }
                     return $builder;
-                });
+                };
+                if(!TypeHint::isArray($property->type)){
+                    $builder = $getBuilder($property->type);
+                }else{
+                    $builder = ArrayBuilder::create($property->type, $getBuilder );
+                }
+
                 $property->builder = $builder;
             }
         }else{

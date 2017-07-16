@@ -30,7 +30,6 @@ class Application
         return new $className;
     }
 
-
     /**
      * @param string $className
      * @return void
@@ -46,9 +45,9 @@ class Application
     /**
      * @return ControllerBuilder[]
      */
-    public function getRoutes()
+    public function getControllers()
     {
-        $key = 'routes:'.md5(serialize(array_keys($this->routeLoaders)));
+        $key = 'controllers:'.md5(serialize(array_keys($this->routeLoaders)));
         return LocalAutoLock::lock($key, 60, function (){
             $res = [];
             foreach ($this->routeLoaders as $loader){
@@ -63,7 +62,7 @@ class Application
      */
     private function getDispatcher()
     {
-        $key = 'routes:'.md5(serialize(array_keys($this->routeLoaders)));
+        $key = 'controllers:'.md5(serialize(array_keys($this->routeLoaders)));
         $expiredData = null;
         $data =  $this->cache->get($key, $this, $expiredData, false);
         if($data == $this){
