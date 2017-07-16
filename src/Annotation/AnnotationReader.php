@@ -55,24 +55,16 @@ class AnnotationReader implements \ArrayAccess
         $key = str_replace('\\','.',self::class).md5($fileName.$className);
         $oldData = null;
         $cache = new CheckableCache(new ApcuCache());
-        $res = $cache->get('lock.'.$key, null, $oldData, false);
+        $res = $cache->get('ann:'.$key, null, $oldData, false);
         if($res === null){
-            return LocalAutoLock::lock(
-                $key,
-                60,
-                function () use($key, $className, $fileName, $cache){
-                    try{
-                        $meta = self::readWithoutCache($className);
-                        $cache->set($key, $meta, 0, new FileExpiredChecker($fileName));
-                        return $meta;
-                    }catch (\Exception $e){
-                        $cache->set($key, $e->getMessage(), 0, new FileExpiredChecker($fileName));
-                        throw $e;
-                    }
-                },
-                function () use($oldData){
-                    return $oldData;
-                });
+            try{
+                $meta = self::readWithoutCache($className);
+                $cache->set($key, $meta, 0, new FileExpiredChecker($fileName));
+                return $meta;
+            }catch (\Exception $e){
+                $cache->set($key, $e->getMessage(), 0, new FileExpiredChecker($fileName));
+                throw $e;
+            }
         }elseif(is_string($res)){
             fail($res);
         }else{

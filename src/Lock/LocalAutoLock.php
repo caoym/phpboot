@@ -9,6 +9,7 @@ namespace PhpBoot\Lock;
 class LocalAutoLock
 {
     static function lock($key, $seconds, callable $success, callable $error=null){
+        $key = 'lock:'.$key;
         if(function_exists('apc_add')){
             $lock = new ApcLock();
         }else{

@@ -47,14 +47,14 @@ class ControllerBuilder
     /**
      * 获取指定名称的路由
      * @param $actionName
-     * @return Route|null
+     * @return Route|false
      */
     public function getRoute($actionName)
     {
         if (array_key_exists($actionName, $this->routes)){
             return $this->routes[$actionName];
         }
-        return null;
+        return false;
     }
 
     static public function dispatch(
@@ -69,22 +69,22 @@ class ControllerBuilder
     }
 
 
-    /**
-     * 应用路由, 使路由生效
-     * @param RouteCollector $r
-     * @return RouteCollector
-     */
-    public function build(RouteCollector $r)
-    {
-        foreach ($this->routes as $actionName=>$route){
-            $r->addRoute(
-                $route->getMethod(),
-                rtrim($this->prefix, '/').'/'.ltrim($route->getUri(),'/'),
-                new SerializableFunc(self::class.'::dispatch', $this->className, $actionName, $route)
-            );
-        }
-        return $r;
-    }
+//    /**
+//     * 应用路由, 使路由生效
+//     * @param RouteCollector $r
+//     * @return RouteCollector
+//     */
+//    public function build(RouteCollector $r)
+//    {
+//        foreach ($this->routes as $actionName=>$route){
+//            $r->addRoute(
+//                $route->getMethod(),
+//                $route->getUri(),
+//                new SerializableFunc(self::class.'::dispatch', $this->className, $actionName, $route)
+//            );
+//        }
+//        return $r;
+//    }
 
     /**
      * @return string

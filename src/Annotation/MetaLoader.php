@@ -44,23 +44,15 @@ abstract class MetaLoader
         $oldData = null;
         $res = $this->cache->get($key, null, $oldData, false);
         if($res === null){
-            return LocalAutoLock::lock(
-                $key,
-                60,
-                function () use($key, $className, $fileName){
-                    try{
-                        $meta = $this->loadFromClassWithoutCache($className);
-                        $this->cache->set($key, $meta, 0, new FileExpiredChecker($fileName));
-                        return $meta;
-                    }catch (\Exception $e){
-                        Logger::warning(__METHOD__.' failed with '.$e->getMessage());
-                        $this->cache->set($key, $e->getMessage(), 0, new FileExpiredChecker($fileName));
-                        throw $e;
-                    }
-                },
-                function () use($oldData){
-                    return $oldData;
-                });
+            try{
+                $meta = $this->loadFromClassWithoutCache($className);
+                $this->cache->set($key, $meta, 0, new FileExpiredChecker($fileName));
+                return $meta;
+            }catch (\Exception $e){
+                Logger::warning(__METHOD__.' failed with '.$e->getMessage());
+                $this->cache->set($key, $e->getMessage(), 0, new FileExpiredChecker($fileName));
+                throw $e;
+            }
         }elseif(is_string($res)){
             fail($res);
         }else{
