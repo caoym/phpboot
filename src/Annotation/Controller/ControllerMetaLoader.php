@@ -2,8 +2,9 @@
 
 namespace PhpBoot\Annotation\Controller;
 
-
 use PhpBoot\Annotation\Controller\Annotations\ClassAnnotationHandler;
+use PhpBoot\Annotation\controller\Annotations\ParamAnnotationHandler;
+use PhpBoot\Annotation\Controller\Annotations\PathAnnotationHandler;
 use PhpBoot\Annotation\Controller\Annotations\RouteAnnotationHandler;
 use PhpBoot\Annotation\MetaLoader;
 use PhpBoot\Controller\ControllerBuilder;
@@ -12,7 +13,9 @@ class ControllerMetaLoader extends MetaLoader
 {
     const DEFAULT_ANNOTATIONS=[
         [ClassAnnotationHandler::class, 'class'],
+        [PathAnnotationHandler::class, "class.children[?name=='path']"],
         [RouteAnnotationHandler::class, "methods.*.children[?name=='route'][]"],
+        [ParamAnnotationHandler::class, "methods.*.children[?name=='param'][]"],
     ];
 
     /**

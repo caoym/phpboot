@@ -1,8 +1,9 @@
 <?php
 
-namespace PhpBoot\Annotation;
+namespace PhpBoot\Annotation\Controller;
 
-use PhpBoot\Container\ControllerBuilder;
+use PhpBoot\Annotation\AnnotationHandler;
+use PhpBoot\Controller\ControllerBuilder;
 
 abstract class ControllerAnnotationHandler implements AnnotationHandler
 {

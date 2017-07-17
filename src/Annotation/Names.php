@@ -1,18 +1,18 @@
 <?php
 namespace PhpBoot\Annotation;
 
-if(!defined('\\PhpBoot\\Annotation\\VLD')){
-    define('VLD', 'vld');
+if(!defined('PHPBOOT_ANNOTATION_VLD')){
+    define('PHPBOOT_ANNOTATION_VLD', 'vld');
 }
-if(!defined('\\PhpBoot\\Annotation\\ROUTE')){
-    define('ROUTE', 'route');
+if(!defined('PHPBOOT_ANNOTATION_ROUTE')){
+    define('PHPBOOT_ANNOTATION_ROUTE', 'route');
 }
-if(!defined('\\PhpBoot\\Annotation\\PATH')){
-    define('PATH', 'path');
+if(!defined('PHPBOOT_ANNOTATION_PATH')){
+    define('PHPBOOT_ANNOTATION_PATH', 'path');
 }
 
 class Names{
-    const VLD = VLD;
-    const ROUTE = ROUTE;
-    const PATH = PATH;
+    const VLD = PHPBOOT_ANNOTATION_VLD;
+    const ROUTE = PHPBOOT_ANNOTATION_ROUTE;
+    const PATH = PHPBOOT_ANNOTATION_PATH;
 }

@@ -2,16 +2,15 @@
 
 namespace PhpBoot\Annotation\Controller\Annotations;
 
-
 use FastRoute\RouteParser\Std;
-use PhhBoot\Metas\ReturnMeta;
+use PhpBoot\Metas\ReturnMeta;
 use PhpBoot\Annotation\AnnotationBlock;
 use PhpBoot\Annotation\AnnotationTag;
-use PhpBoot\Annotation\ControllerAnnotationHandler;
+use PhpBoot\Annotation\Controller\ControllerAnnotationHandler;
 use PhpBoot\Annotation\Entity\EntityMetaLoader;
-use PhpBoot\Container\RequestHandler;
-use PhpBoot\Container\ResponseHandler;
-use PhpBoot\Container\Route;
+use PhpBoot\Controller\RequestHandler;
+use PhpBoot\Controller\ResponseHandler;
+use PhpBoot\Controller\Route;
 use PhpBoot\Entity\ArrayBuilder;
 use PhpBoot\Entity\MixedTypeBuilder;
 use PhpBoot\Entity\ScalarTypeBuilder;
@@ -19,12 +18,9 @@ use PhpBoot\Exceptions\AnnotationSyntaxException;
 use PhpBoot\Metas\ParamMeta;
 use PhpBoot\Utils\AnnotationParams;
 use PhpBoot\Utils\TypeHint;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 class RouteAnnotationHandler extends ControllerAnnotationHandler
 {
-
     /**
      * @param AnnotationBlock|AnnotationTag $ann
      * @return void
@@ -55,7 +51,7 @@ class RouteAnnotationHandler extends ControllerAnnotationHandler
         $routeParser = new Std();
         $info = $routeParser->parse($params->getParam(1)); //0.4和1.0返回值不同, 不兼容
         $routeParams = [];
-        foreach ($info as $i){
+        foreach ($info[0] as $i){
             if(is_array($i)){
                 $routeParams[$i[0]] = true;
             }
@@ -64,32 +60,30 @@ class RouteAnnotationHandler extends ControllerAnnotationHandler
         $paramsMeta = [];
         foreach ($methodParams as $param){
             $paramName = $param->getName();
-            $source = "request.request.$paramName";//默认情况参数来自input, input为post+get的数据
+            $source = "request.$paramName";
             if(array_key_exists($paramName, $routeParams)){ //参数来自路由
-                $source = "request.route.$paramName";
+                $source = "request.$paramName";
             }elseif($httpMethod == 'GET'){
-                $source = "request.query.$paramName"; //GET请求显示指定来自query string
+                $source = "request.$paramName"; //GET请求显示指定来自query string
             }
             $paramClass = $param->getClass();
             if($paramClass){
                 $paramClass = $paramClass->getName();
             }
+            $getBuilder = function($type){
+                if(!$type || $type == 'mixed'){
+                    return new MixedTypeBuilder();
+                }elseif (TypeHint::isScalarType($type)){
+                    return new ScalarTypeBuilder($type);
+                }else{
+                    $loader = new EntityMetaLoader();
+                    return $loader->loadFromClass($type);
+                }
+            };
             if(TypeHint::isArray($paramClass)){
-                $builder = ArrayBuilder::create($paramClass, function($type){
-                   if(!$type || $type == 'mixed'){
-                       return new MixedTypeBuilder();
-                   }elseif (TypeHint::isScalarType($type)){
-                       return new ScalarTypeBuilder($type);
-                   }else{
-                       $loader = new EntityMetaLoader();
-                       return $loader->loadFromClass($type);
-                   }
-                });
-            }elseif (TypeHint::isScalarType($paramClass)){
-                $builder = new ScalarTypeBuilder($paramClass);
+                $builder = ArrayBuilder::create($paramClass, $getBuilder);
             }else{
-                $loader = new EntityMetaLoader();
-                $builder = $loader->loadFromClass($paramClass);
+                $builder = $getBuilder($paramClass);
             }
             $paramsMeta[] = new ParamMeta($paramName,
                 $source,
@@ -98,7 +92,7 @@ class RouteAnnotationHandler extends ControllerAnnotationHandler
                 $param->isOptional()?$param->getDefaultValue():null,
                 $param->isPassedByReference(),
                 null,
-                $ann->description,
+                '',
                 $builder
             );
         }

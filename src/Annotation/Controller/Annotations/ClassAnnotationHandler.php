@@ -5,7 +5,7 @@ namespace PhpBoot\Annotation\Controller\Annotations;
 
 use PhpBoot\Annotation\AnnotationBlock;
 use PhpBoot\Annotation\AnnotationTag;
-use PhpBoot\Annotation\ControllerAnnotationHandler;
+use PhpBoot\Annotation\Controller\ControllerAnnotationHandler;
 
 class ClassAnnotationHandler extends ControllerAnnotationHandler
 {

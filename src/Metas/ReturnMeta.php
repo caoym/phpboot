@@ -1,6 +1,6 @@
 <?php
 
-namespace PhhBoot\Metas;
+namespace PhpBoot\Metas;
 
 class ReturnMeta
 {
@@ -8,7 +8,7 @@ class ReturnMeta
     {
         $this->source = $source;
         $this->type = $type;
-        $this->doc = $description;
+        $this->description = $description;
     }
 
     /**

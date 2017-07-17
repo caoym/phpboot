@@ -9,7 +9,6 @@ use PhpBoot\Entity\EntityBuilder;
 use PhpBoot\Entity\ScalarTypeBuilder;
 use PhpBoot\Metas\PropertyMeta;
 
-
 /**
  * Class LoadTest
  */

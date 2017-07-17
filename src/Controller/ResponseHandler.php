@@ -2,7 +2,7 @@
 
 namespace PhpBoot\Controller;
 
-use PhhBoot\Metas\ReturnMeta;
+use PhpBoot\Metas\ReturnMeta;
 
 class ResponseHandler
 {

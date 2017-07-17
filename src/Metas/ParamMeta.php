@@ -41,7 +41,6 @@ class ParamMeta{
     public $type;
     public $default;
     public $isOptional;
-    public $doc;
     public $isPassedByReference;
     public $validation;
     public $description;
