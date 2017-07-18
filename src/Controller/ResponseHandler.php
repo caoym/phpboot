@@ -3,6 +3,10 @@
 namespace PhpBoot\Controller;
 
 use PhpBoot\Metas\ReturnMeta;
+use PhpBoot\Utils\ArrayAdaptor;
+use PhpBoot\Utils\ArrayHelper;
+use PhpBoot\Utils\ObjectAccess;
+use Symfony\Component\HttpFoundation\Response;
 
 class ResponseHandler
 {
@@ -11,7 +15,8 @@ class ResponseHandler
      * @param $target
      * @param ReturnMeta $src
      */
-    public function setMapping($target, ReturnMeta $src){
+    public function setMapping($target, ReturnMeta $src)
+    {
         $this->mappings[$target] = $src;
     }
 
@@ -19,7 +24,8 @@ class ResponseHandler
      * @param $target
      * @return ReturnMeta
      */
-    public function eraseMapping($target){
+    public function eraseMapping($target)
+    {
         $ori = $this->mappings[$target];
         unset($this->mappings[$target]);
         return $ori;
@@ -29,7 +35,8 @@ class ResponseHandler
      * @param $target
      * @return ReturnMeta
      */
-    public function getMapping($target){
+    public function getMapping($target)
+    {
         if(!array_key_exists($target, $this->mappings)){
             return null;
         }
@@ -37,53 +44,29 @@ class ResponseHandler
     }
 
 
-    /**
-     * @param Context context
-     * @param mixed|null $return
-     * @param array $params
-     */
-    public function handle(Context $context, $return, $params){
+    public function handle($return, $params)
+    {
         $input = [
             'return'=>$return,
             'params'=>$params
         ];
 
-        $mapings = $this->getMappings();
-        if($return instanceof Response){ //直接返回Resonse时, 对return不再做映射
-            $context->setResponse($return);
-            return;
-            //$mapings = array_filter($mapings, function($v){return $v->source != '$.return';});
+        $mappings = $this->getMappings();
+        if($return instanceof Response){ //直接返回Response时, 对return不再做映射
+            return $return;
         }
-        $output = [];
-        $pOutput = new ObjectAccess($output);
-        $pInput = new ObjectAccess($input);
 
-        foreach($mapings as $key=>$map){
-            if(substr($map->source,0,2) == '$.'){
-                //TODO: 转json
-                $pOutput->set($key, $pInput->get($map->source));
-            }else{
-                $pOutput->set($key, $map->source);
+        $response = new Response();
+        $output = new ArrayAdaptor($response);
+
+        foreach($mappings as $key=>$map){
+            $val = \JmesPath\search($map->source, $input);
+            if(substr($key, 0, strlen('response.')) == 'response.'){
+                $key = substr($key, strlen('response.'));
             }
-
+            ArrayHelper::set($output, $key, $val);
         }
-        if (count($output) == 0){
-            return;
-        }
-        array_has($output, 'response') or Verify::fail(
-            new AnnotationSyntaxExceptions("$.{$output[0]} is invalid for http output"));
-
-        foreach ($output['response'] as $k=>$v){
-            if ($k == 'content'){
-                $context->getResponse()->setContent($v);
-            }elseif ($k == 'status'){
-                $context->getResponse()->setStatusCode($v);
-            }else{
-                //TODO * 支持输出header, cookie
-                Verify::fail(
-                    new AnnotationSyntaxExceptions("$.response.$k is invalid for http output"));
-            }
-        }
+        return $response;
     }
     /**
      * @return ReturnMeta[]

@@ -52,7 +52,7 @@ class VarAnnotationHandler extends EntityAnnotationHandler
             }
         }else{
             fail(new AnnotationSyntaxException(
-                "The annotation @{$ann->name} of {$this->builder->getClassName()}::{$ann->parent->name} require 1 param, 0 given"
+                "The annotation \"@{$ann->name} {$ann->description}\" of {$this->builder->getClassName()}::{$ann->parent->name} require 1 param, 0 given"
             ));
         }
 

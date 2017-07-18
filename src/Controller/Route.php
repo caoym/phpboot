@@ -11,6 +11,8 @@ class Route
         $uri='',
         RequestHandler $requestHandler=null,
         ResponseHandler $responseHandler=null,
+        ExceptionHandler $exceptionHandler=null,
+        $hooks=[],
         $summary = '',
         $description = '')
     {
@@ -18,6 +20,8 @@ class Route
         $this->uri = $uri;
         $this->requestHandler = $requestHandler;
         $this->responseHandler = $responseHandler;
+        $this->exceptionHandler = $exceptionHandler;
+        $this->hooks = $hooks;
         $this->summary = $summary;
         $this->description = $description;
     }
@@ -31,10 +35,25 @@ class Route
     {
         $this->requestHandler or fail('undefined requestHandler');
         $this->responseHandler or fail('undefined responseHandler');
-        $params = [];
-        $this->requestHandler->handle($request, $params);
-        $res = call_user_func_array($function, $params);
-        return $this->responseHandler->handle($res);
+        $this->exceptionHandler or fail('undefined exceptionHandler');
+
+        $res = $this->exceptionHandler->handler(function()use($request, $function){
+            $next = function($request)use($function){
+                $params = [];
+                $this->requestHandler->handle($request, $params);
+                $res = call_user_func_array($function, $params);
+                return $this->responseHandler->handle($res, $params);
+            };
+            foreach (array_reverse($this->hooks) as $hookName){
+                $next = function($request)use($hookName, $next){
+                    $hook = new $hookName();
+                    /**@var $hook HookInterface*/
+                    return $hook->handle($request, $next);
+                };
+            }
+            return $next($request);
+        });
+        return $res;
     }
     /**
      * @return string
@@ -133,6 +152,42 @@ class Route
     }
 
     /**
+     * @return ExceptionHandler
+     */
+    public function getExceptionHandler()
+    {
+        return $this->exceptionHandler;
+    }
+
+    /**
+     * @param ExceptionHandler $exceptionHandler
+     */
+    public function setExceptionHandler($exceptionHandler)
+    {
+        $this->exceptionHandler = $exceptionHandler;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getHooks()
+    {
+        return $this->hooks;
+    }
+
+    /**
+     * @param string[] $hooks
+     */
+    public function setHooks($hooks)
+    {
+        $this->hooks = $hooks;
+    }
+
+    public function addHook($className)
+    {
+        $this->hooks[] = $className;
+    }
+    /**
      * @var RequestHandler
      */
     private $requestHandler;
@@ -141,6 +196,11 @@ class Route
      * @var ResponseHandler
      */
     private $responseHandler;
+
+    /**
+     * @var ExceptionHandler
+     */
+    private $exceptionHandler;
 
     /**
      * http method
@@ -162,5 +222,11 @@ class Route
      * @var string
      */
     private $description='';
+
+    /**
+     * hook class names
+     * @var string[]
+     */
+    private $hooks=[];
 
 }

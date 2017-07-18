@@ -3,21 +3,19 @@
 namespace PhpBoot\Annotation\Controller\Annotations;
 
 use FastRoute\RouteParser\Std;
+use PhpBoot\Controller\ExceptionHandler;
+use PhpBoot\Entity\ContainerFactory;
 use PhpBoot\Metas\ReturnMeta;
 use PhpBoot\Annotation\AnnotationBlock;
 use PhpBoot\Annotation\AnnotationTag;
 use PhpBoot\Annotation\Controller\ControllerAnnotationHandler;
-use PhpBoot\Annotation\Entity\EntityMetaLoader;
 use PhpBoot\Controller\RequestHandler;
 use PhpBoot\Controller\ResponseHandler;
 use PhpBoot\Controller\Route;
-use PhpBoot\Entity\ArrayBuilder;
 use PhpBoot\Entity\MixedTypeBuilder;
-use PhpBoot\Entity\ScalarTypeBuilder;
 use PhpBoot\Exceptions\AnnotationSyntaxException;
 use PhpBoot\Metas\ParamMeta;
 use PhpBoot\Utils\AnnotationParams;
-use PhpBoot\Utils\TypeHint;
 
 class RouteAnnotationHandler extends ControllerAnnotationHandler
 {
@@ -28,7 +26,7 @@ class RouteAnnotationHandler extends ControllerAnnotationHandler
     public function handle($ann)
     {
         $params = new AnnotationParams($ann->description, 3);
-        $params->count()>=2 or fail(new AnnotationSyntaxException("The annotation @{$ann->name} of {$this->builder->getClassName()}::{$ann->parent->name} require 2 params, {$params->count()} given"));
+        $params->count()>=2 or fail(new AnnotationSyntaxException("The annotation \"@{$ann->name} {$ann->description}\" of {$this->builder->getClassName()}::{$ann->parent->name} require 2 params, {$params->count()} given"));
 
         //TODO 错误判断: METHOD不支持, path不规范等
         $httpMethod = strtoupper($params->getParam(0));
@@ -70,21 +68,7 @@ class RouteAnnotationHandler extends ControllerAnnotationHandler
             if($paramClass){
                 $paramClass = $paramClass->getName();
             }
-            $getBuilder = function($type){
-                if(!$type || $type == 'mixed'){
-                    return new MixedTypeBuilder();
-                }elseif (TypeHint::isScalarType($type)){
-                    return new ScalarTypeBuilder($type);
-                }else{
-                    $loader = new EntityMetaLoader();
-                    return $loader->loadFromClass($type);
-                }
-            };
-            if(TypeHint::isArray($paramClass)){
-                $builder = ArrayBuilder::create($paramClass, $getBuilder);
-            }else{
-                $builder = $getBuilder($paramClass);
-            }
+            $builder = ContainerFactory::create($paramClass);
             $paramsMeta[] = new ParamMeta($paramName,
                 $source,
                 $paramClass?:'mixed',
@@ -99,13 +83,15 @@ class RouteAnnotationHandler extends ControllerAnnotationHandler
 
         $requestHandler = new RequestHandler($paramsMeta);
         $responseHandler = new ResponseHandler();
-        $responseHandler->setMapping('response.content', new ReturnMeta('return','mixed',''));
+        $exceptionHandler = new ExceptionHandler();
+        $responseHandler->setMapping('response.content', new ReturnMeta('return','mixed','', new MixedTypeBuilder()));
 
         $route = new Route(
             $httpMethod,
             $params->getParam(1),
             $requestHandler,
             $responseHandler,
+            $exceptionHandler,
             $ann->parent->summary,
             $ann->parent->description
         );

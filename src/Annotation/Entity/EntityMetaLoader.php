@@ -4,7 +4,7 @@ namespace PhpBoot\Annotation\Entity;
 
 use PhpBoot\Annotation\Entity\Annotations\ClassAnnotationHandler;
 use PhpBoot\Annotation\Entity\Annotations\PropertyAnnotationHandler;
-use PhpBoot\Annotation\Entity\Annotations\ValidatorAnnotationHandler;
+use PhpBoot\Annotation\Entity\Annotations\ValidateAnnotationHandler;
 use PhpBoot\Annotation\Entity\Annotations\VarAnnotationHandler;
 use PhpBoot\Annotation\MetaLoader;
 use PhpBoot\Annotation\Names;
@@ -16,7 +16,7 @@ class EntityMetaLoader extends MetaLoader
         [ClassAnnotationHandler::class, 'class'],
         [PropertyAnnotationHandler::class, 'properties'],
         [VarAnnotationHandler::class, "properties.*.children[?name=='var'][]"],
-        [ValidatorAnnotationHandler::class, "properties.*.children[?name=='".Names::VLD."'][]"],
+        [ValidateAnnotationHandler::class, "properties.*.children[?name=='".Names::VALIDATE."'][]"],
     ];
 
     /**

@@ -2,20 +2,31 @@
 
 namespace PhpBoot\Annotation\Controller;
 
+use PhpBoot\Annotation\Controller\Annotations\BindAnnotationHandler;
 use PhpBoot\Annotation\Controller\Annotations\ClassAnnotationHandler;
+use PhpBoot\Annotation\Controller\Annotations\HookAnnotationHandler;
 use PhpBoot\Annotation\controller\Annotations\ParamAnnotationHandler;
 use PhpBoot\Annotation\Controller\Annotations\PathAnnotationHandler;
+use PhpBoot\Annotation\Controller\Annotations\ReturnAnnotationHandler;
 use PhpBoot\Annotation\Controller\Annotations\RouteAnnotationHandler;
+use PhpBoot\Annotation\Controller\Annotations\ThrowsAnnotationHandler;
+use PhpBoot\Annotation\Controller\Annotations\ValidateAnnotationHandler;
 use PhpBoot\Annotation\MetaLoader;
+use PhpBoot\Annotation\Names;
 use PhpBoot\Controller\ControllerBuilder;
 
 class ControllerMetaLoader extends MetaLoader
 {
     const DEFAULT_ANNOTATIONS=[
         [ClassAnnotationHandler::class, 'class'],
-        [PathAnnotationHandler::class, "class.children[?name=='path']"],
-        [RouteAnnotationHandler::class, "methods.*.children[?name=='route'][]"],
+        [PathAnnotationHandler::class, "class.children[?name=='".Names::PATH."']"],
+        [RouteAnnotationHandler::class, "methods.*.children[?name=='".Names::ROUTE."'][]"],
         [ParamAnnotationHandler::class, "methods.*.children[?name=='param'][]"],
+        [ReturnAnnotationHandler::class, "methods.*.children[?name=='return'][]"],
+        [BindAnnotationHandler::class, "methods.*.children[].children[?name=='".Names::BIND."'][]"],
+        [ThrowsAnnotationHandler::class, "methods.*.children[?name=='throws'][]"],
+        [ValidateAnnotationHandler::class, "methods.*.children[].children[?name=='".Names::VALIDATE."'][]"],
+        [HookAnnotationHandler::class, "methods.*.children[?name=='".Names::HOOK."'][]"],
     ];
 
     /**

@@ -22,7 +22,7 @@ class LoadTest{
 
     /**
      * @var string
-     * @vld email
+     * @v email
      */
     public $property2='default0';
 
@@ -33,7 +33,7 @@ class LoadTest{
 class BuildScalarTypeTest{
     /**
      * @var int
-     * @vld max:101
+     * @v max:101
      */
     public $property1;
 }
@@ -41,7 +41,7 @@ class BuildScalarTypeTest{
 class BuildScalarTypeArrayTest{
     /**
      * @var int[]
-     * @vld max:101 *
+     * @v max:101 *
      */
     public $property1;
 }

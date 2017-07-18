@@ -7,7 +7,7 @@ use PhpBoot\Annotation\Entity\EntityAnnotationHandler;
 use PhpBoot\Exceptions\AnnotationSyntaxException;
 use PhpBoot\Utils\AnnotationParams;
 
-class ValidatorAnnotationHandler extends EntityAnnotationHandler
+class ValidateAnnotationHandler extends EntityAnnotationHandler
 {
     public function handle($ann)
     {
@@ -25,7 +25,7 @@ class ValidatorAnnotationHandler extends EntityAnnotationHandler
             $property->validation = $expr;
         }else{
             fail(new AnnotationSyntaxException(
-                "The annotation @{$ann->name} of {$this->builder->getClassName()}::{$ann->parent->name} require 1 param, 0 given"
+                "The annotation \"@{$ann->name} {$ann->description}\" of {$this->builder->getClassName()}::{$ann->parent->name} require 1 param, 0 given"
             ));
         }
     }

@@ -20,7 +20,7 @@ class TestClass{
      * method summary
      *
      * method description
-     * 
+     *
      * @methodAnn1 method Ann 1
      */
     public function method1(){
