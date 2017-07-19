@@ -15,8 +15,8 @@ class ValidateAnnotationHandler extends EntityAnnotationHandler
         if($params->count()){
 
             $target = $ann->parent->name;
-            $property = $this->builder->getProperty($target);
-            $property or fail($this->builder->getClassName()." property $target not exist ");
+            $property = $this->container->getProperty($target);
+            $property or fail($this->container->getClassName()." property $target not exist ");
             if($params->count()>1){
                 $expr = [$params->getParam(0), $params->getParam(1)];
             }else{
@@ -25,7 +25,7 @@ class ValidateAnnotationHandler extends EntityAnnotationHandler
             $property->validation = $expr;
         }else{
             fail(new AnnotationSyntaxException(
-                "The annotation \"@{$ann->name} {$ann->description}\" of {$this->builder->getClassName()}::{$ann->parent->name} require 1 param, 0 given"
+                "The annotation \"@{$ann->name} {$ann->description}\" of {$this->container->getClassName()}::{$ann->parent->name} require 1 param, 0 given"
             ));
         }
     }

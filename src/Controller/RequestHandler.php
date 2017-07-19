@@ -11,7 +11,6 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 class RequestHandler
 {
     /**
-     * ParamsBuilder constructor.
      * @param ParamMeta[] $paramMates
      */
     public function __construct(array $paramMates){
@@ -35,8 +34,8 @@ class RequestHandler
             }
             $source = \JmesPath\search($meta->source, $requestArray);
             if ($source !== null){
-                if($meta->builder){
-                    $inputs[$meta->name] = $meta->builder->build($source);
+                if($meta->container){
+                    $inputs[$meta->name] = $meta->container->make($source);
                 }else{
                     $inputs[$meta->name] = $source;
                 }

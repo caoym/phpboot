@@ -20,19 +20,19 @@ class ThrowsAnnotationHandler extends ControllerAnnotationHandler
     public function handle($ann)
     {
         if(!$ann->parent){
-            Logger::debug("The annotation \"@{$ann->name} {$ann->description}\" of {$this->builder->getClassName()} should be used with parent route");
+            Logger::debug("The annotation \"@{$ann->name} {$ann->description}\" of {$this->container->getClassName()} should be used with parent route");
             return;
         }
         $target = $ann->parent->name;
-        $route = $this->builder->getRoute($target);
+        $route = $this->container->getRoute($target);
         if(!$route){
-            Logger::debug("The annotation \"@{$ann->name} {$ann->description}\" of {$this->builder->getClassName()}::$target should be used with parent route");
+            Logger::debug("The annotation \"@{$ann->name} {$ann->description}\" of {$this->container->getClassName()}::$target should be used with parent route");
             return ;
         }
         $params = new AnnotationParams($ann->description, 2);
-        count($params)>0 or fail(new AnnotationSyntaxException("The annotation \"@{$ann->name} {$ann->description}\" of {$this->builder->getClassName()}::$target require at least one param, {$params->count()} given"));
+        count($params)>0 or fail(new AnnotationSyntaxException("The annotation \"@{$ann->name} {$ann->description}\" of {$this->container->getClassName()}::$target require at least one param, {$params->count()} given"));
 
-        $type = TypeHint::normalize($params[0], $this->builder->getClassName()); // TODO 缺少类型时忽略错误
+        $type = TypeHint::normalize($params[0], $this->container->getClassName()); // TODO 缺少类型时忽略错误
         $doc = $params->getRawParam(1, '');
 
         $route->getExceptionHandler()->addExceptions($type, $doc);

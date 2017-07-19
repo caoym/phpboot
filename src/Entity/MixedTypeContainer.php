@@ -2,15 +2,14 @@
 
 namespace PhpBoot\Entity;
 
-class MixedTypeBuilder implements BuilderInterface
+class MixedTypeContainer implements ContainerInterface
 {
-
     /**
      * @param mixed $data
      * @param bool $validate
      * @return mixed
      */
-    public function build($data, $validate = true)
+    public function make($data, $validate = true)
     {
         return $data;
     }

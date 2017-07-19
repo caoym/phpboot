@@ -5,19 +5,19 @@ namespace PhpBoot\Annotation\Entity;
 use PhpBoot\Annotation\AnnotationBlock;
 use PhpBoot\Annotation\AnnotationHandler;
 use PhpBoot\Annotation\AnnotationTag;
-use PhpBoot\Entity\EntityBuilder;
+use PhpBoot\Entity\EntityContainer;
 
 abstract class EntityAnnotationHandler implements AnnotationHandler
 {
-    public function __construct(EntityBuilder $builder, EntityAnnotationHandler $parent=null){
-        $this->builder = $builder;
+    public function __construct(EntityContainer $container, EntityAnnotationHandler $parent=null){
+        $this->container = $container;
         $this->parent = $parent;
     }
 
     /**
-     * @var EntityBuilder
+     * @var EntityContainer
      */
-    protected $builder;
+    protected $container;
 
     /**
      * @var EntityAnnotationHandler

@@ -6,9 +6,10 @@ use PhpBoot\Annotation\AnnotationBlock;
 use PhpBoot\Annotation\AnnotationTag;
 use PhpBoot\Annotation\Controller\ControllerAnnotationHandler;
 use PhpBoot\Annotation\Entity\EntityMetaLoader;
-use PhpBoot\Entity\ArrayBuilder;
-use PhpBoot\Entity\MixedTypeBuilder;
-use PhpBoot\Entity\ScalarTypeBuilder;
+use PhpBoot\Entity\ArrayContainer;
+use PhpBoot\Entity\ContainerFactory;
+use PhpBoot\Entity\MixedTypeContainer;
+use PhpBoot\Entity\ScalarTypeContainer;
 use PhpBoot\Exceptions\AnnotationSyntaxException;
 use PhpBoot\Utils\AnnotationParams;
 use PhpBoot\Utils\Logger;
@@ -46,16 +47,16 @@ class ParamAnnotationHandler extends ControllerAnnotationHandler
     public function handle($ann)
     {
         if(!$ann->parent){
-            Logger::debug("The annotation \"@{$ann->name} {$ann->description}\" of {$this->builder->getClassName()} should be used with parent route");
+            Logger::debug("The annotation \"@{$ann->name} {$ann->description}\" of {$this->container->getClassName()} should be used with parent route");
             return;
         }
         $target = $ann->parent->name;
-        $route = $this->builder->getRoute($target);
+        $route = $this->container->getRoute($target);
         if(!$route){
-            Logger::debug("The annotation \"@{$ann->name} {$ann->description}\" of {$this->builder->getClassName()}::$target should be used with parent route");
+            Logger::debug("The annotation \"@{$ann->name} {$ann->description}\" of {$this->container->getClassName()}::$target should be used with parent route");
             return ;
         }
-        $className = $this->builder->getClassName();
+        $className = $this->container->getClassName();
 
         list($paramType, $paramName, $paramDoc) = self::getParamInfo($ann->description);
 
@@ -63,24 +64,9 @@ class ParamAnnotationHandler extends ControllerAnnotationHandler
         $paramMeta or fail(new AnnotationSyntaxException("$className::$target param $paramName not exist "));
         //TODO 检测声明的类型和注释的类型是否匹配
         if($paramType){
-            $paramMeta->type = TypeHint::normalize($paramType, $className)
-            or fail(new AnnotationSyntaxException("{$this->builder->getClassName()}::{$ann->parent->name} @{$ann->name} syntax error, param $paramName unknown type:$paramType "));
-            $getBuilder = function($type){
-                if(!$type || $type == 'mixed'){
-                    return new MixedTypeBuilder();
-                }elseif (TypeHint::isScalarType($type)){
-                    return new ScalarTypeBuilder($type);
-                }else{
-                    $loader = new EntityMetaLoader();
-                    return $loader->loadFromClass($type);
-                }
-            };
-            if(TypeHint::isArray($paramMeta->type)){
-                $builder = ArrayBuilder::create($paramMeta->type, $getBuilder);
-            }else{
-                $builder = $getBuilder($paramMeta->type);
-            }
-            $paramMeta->builder = $builder;
+            $paramMeta->type = TypeHint::normalize($paramType, $className);//or fail(new AnnotationSyntaxException("{$this->container->getClassName()}::{$ann->parent->name} @{$ann->name} syntax error, param $paramName unknown type:$paramType "));
+            $container = ContainerFactory::create($paramMeta->type);
+            $paramMeta->container = $container;
         }
         $paramMeta->description = $paramDoc;
     }

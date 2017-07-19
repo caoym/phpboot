@@ -18,6 +18,6 @@ class PathAnnotationHandler extends ControllerAnnotationHandler
     public function handle($ann)
     {
         $params = new AnnotationParams($ann->description, 2);
-        $this->builder->setPathPrefix($params->getParam(0, ''));
+        $this->container->setPathPrefix($params->getParam(0, ''));
     }
 }

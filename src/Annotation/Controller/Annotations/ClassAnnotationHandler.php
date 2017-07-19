@@ -15,11 +15,11 @@ class ClassAnnotationHandler extends ControllerAnnotationHandler
      */
     public function handle($ann)
     {
-        $ref = new \ReflectionClass($this->builder->getClassName());
-        $this->builder->getClassName();
+        $ref = new \ReflectionClass($this->container->getClassName());
+        $this->container->getClassName();
 
-        $this->builder->setDescription($ann->description);
-        $this->builder->setSummary($ann->summary);
-        $this->builder->setFileName($ref->getFileName());
+        $this->container->setDescription($ann->description);
+        $this->container->setSummary($ann->summary);
+        $this->container->setFileName($ref->getFileName());
     }
 }

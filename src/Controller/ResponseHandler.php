@@ -5,7 +5,7 @@ namespace PhpBoot\Controller;
 use PhpBoot\Metas\ReturnMeta;
 use PhpBoot\Utils\ArrayAdaptor;
 use PhpBoot\Utils\ArrayHelper;
-use PhpBoot\Utils\ObjectAccess;
+
 use Symfony\Component\HttpFoundation\Response;
 
 class ResponseHandler

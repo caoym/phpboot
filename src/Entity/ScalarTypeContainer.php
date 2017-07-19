@@ -5,7 +5,7 @@ namespace PhpBoot\Entity;
 use PhpBoot\Utils\TypeCast;
 use PhpBoot\Utils\TypeHint;
 
-class ScalarTypeBuilder implements BuilderInterface
+class ScalarTypeContainer implements ContainerInterface
 {
     public function __construct($type)
     {
@@ -13,7 +13,7 @@ class ScalarTypeBuilder implements BuilderInterface
         !$type || TypeHint::isScalarType($type)  or fail(new \InvalidArgumentException("$type is not scalar type"));
     }
 
-    public function build($data, $validate = true){
+    public function make($data, $validate = true){
         return TypeCast::cast($data, $this->type, $validate);
     }
     private $type;

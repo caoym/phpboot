@@ -18,18 +18,18 @@ class ValidateAnnotationHandler extends ControllerAnnotationHandler
     public function handle($ann)
     {
         if(!$ann->parent || !$ann->parent->parent){
-            Logger::debug("The annotation \"@{$ann->name} {$ann->description}\" of {$this->builder->getClassName()} should be used with parent parent");
+            Logger::debug("The annotation \"@{$ann->name} {$ann->description}\" of {$this->container->getClassName()} should be used with parent parent");
             return;
         }
         $target = $ann->parent->parent->name;
-        $route = $this->builder->getRoute($target);
+        $route = $this->container->getRoute($target);
         if(!$route){
-            Logger::debug("The annotation \"@{$ann->name} {$ann->description}\" of {$this->builder->getClassName()}::$target should be used with parent parent");
+            Logger::debug("The annotation \"@{$ann->name} {$ann->description}\" of {$this->container->getClassName()}::$target should be used with parent parent");
             return ;
         }
         $params = new AnnotationParams($ann->description, 2);
 
-        count($params)>0 or fail(new AnnotationSyntaxException("The annotation \"@{$ann->name} {$ann->description}\" of {$this->builder->getClassName()}::$target require 1 param, {$params->count()} given"));
+        count($params)>0 or fail(new AnnotationSyntaxException("The annotation \"@{$ann->name} {$ann->description}\" of {$this->container->getClassName()}::$target require 1 param, {$params->count()} given"));
 
         if($ann->parent->name == 'param'){
             list($paramType, $paramName, $paramDoc) = ParamAnnotationHandler::getParamInfo($ann->parent->description);
@@ -43,6 +43,6 @@ class ValidateAnnotationHandler extends ControllerAnnotationHandler
 
             return;
         }
-        Logger::debug("The annotation \"@{$ann->name} {$ann->description}\" of {$this->builder->getClassName()}::$target should be used with parent parent");
+        Logger::debug("The annotation \"@{$ann->name} {$ann->description}\" of {$this->container->getClassName()}::$target should be used with parent parent");
     }
 }

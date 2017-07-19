@@ -46,11 +46,11 @@ abstract class MetaLoader
         if($res === null){
             try{
                 $meta = $this->loadFromClassWithoutCache($className);
-                $this->cache->set($key, $meta, 0, new FileExpiredChecker($fileName));
+                $this->cache->set($key, $meta, 0, $fileName?new FileExpiredChecker($fileName):null);
                 return $meta;
             }catch (\Exception $e){
                 Logger::warning(__METHOD__.' failed with '.$e->getMessage());
-                $this->cache->set($key, $e->getMessage(), 0, new FileExpiredChecker($fileName));
+                $this->cache->set($key, $e->getMessage(), 0, $fileName?new FileExpiredChecker($fileName):null);
                 throw $e;
             }
         }elseif(is_string($res)){
@@ -64,7 +64,7 @@ abstract class MetaLoader
      * @param string $className
      * @return object
      */
-    protected abstract function createBuilder($className);
+    protected abstract function createContainer($className);
 
     /**
      * @param $className
@@ -72,12 +72,12 @@ abstract class MetaLoader
      */
     public function loadFromClassWithoutCache($className)
     {
-        $builder = $this->createBuilder($className);
+        $container = $this->createContainer($className);
         $anns = AnnotationReader::read($className);
         foreach ($this->annotations as $i){
             list($class, $target) = $i;
 
-            $handler = new $class($builder);
+            $handler = new $class($container);
             /** @var $handler AnnotationHandler*/
             $found = \JmesPath\search($target, $anns);
             if(is_array($found)){
@@ -88,49 +88,7 @@ abstract class MetaLoader
                 $handler->handle($found);
             }
         }
-        return $builder;
-    }
-
-    /**
-     * @param mixed $userData
-     * @param string $type
-     * @param AnnotationHandler|null $parent
-     * @return AnnotationHandler|null
-     */
-    public function getAnnotationHandler($userData, $type, $parent=null)
-    {
-        $acc = new ObjectAccess($this->annotations);
-        $class = $acc->get($type);
-        if($class){
-            class_exists($class) or fail("Annotation Handler class $class not exist");
-            return new $class($userData, $parent);
-        }
-        return null;
-    }
-    private function handleAnnotation($builder, $type, $target, $doc)
-    {
-        $docFactory = AnnotationReader::createDocBlockFactory();
-        $docBlock = $docFactory->create($doc);
-        $h = $this->getAnnotationHandler($builder, '$.'.$type);
-
-        $tags = $docBlock->getTags();
-        //class annotations;
-        foreach ($tags as $tag) {
-            $h = $this->getAnnotationHandler($builder, '$.'.$type);
-            if($h){
-                $h->handle($type, $target, $tag->getName(), $docBlock->getDescription());
-
-                $childBlock = $docFactory->create($docBlock->getDescription());
-                $childTags = $childBlock->getTags();
-
-                foreach ($childTags as $child) {
-                    $childHandler = $this->getAnnotationHandler($builder, '$.'.$type.'.'.$tag->getName(), $h);
-                    if($childHandler){
-                        $childHandler->handle($type, $target, $child->getName(), $childBlock->getDescription());
-                    }
-                }
-            }
-        }
+        return $container;
     }
     /**
      * @var array

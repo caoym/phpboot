@@ -45,6 +45,7 @@ class AnnotationReader implements \ArrayAccess
     }
     /**
      * load from class with local cache
+     * TODO 增加 filter 能力
      * @param string $className
      * @return object
      */
@@ -59,10 +60,10 @@ class AnnotationReader implements \ArrayAccess
         if($res === null){
             try{
                 $meta = self::readWithoutCache($className);
-                $cache->set($key, $meta, 0, new FileExpiredChecker($fileName));
+                $cache->set($key, $meta, 0, $fileName?new FileExpiredChecker($fileName):null);
                 return $meta;
             }catch (\Exception $e){
-                $cache->set($key, $e->getMessage(), 0, new FileExpiredChecker($fileName));
+                $cache->set($key, $e->getMessage(), 0, $fileName?new FileExpiredChecker($fileName):null);
                 throw $e;
             }
         }elseif(is_string($res)){
@@ -91,9 +92,22 @@ class AnnotationReader implements \ArrayAccess
         }
         //property annotations
         foreach ($rfl->getProperties() as $i){
+            if ($i->isStatic()) {
+                continue;
+            }
             $block = self::readAnnotationBlock($i->getDocComment());
             $block->name = $i->getName();
             $reader->properties[$i->getName()]=$block;
+        }
+        while ($rfl = $rfl->getParentClass()) {
+            foreach ($rfl->getProperties(\ReflectionProperty::IS_PRIVATE) as $i) {
+                if ($i->isStatic()) {
+                    continue;
+                }
+                $block = self::readAnnotationBlock($i->getDocComment());
+                $block->name = $i->getName();
+                $reader->properties[$i->getName()]=$block;
+            }
         }
         return $reader;
     }

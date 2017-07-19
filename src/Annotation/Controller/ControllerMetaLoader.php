@@ -13,7 +13,7 @@ use PhpBoot\Annotation\Controller\Annotations\ThrowsAnnotationHandler;
 use PhpBoot\Annotation\Controller\Annotations\ValidateAnnotationHandler;
 use PhpBoot\Annotation\MetaLoader;
 use PhpBoot\Annotation\Names;
-use PhpBoot\Controller\ControllerBuilder;
+use PhpBoot\Controller\ControllerContainer;
 
 class ControllerMetaLoader extends MetaLoader
 {
@@ -40,7 +40,7 @@ class ControllerMetaLoader extends MetaLoader
     /**
      * load from class with local cache
      * @param string $className
-     * @return ControllerBuilder
+     * @return ControllerContainer
      */
     public function loadFromClass($className)
     {
@@ -49,7 +49,7 @@ class ControllerMetaLoader extends MetaLoader
 
     /**
      * @param $className
-     * @return ControllerBuilder
+     * @return ControllerContainer
      */
     public function loadFromClassWithoutCache($className)
     {
@@ -60,8 +60,8 @@ class ControllerMetaLoader extends MetaLoader
      * @param string $className
      * @return object
      */
-    protected function createBuilder($className)
+    protected function createContainer($className)
     {
-        return new ControllerBuilder($className);
+        return new ControllerContainer($className);
     }
 }

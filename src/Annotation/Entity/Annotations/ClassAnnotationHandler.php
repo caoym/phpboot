@@ -16,18 +16,18 @@ class ClassAnnotationHandler extends EntityAnnotationHandler
      */
     public function handle($ann)
     {
-        $ref = new \ReflectionClass($this->builder->getClassName());
-        $this->builder->getClassName();
+        $ref = new \ReflectionClass($this->container->getClassName());
+        $this->container->getClassName();
         $properties = $ref->getProperties(\ReflectionProperty::IS_PUBLIC);
         $default = $ref->getDefaultProperties();
-        $this->builder->setFileName($ref->getFileName());
+        $this->container->setFileName($ref->getFileName());
 
-        $this->builder->setDescription($ann->description);
-        $this->builder->setSummary($ann->summary);
+        $this->container->setDescription($ann->description);
+        $this->container->setSummary($ann->summary);
 
         foreach ($properties as $i){
             $isOption = array_key_exists($i->getName(), $default) && $default[$i->getName()] !==null;
-            $this->builder->setProperty($i->getName(), new PropertyMeta(
+            $this->container->setProperty($i->getName(), new PropertyMeta(
                 $i->getName(),
                 null,
                 $isOption,

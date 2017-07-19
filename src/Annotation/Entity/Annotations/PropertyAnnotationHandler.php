@@ -9,10 +9,10 @@ class PropertyAnnotationHandler extends EntityAnnotationHandler
 
     public function handle($block)
     {
-        $meta = $this->builder->getProperty($block->name);
+        $meta = $this->container->getProperty($block->name);
         if(!$meta){
             $meta = new PropertyMeta($block->name);
-            $this->builder->setProperty($block->name, $meta);
+            $this->container->setProperty($block->name, $meta);
         }
         $meta->description = $block->description;
         $meta->summary = $block->summary;

@@ -20,19 +20,19 @@ class BindAnnotationHandler extends ControllerAnnotationHandler
     public function handle($ann)
     {
         if(!$ann->parent || !$ann->parent->parent){
-            Logger::debug("The annotation \"@{$ann->name} {$ann->description}\" of {$this->builder->getClassName()} should be used with parent param/return");
+            Logger::debug("The annotation \"@{$ann->name} {$ann->description}\" of {$this->container->getClassName()} should be used with parent param/return");
             return;
         }
         $target = $ann->parent->parent->name;
-        $route = $this->builder->getRoute($target);
+        $route = $this->container->getRoute($target);
         if(!$route){
-            Logger::debug("The annotation \"@{$ann->name} {$ann->description}\" of {$this->builder->getClassName()}::$target should be used with parent param/return");
+            Logger::debug("The annotation \"@{$ann->name} {$ann->description}\" of {$this->container->getClassName()}::$target should be used with parent param/return");
             return ;
         }
 
         $params = new AnnotationParams($ann->description, 2);
 
-        $params->count()>0 or fail(new AnnotationSyntaxException("The annotation \"@{$ann->name} {$ann->description}\" of {$this->builder->getClassName()}::$target require 1 param, {$params->count()} given"));
+        $params->count()>0 or fail(new AnnotationSyntaxException("The annotation \"@{$ann->name} {$ann->description}\" of {$this->container->getClassName()}::$target require 1 param, {$params->count()} given"));
 
         $handler = $route->getResponseHandler();
 

@@ -2,7 +2,7 @@
 
 namespace PhpBoot\Tests;
 use PhpBoot\Annotation\Controller\ControllerMetaLoader;
-use PhpBoot\Controller\ControllerBuilder;
+use PhpBoot\Controller\ControllerContainer;
 use PhpBoot\Controller\HookInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -64,7 +64,7 @@ class ControllerMetaLoaderTest extends TestCase
     {
         $loader = new ControllerMetaLoader();
         $actual = $loader->loadFromClass(ControllerTest::class);
-        $expected = new ControllerBuilder(ControllerTest::class);
+        $expected = new ControllerContainer(ControllerTest::class);
         //TODO $this->assertEquals($expected, $actual);
     }
 }

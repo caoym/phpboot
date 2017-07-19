@@ -5,22 +5,22 @@ namespace  PhpBoot\Entity;
 use PhpBoot\Metas\PropertyMeta;
 use PhpBoot\Validator\Validator;
 
-class EntityBuilder implements BuilderInterface
+class EntityContainer implements ContainerInterface
 {
     public function __construct($className)
     {
         $this->className = $className;
     }
 
-    public function build($data, $validate = true)
+    public function make($data, $validate = true)
     {
         is_array($data) or fail(new \InvalidArgumentException("array is required by param 0"));
         $className = $this->getClassName();
         $obj = new $className();
         $vld = new Validator();
         foreach ($this->properties as $p){
-            if($p->builder && isset($data[$p->name])){
-                $data[$p->name] = $p->builder->build($data[$p->name]);
+            if($p->container && isset($data[$p->name])){
+                $data[$p->name] = $p->container->make($data[$p->name]);
             }
             if(!$p->isOptional){
                 $vld->rule('required', $p->name);

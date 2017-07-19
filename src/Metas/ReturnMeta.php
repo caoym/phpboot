@@ -2,16 +2,16 @@
 
 namespace PhpBoot\Metas;
 
-use PhpBoot\Entity\BuilderInterface;
+use PhpBoot\Entity\ContainerInterface;
 
 class ReturnMeta
 {
-    public function __construct($source, $type, $description, $builder)
+    public function __construct($source, $type, $description, $container)
     {
         $this->source = $source;
         $this->type = $type;
         $this->description = $description;
-        $this->builder = $builder;
+        $this->container = $container;
     }
 
     /**
@@ -33,7 +33,7 @@ class ReturnMeta
     public $description;
 
     /**
-     * @var BuilderInterface|null
+     * @var ContainerInterface|null
      */
-    public $builder;
+    public $container;
 }

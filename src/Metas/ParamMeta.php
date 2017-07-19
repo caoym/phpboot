@@ -1,10 +1,10 @@
 <?php
 
 namespace PhpBoot\Metas;
-use PhpBoot\Entity\ArrayBuilder;
-use PhpBoot\Entity\BuilderInterface;
-use PhpBoot\Entity\EntityBuilder;
-use PhpBoot\Entity\ScalarTypeBuilder;
+use PhpBoot\Entity\ArrayContainer;
+use PhpBoot\Entity\ContainerInterface;
+use PhpBoot\Entity\EntityContainer;
+use PhpBoot\Entity\ScalarTypeContainer;
 
 /**
  * Class ParamMeta
@@ -23,9 +23,9 @@ class ParamMeta{
      * @param boolean $isPassedByReference
      * @param string $validation
      * @param string $description
-     * @param BuilderInterface|null $builder
+     * @param ContainerInterface|null $container
      */
-    public function __construct($name, $source, $type, $isOptional ,$default, $isPassedByReference,$validation, $description="", $builder=null){
+    public function __construct($name, $source, $type, $isOptional ,$default, $isPassedByReference,$validation, $description="", $container=null){
         $this->name = $name;
         $this->source = $source;
         $this->type = $type;
@@ -34,7 +34,7 @@ class ParamMeta{
         $this->isPassedByReference = $isPassedByReference;
         $this->validation = $validation;
         $this->description = $description;
-        $this->builder = $builder;
+        $this->container = $container;
     }
     public $name;
     public $source;
@@ -45,7 +45,7 @@ class ParamMeta{
     public $validation;
     public $description;
     /**
-     * @var BuilderInterface|null
+     * @var ContainerInterface|null
      */
-    public $builder;
+    public $container;
 }

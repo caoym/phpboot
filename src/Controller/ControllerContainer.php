@@ -1,16 +1,13 @@
 <?php
 
 namespace PhpBoot\Controller;
-use FastRoute\RouteCollector;
 use PhpBoot\Application;
-use PhpBoot\Utils\SerializableFunc;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Class ControllerBuilder
+ * Class ControllerContainer
  */
-class ControllerBuilder
+class ControllerContainer
 {
     public function __construct($className)
     {
@@ -38,7 +35,7 @@ class ControllerBuilder
 
     /**
      * 获取路由列表
-     * @params Route[] $routes
+     * @param Route[] $routes
      */
     public function setRoutes($routes)
     {
@@ -67,8 +64,7 @@ class ControllerBuilder
         $ctrl = $app->make($className);
         return $route->invoke([$ctrl, $actionName], $request);
     }
-
-
+    
 //    /**
 //     * 应用路由, 使路由生效
 //     * @param RouteCollector $r

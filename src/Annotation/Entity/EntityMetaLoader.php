@@ -8,7 +8,7 @@ use PhpBoot\Annotation\Entity\Annotations\ValidateAnnotationHandler;
 use PhpBoot\Annotation\Entity\Annotations\VarAnnotationHandler;
 use PhpBoot\Annotation\MetaLoader;
 use PhpBoot\Annotation\Names;
-use PhpBoot\Entity\EntityBuilder;
+use PhpBoot\Entity\EntityContainer;
 
 class EntityMetaLoader extends MetaLoader
 {
@@ -30,7 +30,7 @@ class EntityMetaLoader extends MetaLoader
     /**
      * load from class with local cache
      * @param string $className
-     * @return EntityBuilder
+     * @return EntityContainer
      */
     public function loadFromClass($className)
     {
@@ -39,7 +39,7 @@ class EntityMetaLoader extends MetaLoader
 
     /**
      * @param $className
-     * @return EntityBuilder
+     * @return EntityContainer
      */
     public function loadFromClassWithoutCache($className)
     {
@@ -50,8 +50,8 @@ class EntityMetaLoader extends MetaLoader
      * @param string $className
      * @return object
      */
-    protected function createBuilder($className)
+    protected function createContainer($className)
     {
-        return new EntityBuilder($className);
+        return new EntityContainer($className);
     }
 }

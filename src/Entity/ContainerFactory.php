@@ -14,16 +14,16 @@ class ContainerFactory
 
         $getter = function($type){
             if(!$type || $type == 'mixed'){
-                return new MixedTypeBuilder();
+                return new MixedTypeContainer();
             }elseif (TypeHint::isScalarType($type)){
-                return new ScalarTypeBuilder($type);
+                return new ScalarTypeContainer($type);
             }else{
                 $loader = new EntityMetaLoader();
                 return $loader->loadFromClass($type);
             }
         };
         if(TypeHint::isArray($type)){
-            $container = ArrayBuilder::create($type, $getter);
+            $container = ArrayContainer::create($type, $getter);
         }else{
             $container = $getter($type);
         }

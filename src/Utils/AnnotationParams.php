@@ -18,6 +18,9 @@ class AnnotationParams implements \Countable, \ArrayAccess
         $pos = 0;
         $state = 'stateNormal';
         $len = strlen($text);
+        if($len == 0){
+            return;
+        }
         while (true){
             if($state == 'stateNormal' && count($this->rawParams)+1 == $limit){
                 break;

@@ -19,20 +19,20 @@ class HookAnnotationHandler extends ControllerAnnotationHandler
     public function handle($ann)
     {
         if(!$ann->parent){
-            Logger::debug("The annotation \"@{$ann->name} {$ann->description}\" of {$this->builder->getClassName()} should be used with parent route");
+            Logger::debug("The annotation \"@{$ann->name} {$ann->description}\" of {$this->container->getClassName()} should be used with parent route");
             return;
         }
         $target = $ann->parent->name;
-        $route = $this->builder->getRoute($target);
+        $route = $this->container->getRoute($target);
         if(!$route){
-            Logger::debug("The annotation \"@{$ann->name} {$ann->description}\" of {$this->builder->getClassName()}::$target should be used with parent route");
+            Logger::debug("The annotation \"@{$ann->name} {$ann->description}\" of {$this->container->getClassName()}::$target should be used with parent route");
             return ;
         }
         $params = new AnnotationParams($ann->description, 2);
-        count($params)>0 or fail("The annotation \"@{$ann->name} {$ann->description}\" of {$this->builder->getClassName()}::$target require at least one param, 0 given");
+        count($params)>0 or fail("The annotation \"@{$ann->name} {$ann->description}\" of {$this->container->getClassName()}::$target require at least one param, 0 given");
         $className = $params[0];
-        $className = TypeHint::normalize($className, $this->builder->getClassName());
-        is_subclass_of($className, HookInterface::class) or fail("$className is not a HookInterface on the annotation \"@{$ann->name} {$ann->description}\" of {$this->builder->getClassName()}::$target");
+        $className = TypeHint::normalize($className, $this->container->getClassName());
+        is_subclass_of($className, HookInterface::class) or fail("$className is not a HookInterface on the annotation \"@{$ann->name} {$ann->description}\" of {$this->container->getClassName()}::$target");
         $route->addHook($className);
     }
 }

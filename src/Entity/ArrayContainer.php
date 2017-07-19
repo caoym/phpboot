@@ -5,14 +5,14 @@ namespace PhpBoot\Entity;
 
 use PhpBoot\Utils\TypeHint;
 
-class ArrayBuilder implements BuilderInterface
+class ArrayContainer implements ContainerInterface
 {
     /**
      * @param string $type
-     * @param callable $getElementBuilder
-     * @return ArrayBuilder
+     * @param callable $getElementContainer
+     * @return self
      */
-    static public function create($type, callable $getElementBuilder)
+    static public function create($type, callable $getElementContainer)
     {
         TypeHint::isArray($type) or fail(new \InvalidArgumentException("type $type is not array"));
         $elementType = $type;
@@ -21,16 +21,16 @@ class ArrayBuilder implements BuilderInterface
             $elementType = TypeHint::getArrayType($elementType);
             $loops++;
         }
-        $builder = $getElementBuilder($elementType);
+        $container = $getElementContainer($elementType);
 
         while($loops--){
-            $builder = new ArrayBuilder($builder);
+            $container = new self($container);
         }
-        return $builder;
+        return $container;
     }
-    public function __construct($elementBuilder)
+    public function __construct($elementContainer)
     {
-        $this->builder = $elementBuilder;
+        $this->container = $elementContainer;
     }
 
     /**
@@ -38,18 +38,18 @@ class ArrayBuilder implements BuilderInterface
      * @param bool $validate
      * @return mixed
      */
-    public function build($data, $validate = true)
+    public function make($data, $validate = true)
     {
         is_array($data) or fail(new \InvalidArgumentException('the first param is required to be array'));
         $res = [];
         foreach ($data as $k=>$v){
-            $res[$k] = $this->builder->build($v, $validate);
+            $res[$k] = $this->container->make($v, $validate);
         }
         return $res;
     }
 
     /**
-     * @var BuilderInterface
+     * @var ContainerInterface
      */
-    private $builder;
+    private $container;
 }

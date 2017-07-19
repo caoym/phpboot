@@ -2,10 +2,10 @@
 
 namespace PhpBoot\Metas;
 
-use PhpBoot\Entity\ArrayBuilder;
-use PhpBoot\Entity\BuilderInterface;
-use PhpBoot\Entity\EntityBuilder;
-use PhpBoot\Entity\ScalarTypeBuilder;
+use PhpBoot\Entity\ArrayContainer;
+use PhpBoot\Entity\ContainerInterface;
+use PhpBoot\Entity\EntityContainer;
+use PhpBoot\Entity\ScalarTypeContainer;
 
 class PropertyMeta
 {
@@ -18,9 +18,9 @@ class PropertyMeta
      * @param string $validation
      * @param string $summary
      * @param string $description
-     * @param BuilderInterface|null $builder
+     * @param ContainerInterface|null $container
      */
-    public function __construct($name, $type=null, $isOptional=false,$default=null, $validation=null, $summary='', $description='', $builder = null){
+    public function __construct($name, $type=null, $isOptional=false,$default=null, $validation=null, $summary='', $description='', $container = null){
         $this->name = $name;
         $this->type = $type;
         $this->default = $default;
@@ -28,13 +28,13 @@ class PropertyMeta
         $this->validation = $validation;
         $this->summary = $summary;
         $this->description = $description;
-        $this->builder = $builder;
+        $this->container = $container;
     }
 
     /**
-     * @var BuilderInterface|null
+     * @var ContainerInterface|null
      */
-    public $builder;
+    public $container;
     public $name;
     public $type;
     public $default;

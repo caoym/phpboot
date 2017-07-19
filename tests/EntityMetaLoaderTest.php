@@ -4,9 +4,9 @@ namespace PhpBoot\Tests;
 
 
 use PhpBoot\Annotation\Entity\EntityMetaLoader;
-use PhpBoot\Entity\ArrayBuilder;
-use PhpBoot\Entity\EntityBuilder;
-use PhpBoot\Entity\ScalarTypeBuilder;
+use PhpBoot\Entity\ArrayContainer;
+use PhpBoot\Entity\EntityContainer;
+use PhpBoot\Entity\ScalarTypeContainer;
 use PhpBoot\Metas\PropertyMeta;
 
 /**
@@ -30,7 +30,7 @@ class LoadTest{
 }
 
 
-class BuildScalarTypeTest{
+class ScalarTypeTest{
     /**
      * @var int
      * @v max:101
@@ -38,7 +38,7 @@ class BuildScalarTypeTest{
     public $property1;
 }
 
-class BuildScalarTypeArrayTest{
+class ScalarTypeArrayTest{
     /**
      * @var int[]
      * @v max:101 *
@@ -46,17 +46,17 @@ class BuildScalarTypeArrayTest{
     public $property1;
 }
 
-class BuildEntityTest{
+class EntityTest{
     /**
-     * @var BuildScalarTypeTest
+     * @var ScalarTypeTest
      */
     public $property1;
 }
 
 
-class BuildEntityArrayTest{
+class EntityArrayTest{
     /**
-     * @var BuildScalarTypeTest[]
+     * @var ScalarTypeTest[]
      */
     public $property1;
 }
@@ -69,72 +69,72 @@ class EntityMetaLoaderTest extends TestCase
         $loader = new EntityMetaLoader();
         $actual = $loader->loadFromClass(LoadTest::class);
 
-        $expected = new EntityBuilder(LoadTest::class);
+        $expected = new EntityContainer(LoadTest::class);
         $expected->setSummary('Class LoadTest');
         $expected->setFileName(__FILE__);
-        $expected->setProperty('property1', new PropertyMeta('property1', 'string[]', false,null,null,'property1', '', new ArrayBuilder(new ScalarTypeBuilder('string'))));
-        $expected->setProperty('property2', new PropertyMeta('property2', 'string', true,'default0', 'email', '', '', new ScalarTypeBuilder('string')));
+        $expected->setProperty('property1', new PropertyMeta('property1', 'string[]', false,null,null,'property1', '', new ArrayContainer(new ScalarTypeContainer('string'))));
+        $expected->setProperty('property2', new PropertyMeta('property2', 'string', true,'default0', 'email', '', '', new ScalarTypeContainer('string')));
         $expected->setProperty('property3', new PropertyMeta('property3', null, true,1, null, '', ''));
         self::assertEquals($expected, $actual);
     }
 
-    public function testBuildScalarType()
+    public function testMakeScalarType()
     {
         $loader = new EntityMetaLoader();
-        $builder = $loader->loadFromClass(BuildScalarTypeTest::class);
-        $actual = $builder->build(['property1'=>100]);
-        $expected = new BuildScalarTypeTest();
+        $container = $loader->loadFromClass(ScalarTypeTest::class);
+        $actual = $container->make(['property1'=>100]);
+        $expected = new ScalarTypeTest();
         $expected->property1 = 100;
         self::assertEquals($expected, $actual);
 
-        self::assertException(function ()use($builder){
-            $builder->build(['property1'=>'not string']);
+        self::assertException(function ()use($container){
+            $container->make(['property1'=>'not string']);
         }, \InvalidArgumentException::class);
 
-        self::assertException(function ()use($builder){
-            $builder->build(['property1'=>102]);
+        self::assertException(function ()use($container){
+            $container->make(['property1'=>102]);
         }, \InvalidArgumentException::class);
     }
 
-    public function testBuildScalarTypeArray()
+    public function testMakeScalarTypeArray()
     {
         $loader = new EntityMetaLoader();
-        $builder = $loader->loadFromClass(BuildScalarTypeArrayTest::class);
-        $actual = $builder->build(['property1'=>[100]]);
-        $expected = new BuildScalarTypeArrayTest();
+        $container = $loader->loadFromClass(ScalarTypeArrayTest::class);
+        $actual = $container->make(['property1'=>[100]]);
+        $expected = new ScalarTypeArrayTest();
         $expected->property1 = [100];
         self::assertEquals($expected, $actual);
 
-        self::assertException(function ()use($builder){
-            $builder->build(['property1'=>'not string']);
+        self::assertException(function ()use($container){
+            $container->make(['property1'=>'not string']);
         }, \InvalidArgumentException::class);
 
-        self::assertException(function ()use($builder){
-            $builder->build(['property1'=>[102]]);
+        self::assertException(function ()use($container){
+            $container->make(['property1'=>[102]]);
         }, \InvalidArgumentException::class);
     }
 
-    public function testBuildEntity()
+    public function testMakeEntity()
     {
         $loader = new EntityMetaLoader();
-        $builder = $loader->loadFromClass(BuildEntityTest::class);
-        $actual = $builder->build([
+        $container = $loader->loadFromClass(EntityTest::class);
+        $actual = $container->make([
             'property1'=>[
                 'property1'=>100
             ]
         ]);
 
-        $expected = new BuildEntityTest();
-        $expected->property1 = new BuildScalarTypeTest();
+        $expected = new EntityTest();
+        $expected->property1 = new ScalarTypeTest();
         $expected->property1->property1 = 100;
         self::assertEquals($expected, $actual);
 
-        self::assertException(function ()use($builder){
-            $builder->build(['property1'=>'not string']);
+        self::assertException(function ()use($container){
+            $container->make(['property1'=>'not string']);
         }, \InvalidArgumentException::class);
 
-        self::assertException(function ()use($builder){
-            $builder->build([
+        self::assertException(function ()use($container){
+            $container->make([
                 'property1'=>[
                     'property1'=>102
                 ]
@@ -142,29 +142,29 @@ class EntityMetaLoaderTest extends TestCase
         }, \InvalidArgumentException::class);
     }
 
-    public function testBuildEntityArray()
+    public function testMakeEntityArray()
     {
         $loader = new EntityMetaLoader();
-        $builder = $loader->loadFromClass(BuildEntityArrayTest::class);
-        $actual = $builder->build([
+        $container = $loader->loadFromClass(EntityArrayTest::class);
+        $actual = $container->make([
             'property1'=>[
                 ['property1'=>100]
             ]
         ]);
 
-        $expected = new BuildEntityArrayTest();
-        $property1 = new BuildScalarTypeTest();
+        $expected = new EntityArrayTest();
+        $property1 = new ScalarTypeTest();
         $property1->property1 = 100;
         $expected->property1 =[$property1];
 
         self::assertEquals($expected, $actual);
 
-        self::assertException(function ()use($builder){
-            $builder->build(['property1'=>'not string']);
+        self::assertException(function ()use($container){
+            $container->make(['property1'=>'not string']);
         }, \InvalidArgumentException::class);
 
-        self::assertException(function ()use($builder){
-            $builder->build([
+        self::assertException(function ()use($container){
+            $container->make([
                 'property1'=>[
                     ['property1'=>102]
                 ]

@@ -4,9 +4,10 @@ namespace PhpBoot\Annotation\Entity\Annotations;
 
 use PhpBoot\Annotation\Entity\EntityAnnotationHandler;
 use PhpBoot\Annotation\Entity\EntityMetaLoader;
-use PhpBoot\Entity\ArrayBuilder;
-use PhpBoot\Entity\MixedTypeBuilder;
-use PhpBoot\Entity\ScalarTypeBuilder;
+use PhpBoot\Entity\ArrayContainer;
+use PhpBoot\Entity\ContainerFactory;
+use PhpBoot\Entity\MixedTypeContainer;
+use PhpBoot\Entity\ScalarTypeContainer;
 use PhpBoot\Exceptions\AnnotationSyntaxException;
 use PhpBoot\Utils\AnnotationParams;
 use PhpBoot\Utils\TypeHint;
@@ -15,44 +16,24 @@ class VarAnnotationHandler extends EntityAnnotationHandler
 {
     public function handle($ann)
     {
-        $params = new AnnotationParams($ann->description, 2);
+        $params = new AnnotationParams($ann->description, 3);
         if($params->count()){
             $type = $params->getParam(0);
             //TODO 校验type类型
             $target = $ann->parent->name;
-            $property = $this->builder->getProperty($target);
-            $property or fail($this->builder->getClassName()." property $target not exist ");
+            $property = $this->container->getProperty($target);
+            $property or fail($this->container->getClassName()." property $target not exist ");
             if($type == null || $type == 'mixed'){
-                $property->builder = new MixedTypeBuilder();
+                $property->container = new MixedTypeContainer();
             } else{
                 // TODO 判断$type是否匹配
-                $property->type = TypeHint::normalize($type, $this->builder->getClassName());
+                $property->type = TypeHint::normalize($type, $this->container->getClassName());
 
-                $getBuilder = function($class)use($ann){
-                    if($class == 'mixed'){
-                        $builder = new MixedTypeBuilder();
-                    }else if(!TypeHint::isScalarType($class)){
-                        class_exists($class) or fail(new AnnotationSyntaxException(
-                            "{$this->builder->getClassName()}::{$ann->parent->name} @{$ann->name} error, class $class not exist"
-                        ));
-                        $loader = new EntityMetaLoader();
-                        $builder = $loader->loadFromClass($class);
-                    }else{
-                        $builder = new ScalarTypeBuilder($class);
-                    }
-                    return $builder;
-                };
-                if(!TypeHint::isArray($property->type)){
-                    $builder = $getBuilder($property->type);
-                }else{
-                    $builder = ArrayBuilder::create($property->type, $getBuilder );
-                }
-
-                $property->builder = $builder;
+                $property->container = ContainerFactory::create($property->type);
             }
         }else{
             fail(new AnnotationSyntaxException(
-                "The annotation \"@{$ann->name} {$ann->description}\" of {$this->builder->getClassName()}::{$ann->parent->name} require 1 param, 0 given"
+                "The annotation \"@{$ann->name} {$ann->description}\" of {$this->container->getClassName()}::{$ann->parent->name} require 1 param, 0 given"
             ));
         }
 

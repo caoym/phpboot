@@ -20,20 +20,20 @@ class ReturnAnnotationHandler extends ControllerAnnotationHandler
     public function handle($ann)
     {
         if(!$ann->parent){
-            Logger::debug("The annotation \"@{$ann->name} {$ann->description}\" of {$this->builder->getClassName()} should be used with parent route");
+            Logger::debug("The annotation \"@{$ann->name} {$ann->description}\" of {$this->container->getClassName()} should be used with parent route");
             return;
         }
         $target = $ann->parent->name;
-        $route = $this->builder->getRoute($target);
+        $route = $this->container->getRoute($target);
         if(!$route){
-            Logger::debug("The annotation \"@{$ann->name} {$ann->description}\" of {$this->builder->getClassName()}::$target should be used with parent route");
+            Logger::debug("The annotation \"@{$ann->name} {$ann->description}\" of {$this->container->getClassName()}::$target should be used with parent route");
             return ;
         }
 
         $params = new AnnotationParams($ann->description, 2);
         $type = $doc = null;
         if(count($params)>0){
-            $type = TypeHint::normalize($params[0], $this->builder->getClassName());
+            $type = TypeHint::normalize($params[0], $this->container->getClassName());
         }
         $doc = $params->getRawParam(1, '');
 
@@ -44,7 +44,7 @@ class ReturnAnnotationHandler extends ControllerAnnotationHandler
         if($meta){
             $meta->description = $doc;
             $meta->type = $type;
-            $meta->builder = ContainerFactory::create($type);
+            $meta->container = ContainerFactory::create($type);
         }
     }
 }
