@@ -1,6 +1,6 @@
 <?php
 
-namespace PhpBoot\Annotation\Controller\Annotations;
+namespace PhpBoot\Controller\Annotations;
 
 use FastRoute\RouteParser\Std;
 use PhpBoot\Controller\ExceptionHandler;
@@ -8,7 +8,7 @@ use PhpBoot\Entity\ContainerFactory;
 use PhpBoot\Metas\ReturnMeta;
 use PhpBoot\Annotation\AnnotationBlock;
 use PhpBoot\Annotation\AnnotationTag;
-use PhpBoot\Annotation\Controller\ControllerAnnotationHandler;
+use PhpBoot\Controller\Annotations\ControllerAnnotationHandler;
 use PhpBoot\Controller\RequestHandler;
 use PhpBoot\Controller\ResponseHandler;
 use PhpBoot\Controller\Route;

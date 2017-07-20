@@ -3,7 +3,7 @@ namespace PhpBoot\DI;
 
 use DI\Container;
 
-class ContainerBuilder extends \DI\ContainerBuilder
+class DIContainerBuilder extends \DI\ContainerBuilder
 {
     /**
      * Build and return a container.

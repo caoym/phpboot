@@ -1,20 +1,20 @@
 <?php
 namespace PhpBoot;
 
-use DI\ContainerBuilder;
+use DI\Container;
 use Doctrine\Common\Cache\ApcCache;
 use FastRoute\DataGenerator\GroupCountBased as GroupCountBasedDataGenerator;
 use FastRoute\Dispatcher\GroupCountBased as GroupCountBasedDispatcher;
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
 use FastRoute\RouteParser\Std;
-use PhpBoot\Annotation\Controller\ControllerMetaLoader;
+use PhpBoot\Controller\ControllerContainerBuilder;
 use PhpBoot\Cache\CheckableCache;
 use PhpBoot\Cache\FileExpiredChecker;
 use PhpBoot\Controller\ControllerContainer;
 use PhpBoot\Controller\Route;
+use PhpBoot\DI\DIContainerBuilder;
 use PhpBoot\Lock\LocalAutoLock;
-use Pimple\Container;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
@@ -26,15 +26,46 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class Application implements ContainerInterface
 {
     /**
+     * @param string|array
+     * .php file
+     * ```
+     * return
+     * [
+     *      'DB'=>['user'=>'', 'password'=>'']
+     *      'localCache'
+     * ];
+     * ```
+     * or just the array
+     * @return self
+     */
+    static public function createByDefault($conf=[]){
+        $builder = new DIContainerBuilder();
+        $builder->addDefinitions($conf);
+        $container = $builder->build();
+
+        if(!$container->has('app.localCache')){
+            $container->set('app.localCache', \DI\object(ApcCache::class));
+        }
+        $container->set(
+            self::class,
+            \DI\object()
+                ->constructorParameter('localCache',\DI\get('app.localCache'))
+        );
+        $container->set('container', $container);
+        $container->set(Request::class, \DI\factory([Request::class, 'createFromGlobals']));
+
+        $app = $container->make(self::class);
+
+        $container->set('app', $app);
+        return $app;
+    }
+    /**
      * Application constructor.
      * @param string|array $conf
      */
-    public function __construct($conf)
+    public function __construct($localCache)
     {
-        $builder = new ContainerBuilder();
-        $builder->addDefinitions($conf);
-        $this->container = $builder->build();
-        $this->cache = new CheckableCache(new ApcCache());
+        $this->cache = new CheckableCache($localCache);
     }
 
     public function make($className, $params=[]){
@@ -48,8 +79,7 @@ class Application implements ContainerInterface
     public function loadRoutesFromClass($className)
     {
         $this->routeLoaders[$className] = function()use($className){
-            $loader = new ControllerMetaLoader();
-            $container = $loader->loadFromClass($className);
+            $container = $this->controllerContainerBuilder->build($className);
             return [$container];
         };
     }
@@ -110,6 +140,9 @@ class Application implements ContainerInterface
     }
     public function dispatch(Request $request = null, $send = true)
     {
+        if ($request == null){
+            $request = $this->make(Request::class);
+        }
         $uri = $request->getRequestUri();
         if (false !== $pos = strpos($uri, '?')) {
             $uri = substr($uri, 0, $pos);
@@ -162,7 +195,7 @@ class Application implements ContainerInterface
         }
         if($route == $this){
             return LocalAutoLock::lock($key, 60, function()use($className, $actionName, $key){
-                $container = new ControllerContainer($className);
+                $container = $this->controllerContainerBuilder->build($className);
                 $route = $container->getRoute($actionName);
                 $this->cache->set('route:'.$key, $route, new FileExpiredChecker($container->getFileName()));
                 return $route;
@@ -172,19 +205,6 @@ class Application implements ContainerInterface
         }
         return $route;
     }
-
-    private $cache;
-
-    /**
-     * @var callable[]
-     */
-    private $routeLoaders = [];
-
-    private $dispatcher;
-    /**
-     * @var Container
-     */
-    private $container;
 
     /**
      * Finds an entry of the container by its identifier and returns it.
@@ -216,4 +236,29 @@ class Application implements ContainerInterface
     {
         return $this->container->has($id);
     }
+
+    /**
+     * @inject container
+     * @var Container
+     */
+    public $container;
+
+    /**
+     * @inject
+     * @var ControllerContainerBuilder
+     */
+    public $controllerContainerBuilder;
+
+    /**
+     * @var CheckableCache
+     */
+    private $cache;
+
+    /**
+     * @var callable[]
+     */
+    private $routeLoaders = [];
+
+    private $dispatcher;
+
 }

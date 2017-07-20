@@ -1,11 +1,9 @@
 <?php
 
-namespace PhpBoot\Annotation\Entity\Annotations;
-
+namespace PhpBoot\Entity\Annotations;
 
 use PhpBoot\Annotation\AnnotationBlock;
 use PhpBoot\Annotation\AnnotationTag;
-use PhpBoot\Annotation\Entity\EntityAnnotationHandler;
 use PhpBoot\Metas\PropertyMeta;
 
 class ClassAnnotationHandler extends EntityAnnotationHandler

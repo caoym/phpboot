@@ -2,18 +2,15 @@
 
 namespace PhpBoot\Annotation;
 
-
-use Doctrine\Common\Cache\ApcuCache;
+use Doctrine\Common\Cache\ApcCache;
 use PhpBoot\Cache\CheckableCache;
 use PhpBoot\Cache\FileExpiredChecker;
-use PhpBoot\Lock\LocalAutoLock;
 use PhpBoot\Utils\Logger;
-use PhpBoot\Utils\ObjectAccess;
 
-abstract class MetaLoader
+abstract class ContainerBuilder
 {
     /**
-     * MetaLoader constructor.
+     * ContainerBuilder constructor.
      * @param array $annotations 需加载的注释和顺序
      *
      * 语法 http://jmespath.org/tutorial.html
@@ -27,7 +24,7 @@ abstract class MetaLoader
     public function __construct(array $annotations)
     {
         $this->annotations = $annotations;
-        $this->cache = new CheckableCache(new ApcuCache());
+        $this->cache = new CheckableCache(new ApcCache());
     }
 
     /**
@@ -35,7 +32,7 @@ abstract class MetaLoader
      * @param string $className
      * @return object
      */
-    public function loadFromClass($className)
+    public function build($className)
     {
         //TODO【重要】 使用全局的缓存版本号, 而不是针对每个文件判断缓存过期与否
         $rfl = new \ReflectionClass($className) or fail("load class $className failed");
@@ -45,7 +42,7 @@ abstract class MetaLoader
         $res = $this->cache->get($key, null, $oldData, false);
         if($res === null){
             try{
-                $meta = $this->loadFromClassWithoutCache($className);
+                $meta = $this->buildWithoutCache($className);
                 $this->cache->set($key, $meta, 0, $fileName?new FileExpiredChecker($fileName):null);
                 return $meta;
             }catch (\Exception $e){
@@ -70,7 +67,7 @@ abstract class MetaLoader
      * @param $className
      * @return object
      */
-    public function loadFromClassWithoutCache($className)
+    public function buildWithoutCache($className)
     {
         $container = $this->createContainer($className);
         $anns = AnnotationReader::read($className);

@@ -1,6 +1,7 @@
 <?php
 namespace PhpBoot\Controller;
 
+use PhpBoot\Application;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -27,17 +28,18 @@ class Route
     }
 
     /**
+     * @param Application $app
      * @param callable $function
      * @param Request $request
      * @return Response
      */
-    public function invoke(callable $function, Request $request)
+    public function invoke(Application $app, callable $function, Request $request)
     {
         $this->requestHandler or fail('undefined requestHandler');
         $this->responseHandler or fail('undefined responseHandler');
         $this->exceptionHandler or fail('undefined exceptionHandler');
 
-        $res = $this->exceptionHandler->handler(function()use($request, $function){
+        $res = $this->exceptionHandler->handler(function()use($app, $request, $function){
             $next = function($request)use($function){
                 $params = [];
                 $this->requestHandler->handle($request, $params);
@@ -45,8 +47,8 @@ class Route
                 return $this->responseHandler->handle($res, $params);
             };
             foreach (array_reverse($this->hooks) as $hookName){
-                $next = function($request)use($hookName, $next){
-                    $hook = new $hookName();
+                $next = function($request)use($app, $hookName, $next){
+                    $hook = $app->get($hookName);
                     /**@var $hook HookInterface*/
                     return $hook->handle($request, $next);
                 };

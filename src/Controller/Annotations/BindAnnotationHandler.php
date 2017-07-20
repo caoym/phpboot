@@ -1,10 +1,9 @@
 <?php
 
-namespace PhpBoot\Annotation\Controller\Annotations;
+namespace PhpBoot\Controller\Annotations;
 
 use PhpBoot\Annotation\AnnotationBlock;
 use PhpBoot\Annotation\AnnotationTag;
-use PhpBoot\Annotation\Controller\ControllerAnnotationHandler;
 use PhpBoot\Entity\ContainerFactory;
 use PhpBoot\Exceptions\AnnotationSyntaxException;
 use PhpBoot\Metas\ReturnMeta;

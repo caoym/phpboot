@@ -2,6 +2,7 @@
 
 namespace PhpBoot\Controller;
 
+use PhpBoot\Application;
 use PhpBoot\Metas\ParamMeta;
 use PhpBoot\Utils\ArrayAdaptor;
 use PhpBoot\Validator\Validator;
@@ -18,11 +19,12 @@ class RequestHandler
     }
 
     /**
+     * @param Application $app
      * @param Request $request
      * @param array $params
      * @return void
      */
-    public function handle(Request $request, array &$params){
+    public function handle(Application $app, Request $request, array &$params){
 
         $vld = new Validator();
         $requestArray = new ArrayAdaptor($request);

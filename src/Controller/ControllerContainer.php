@@ -61,8 +61,8 @@ class ControllerContainer
         Application $app,
         Request $request)
     {
-        $ctrl = $app->make($className);
-        return $route->invoke([$ctrl, $actionName], $request);
+        $ctrl = $app->get($className);
+        return $route->invoke($app, [$ctrl, $actionName], $request);
     }
     
 //    /**

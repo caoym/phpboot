@@ -2,8 +2,6 @@
 
 namespace PhpBoot\Entity;
 
-
-use PhpBoot\Annotation\Entity\EntityMetaLoader;
 use PhpBoot\Utils\TypeHint;
 
 class ContainerFactory
@@ -18,8 +16,8 @@ class ContainerFactory
             }elseif (TypeHint::isScalarType($type)){
                 return new ScalarTypeContainer($type);
             }else{
-                $loader = new EntityMetaLoader();
-                return $loader->loadFromClass($type);
+                $builder = new EntityContainerBuilder();
+                return $builder->build($type);
             }
         };
         if(TypeHint::isArray($type)){

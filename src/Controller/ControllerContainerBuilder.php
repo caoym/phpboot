@@ -1,21 +1,20 @@
 <?php
 
-namespace PhpBoot\Annotation\Controller;
+namespace PhpBoot\Controller;
 
-use PhpBoot\Annotation\Controller\Annotations\BindAnnotationHandler;
-use PhpBoot\Annotation\Controller\Annotations\ClassAnnotationHandler;
-use PhpBoot\Annotation\Controller\Annotations\HookAnnotationHandler;
-use PhpBoot\Annotation\controller\Annotations\ParamAnnotationHandler;
-use PhpBoot\Annotation\Controller\Annotations\PathAnnotationHandler;
-use PhpBoot\Annotation\Controller\Annotations\ReturnAnnotationHandler;
-use PhpBoot\Annotation\Controller\Annotations\RouteAnnotationHandler;
-use PhpBoot\Annotation\Controller\Annotations\ThrowsAnnotationHandler;
-use PhpBoot\Annotation\Controller\Annotations\ValidateAnnotationHandler;
-use PhpBoot\Annotation\MetaLoader;
+use PhpBoot\Controller\Annotations\BindAnnotationHandler;
+use PhpBoot\Controller\Annotations\ClassAnnotationHandler;
+use PhpBoot\Controller\Annotations\HookAnnotationHandler;
+use PhpBoot\controller\Annotations\ParamAnnotationHandler;
+use PhpBoot\Controller\Annotations\PathAnnotationHandler;
+use PhpBoot\Controller\Annotations\ReturnAnnotationHandler;
+use PhpBoot\Controller\Annotations\RouteAnnotationHandler;
+use PhpBoot\Controller\Annotations\ThrowsAnnotationHandler;
+use PhpBoot\Controller\Annotations\ValidateAnnotationHandler;
+use PhpBoot\Annotation\ContainerBuilder;
 use PhpBoot\Annotation\Names;
-use PhpBoot\Controller\ControllerContainer;
 
-class ControllerMetaLoader extends MetaLoader
+class ControllerContainerBuilder extends ContainerBuilder
 {
     const DEFAULT_ANNOTATIONS=[
         [ClassAnnotationHandler::class, 'class'],
@@ -30,7 +29,7 @@ class ControllerMetaLoader extends MetaLoader
     ];
 
     /**
-     * ControllerMetaLoader constructor.
+     * ControllerContainerBuilder constructor.
      * @param array $annotations
      */
     public function __construct(array $annotations = self::DEFAULT_ANNOTATIONS)
@@ -42,18 +41,18 @@ class ControllerMetaLoader extends MetaLoader
      * @param string $className
      * @return ControllerContainer
      */
-    public function loadFromClass($className)
+    public function build($className)
     {
-        return parent::loadFromClass($className);
+        return parent::build($className);
     }
 
     /**
      * @param $className
      * @return ControllerContainer
      */
-    public function loadFromClassWithoutCache($className)
+    public function buildWithoutCache($className)
     {
-        return parent::loadFromClassWithoutCache($className);
+        return parent::buildWithoutCache($className);
     }
 
     /**

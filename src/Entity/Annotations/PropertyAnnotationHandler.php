@@ -1,7 +1,6 @@
 <?php
-namespace PhpBoot\Annotation\Entity\Annotations;
+namespace PhpBoot\Entity\Annotations;
 
-use PhpBoot\Annotation\Entity\EntityAnnotationHandler;
 use PhpBoot\Metas\PropertyMeta;
 
 class PropertyAnnotationHandler extends EntityAnnotationHandler

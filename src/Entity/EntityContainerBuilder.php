@@ -1,16 +1,15 @@
 <?php
 
-namespace PhpBoot\Annotation\Entity;
+namespace PhpBoot\Entity;
 
-use PhpBoot\Annotation\Entity\Annotations\ClassAnnotationHandler;
-use PhpBoot\Annotation\Entity\Annotations\PropertyAnnotationHandler;
-use PhpBoot\Annotation\Entity\Annotations\ValidateAnnotationHandler;
-use PhpBoot\Annotation\Entity\Annotations\VarAnnotationHandler;
-use PhpBoot\Annotation\MetaLoader;
+use PhpBoot\Entity\Annotations\ClassAnnotationHandler;
+use PhpBoot\Entity\Annotations\PropertyAnnotationHandler;
+use PhpBoot\Entity\Annotations\ValidateAnnotationHandler;
+use PhpBoot\Entity\Annotations\VarAnnotationHandler;
+use PhpBoot\Annotation\ContainerBuilder;
 use PhpBoot\Annotation\Names;
-use PhpBoot\Entity\EntityContainer;
 
-class EntityMetaLoader extends MetaLoader
+class EntityContainerBuilder extends ContainerBuilder
 {
     const DEFAULT_ANNOTATIONS=[
         [ClassAnnotationHandler::class, 'class'],
@@ -20,7 +19,7 @@ class EntityMetaLoader extends MetaLoader
     ];
 
     /**
-     * EntityMetaLoader constructor.
+     * EntityContainerBuilder constructor.
      * @param array $annotations
      */
     public function __construct(array $annotations = self::DEFAULT_ANNOTATIONS)
@@ -32,18 +31,18 @@ class EntityMetaLoader extends MetaLoader
      * @param string $className
      * @return EntityContainer
      */
-    public function loadFromClass($className)
+    public function build($className)
     {
-        return parent::loadFromClass($className);
+        return parent::build($className);
     }
 
     /**
      * @param $className
      * @return EntityContainer
      */
-    public function loadFromClassWithoutCache($className)
+    public function buildWithoutCache($className)
     {
-        return parent::loadFromClassWithoutCache($className);
+        return parent::buildWithoutCache($className);
     }
 
     /**

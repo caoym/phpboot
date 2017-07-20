@@ -3,6 +3,7 @@
 namespace PhpBoot\DI;
 
 use DI\Definition\EntryReference;
+use DI\Definition\ObjectDefinition;
 use DI\Definition\Source\DefinitionSource;
 use DI\Definition\ObjectDefinition\MethodInjection;
 use PhpBoot\Exceptions\AnnotationSyntaxException;
@@ -21,11 +22,15 @@ class AnnotationReader implements DefinitionSource
             return null;
         }
 
-        $loader = new DIMetaLoader();
-        $context = $loader->loadFromClass($name);
-        /**@var $context ObjectDefinitionContext */
         $class = new \ReflectionClass($name);
-        $definition = $context->definition;
+//        if(isset($name::$__enableAnnotations__) && $name::$__enableAnnotations__){
+            $loader = new DIMetaLoader();
+            $context = $loader->build($name);
+            /**@var $context ObjectDefinitionContext */
+            $definition = $context->definition;
+//        }else{
+//            $definition = new ObjectDefinition($name);
+//        }
 
         $constructor = $class->getConstructor();
         if ($constructor && $constructor->isPublic()) {

@@ -5,9 +5,9 @@ namespace PhpBoot\Controller;
 
 class ExceptionHandler
 {
-    public function __construct()
+    public function __construct(ExceptionRenderer $renderer)
     {
-        $this->renderer = new ExceptionRenderer();
+        $this->renderer = $renderer;
     }
 
     /**

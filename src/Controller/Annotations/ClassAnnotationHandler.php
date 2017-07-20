@@ -1,11 +1,11 @@
 <?php
 
-namespace PhpBoot\Annotation\Controller\Annotations;
+namespace PhpBoot\Controller\Annotations;
 
 
 use PhpBoot\Annotation\AnnotationBlock;
 use PhpBoot\Annotation\AnnotationTag;
-use PhpBoot\Annotation\Controller\ControllerAnnotationHandler;
+use PhpBoot\Controller\Annotations\ControllerAnnotationHandler;
 
 class ClassAnnotationHandler extends ControllerAnnotationHandler
 {

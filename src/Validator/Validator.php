@@ -1,6 +1,6 @@
 <?php
 namespace PhpBoot\Validator;
-use PhpBoot\Annotation\EntityMetaLoader;
+use PhpBoot\Annotation\EntityContainerBuilder;
 use PhpBoot\Utils\TypeHint;
 
 
@@ -103,7 +103,7 @@ class Validator extends \Valitron\Validator
 //            }
 //        }else{
 //            //TODO class validate
-//            $metas = new EntityMetaLoader($type);
+//            $metas = new EntityContainerBuilder($type);
 //            $metas = $metas->getPropertyMetas();
 //
 //        }

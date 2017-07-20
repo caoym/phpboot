@@ -14,18 +14,13 @@ use PhpBoot\Utils\TypeHint;
 
 class VarAnnotationHandler implements AnnotationHandler
 {
-    public function __construct(ObjectDefinitionContext $context, self $parent=null){
+    public function __construct(ObjectDefinitionContext $context){
         $this->context = $context;
-        $this->parent = $parent;
     }
     /**
      * @var ObjectDefinitionContext
      */
     protected $context;
-    /**
-     * @var self
-     */
-    protected $parent;
 
     /**
      * @param AnnotationBlock|AnnotationTag $ann
@@ -34,8 +29,8 @@ class VarAnnotationHandler implements AnnotationHandler
     public function handle($ann)
     {
         $className = $this->context->definition->getClassName();
-        if(!$this->parent){
-            Logger::debug("The annotation \"@{$ann->name} {$ann->description}\" of $className should be used with parent route");
+        if(!$ann->parent){
+            Logger::debug("The annotation \"@{$ann->name} {$ann->description}\" of $className should be used with parent");
         }
         $target = $ann->parent->name;
         //

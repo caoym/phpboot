@@ -1,9 +1,7 @@
 <?php
 
-namespace PhpBoot\Annotation\Entity\Annotations;
+namespace PhpBoot\Entity\Annotations;
 
-
-use PhpBoot\Annotation\Entity\EntityAnnotationHandler;
 use PhpBoot\Exceptions\AnnotationSyntaxException;
 use PhpBoot\Utils\AnnotationParams;
 

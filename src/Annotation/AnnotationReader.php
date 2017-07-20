@@ -1,16 +1,13 @@
 <?php
 
 namespace PhpBoot\Annotation;
-use Doctrine\Common\Cache\ApcuCache;
+use Doctrine\Common\Cache\ApcCache;
 use PhpBoot\Cache\CheckableCache;
 use PhpBoot\Cache\FileExpiredChecker;
-use PhpBoot\Lock\LocalAutoLock;
-use PhpBoot\Utils\Logger;
 use phpDocumentor\Reflection\DocBlock\DescriptionFactory;
 use phpDocumentor\Reflection\DocBlock\StandardTagFactory;
 use phpDocumentor\Reflection\DocBlock\Tag;
 use phpDocumentor\Reflection\DocBlock\Tags\Formatter;
-use phpDocumentor\Reflection\DocBlock\Tags\Generic;
 use phpDocumentor\Reflection\DocBlockFactory;
 use phpDocumentor\Reflection\FqsenResolver;
 use phpDocumentor\Reflection\TypeResolver;
@@ -43,6 +40,7 @@ class AnnotationReader implements \ArrayAccess
         $docBlockFactory = new DocBlockFactory($descriptionFactory, $tagFactory);
         return $docBlockFactory;
     }
+
     /**
      * load from class with local cache
      * TODO 增加 filter 能力
@@ -55,7 +53,7 @@ class AnnotationReader implements \ArrayAccess
         $fileName = $rfl->getFileName();
         $key = str_replace('\\','.',self::class).md5($fileName.$className);
         $oldData = null;
-        $cache = new CheckableCache(new ApcuCache());
+        $cache = new CheckableCache(new ApcCache());
         $res = $cache->get('ann:'.$key, null, $oldData, false);
         if($res === null){
             try{

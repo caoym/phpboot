@@ -4,12 +4,12 @@ namespace PhpBoot\DI;
 
 
 use DI\Definition\ObjectDefinition;
-use PhpBoot\Annotation\MetaLoader;
+use PhpBoot\Annotation\ContainerBuilder;
 use PhpBoot\Annotation\Names;
 use PhpBoot\DI\Annotations\InjectAnnotationHandler;
 use PhpBoot\DI\Annotations\VarAnnotationHandler;
 
-class DIMetaLoader extends MetaLoader
+class DIMetaLoader extends ContainerBuilder
 {
     const DEFAULT_ANNOTATIONS=[
         [VarAnnotationHandler::class, "properties.*.children[?name=='var'][]"],
@@ -17,7 +17,7 @@ class DIMetaLoader extends MetaLoader
     ];
 
     /**
-     * EntityMetaLoader constructor.
+
      * @param array $annotations
      */
     public function __construct(array $annotations = self::DEFAULT_ANNOTATIONS)

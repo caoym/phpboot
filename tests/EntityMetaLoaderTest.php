@@ -2,8 +2,7 @@
 
 namespace PhpBoot\Tests;
 
-
-use PhpBoot\Annotation\Entity\EntityMetaLoader;
+use PhpBoot\Entity\EntityContainerBuilder;
 use PhpBoot\Entity\ArrayContainer;
 use PhpBoot\Entity\EntityContainer;
 use PhpBoot\Entity\ScalarTypeContainer;
@@ -66,8 +65,8 @@ class EntityMetaLoaderTest extends TestCase
 
     public function testLoad()
     {
-        $loader = new EntityMetaLoader();
-        $actual = $loader->loadFromClass(LoadTest::class);
+        $builder = new EntityContainerBuilder();
+        $actual = $builder->build(LoadTest::class);
 
         $expected = new EntityContainer(LoadTest::class);
         $expected->setSummary('Class LoadTest');
@@ -80,8 +79,8 @@ class EntityMetaLoaderTest extends TestCase
 
     public function testMakeScalarType()
     {
-        $loader = new EntityMetaLoader();
-        $container = $loader->loadFromClass(ScalarTypeTest::class);
+        $builder = new EntityContainerBuilder();
+        $container = $builder->build(ScalarTypeTest::class);
         $actual = $container->make(['property1'=>100]);
         $expected = new ScalarTypeTest();
         $expected->property1 = 100;
@@ -98,8 +97,8 @@ class EntityMetaLoaderTest extends TestCase
 
     public function testMakeScalarTypeArray()
     {
-        $loader = new EntityMetaLoader();
-        $container = $loader->loadFromClass(ScalarTypeArrayTest::class);
+        $builder = new EntityContainerBuilder();
+        $container = $builder->build(ScalarTypeArrayTest::class);
         $actual = $container->make(['property1'=>[100]]);
         $expected = new ScalarTypeArrayTest();
         $expected->property1 = [100];
@@ -116,8 +115,8 @@ class EntityMetaLoaderTest extends TestCase
 
     public function testMakeEntity()
     {
-        $loader = new EntityMetaLoader();
-        $container = $loader->loadFromClass(EntityTest::class);
+        $builder = new EntityContainerBuilder();
+        $container = $builder->build(EntityTest::class);
         $actual = $container->make([
             'property1'=>[
                 'property1'=>100
@@ -144,8 +143,8 @@ class EntityMetaLoaderTest extends TestCase
 
     public function testMakeEntityArray()
     {
-        $loader = new EntityMetaLoader();
-        $container = $loader->loadFromClass(EntityArrayTest::class);
+        $builder = new EntityContainerBuilder();
+        $container = $builder->build(EntityArrayTest::class);
         $actual = $container->make([
             'property1'=>[
                 ['property1'=>100]

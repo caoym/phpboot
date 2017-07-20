@@ -1,7 +1,6 @@
 <?php
 namespace  PhpBoot\Cache;
 use Doctrine\Common\Cache\Cache;
-use PhpBoot\Utils\SerializableFunc;
 
 /**
  * 可检查缓存是否失效的缓存

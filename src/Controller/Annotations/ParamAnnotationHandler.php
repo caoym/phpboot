@@ -1,15 +1,10 @@
 <?php
 
-namespace PhpBoot\Annotation\controller\Annotations;
+namespace PhpBoot\Controller\Annotations;
 
 use PhpBoot\Annotation\AnnotationBlock;
 use PhpBoot\Annotation\AnnotationTag;
-use PhpBoot\Annotation\Controller\ControllerAnnotationHandler;
-use PhpBoot\Annotation\Entity\EntityMetaLoader;
-use PhpBoot\Entity\ArrayContainer;
 use PhpBoot\Entity\ContainerFactory;
-use PhpBoot\Entity\MixedTypeContainer;
-use PhpBoot\Entity\ScalarTypeContainer;
 use PhpBoot\Exceptions\AnnotationSyntaxException;
 use PhpBoot\Utils\AnnotationParams;
 use PhpBoot\Utils\Logger;
