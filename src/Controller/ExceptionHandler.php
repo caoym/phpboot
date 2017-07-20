@@ -3,11 +3,13 @@
 namespace PhpBoot\Controller;
 
 
+use PhpBoot\Application;
+
 class ExceptionHandler
 {
-    public function __construct(ExceptionRenderer $renderer)
+    public function __construct()
     {
-        $this->renderer = $renderer;
+        $this->renderer = new ExceptionRenderer();
     }
 
     /**
@@ -44,35 +46,16 @@ class ExceptionHandler
     private $exceptions = [];
 
     /**
+     * @param Application $app
      * @param callable $call
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function handler(callable $call){
+    public function handler(Application $app, callable $call){
         try{
             return $call();
         }catch (\Exception $e){
-            return $this->renderer->render($e);
+            $renderer = $app->get(ExceptionRenderer::class); //TODO 放在这里是否合适
+            return $renderer->render($e);
         }
     }
-
-    /**
-     * @return ExceptionRenderer
-     */
-    public function getRenderer()
-    {
-        return $this->renderer;
-    }
-
-    /**
-     * @param ExceptionRenderer $renderer
-     */
-    public function setRenderer($renderer)
-    {
-        $this->renderer = $renderer;
-    }
-    /**
-     * @var ExceptionRenderer;
-     */
-    private $renderer;
-
 }
