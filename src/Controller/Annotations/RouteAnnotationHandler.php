@@ -92,6 +92,7 @@ class RouteAnnotationHandler extends ControllerAnnotationHandler
             $requestHandler,
             $responseHandler,
             $exceptionHandler,
+            [],
             $ann->parent->summary,
             $ann->parent->description
         );
