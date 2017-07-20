@@ -5,6 +5,7 @@ use PhpBoot\Entity\ArrayContainer;
 use PhpBoot\Entity\ContainerInterface;
 use PhpBoot\Entity\EntityContainer;
 use PhpBoot\Entity\ScalarTypeContainer;
+use PhpBoot\Entity\TypeContainerInterface;
 
 /**
  * Class ParamMeta
@@ -23,7 +24,7 @@ class ParamMeta{
      * @param boolean $isPassedByReference
      * @param string $validation
      * @param string $description
-     * @param ContainerInterface|null $container
+     * @param TypeContainerInterface|null $container
      */
     public function __construct($name, $source, $type, $isOptional ,$default, $isPassedByReference,$validation, $description="", $container=null){
         $this->name = $name;
@@ -45,7 +46,7 @@ class ParamMeta{
     public $validation;
     public $description;
     /**
-     * @var ContainerInterface|null
+     * @var TypeContainerInterface|null
      */
     public $container;
 }

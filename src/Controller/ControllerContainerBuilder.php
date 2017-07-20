@@ -2,6 +2,7 @@
 
 namespace PhpBoot\Controller;
 
+use DI\FactoryInterface;
 use PhpBoot\Controller\Annotations\BindAnnotationHandler;
 use PhpBoot\Controller\Annotations\ClassAnnotationHandler;
 use PhpBoot\Controller\Annotations\HookAnnotationHandler;
@@ -30,11 +31,13 @@ class ControllerContainerBuilder extends ContainerBuilder
 
     /**
      * ControllerContainerBuilder constructor.
+     * @param FactoryInterface $factory
      * @param array $annotations
      */
-    public function __construct(array $annotations = self::DEFAULT_ANNOTATIONS)
+    public function __construct(FactoryInterface $factory, array $annotations = self::DEFAULT_ANNOTATIONS)
     {
         parent::__construct($annotations);
+        $this->factory = $factory;
     }
     /**
      * load from class with local cache
@@ -61,6 +64,17 @@ class ControllerContainerBuilder extends ContainerBuilder
      */
     protected function createContainer($className)
     {
-        return new ControllerContainer($className);
+        return $this->factory->make(ControllerContainer::class, ['className'=>$className]);
     }
+
+    protected function getHandler($handlerName, $container)
+    {
+        return $this->factory->make($handlerName, ['container'=>$container]);
+    }
+
+
+    /**
+     * @var FactoryInterface
+     */
+    private $factory;
 }

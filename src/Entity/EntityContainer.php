@@ -5,7 +5,7 @@ namespace  PhpBoot\Entity;
 use PhpBoot\Metas\PropertyMeta;
 use PhpBoot\Validator\Validator;
 
-class EntityContainer implements ContainerInterface
+class EntityContainer implements TypeContainerInterface
 {
     public function __construct($className)
     {

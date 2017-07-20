@@ -2,6 +2,7 @@
 
 namespace PhpBoot\Entity;
 
+use DI\FactoryInterface;
 use PhpBoot\Entity\Annotations\ClassAnnotationHandler;
 use PhpBoot\Entity\Annotations\PropertyAnnotationHandler;
 use PhpBoot\Entity\Annotations\ValidateAnnotationHandler;
@@ -20,10 +21,12 @@ class EntityContainerBuilder extends ContainerBuilder
 
     /**
      * EntityContainerBuilder constructor.
+     * @param FactoryInterface $factory
      * @param array $annotations
      */
-    public function __construct(array $annotations = self::DEFAULT_ANNOTATIONS)
+    public function __construct(FactoryInterface $factory, array $annotations = self::DEFAULT_ANNOTATIONS)
     {
+        $this->factory = $factory;
         parent::__construct($annotations);
     }
     /**
@@ -51,6 +54,16 @@ class EntityContainerBuilder extends ContainerBuilder
      */
     protected function createContainer($className)
     {
-        return new EntityContainer($className);
+        return $this->factory->make(EntityContainer::class, ['className'=>$className]);
     }
+
+    protected function getHandler($handlerName, $container)
+    {
+        return $this->factory->make($handlerName, ['builder'=>$this, 'container'=>$container]);
+    }
+
+    /**
+     * @var FactoryInterface
+     */
+    private $factory;
 }

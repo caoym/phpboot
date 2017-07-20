@@ -2,7 +2,7 @@
 
 namespace PhpBoot\Entity;
 
-class MixedTypeContainer implements ContainerInterface
+class MixedTypeContainer implements TypeContainerInterface
 {
     /**
      * @param mixed $data

@@ -3,9 +3,9 @@
 namespace PhpBoot\Metas;
 
 use PhpBoot\Entity\ArrayContainer;
-use PhpBoot\Entity\ContainerInterface;
 use PhpBoot\Entity\EntityContainer;
 use PhpBoot\Entity\ScalarTypeContainer;
+use PhpBoot\Entity\TypeContainerInterface;
 
 class PropertyMeta
 {
@@ -18,7 +18,7 @@ class PropertyMeta
      * @param string $validation
      * @param string $summary
      * @param string $description
-     * @param ContainerInterface|null $container
+     * @param TypeContainerInterface|null $container
      */
     public function __construct($name, $type=null, $isOptional=false,$default=null, $validation=null, $summary='', $description='', $container = null){
         $this->name = $name;
@@ -32,7 +32,7 @@ class PropertyMeta
     }
 
     /**
-     * @var ContainerInterface|null
+     * @var TypeContainerInterface|null
      */
     public $container;
     public $name;

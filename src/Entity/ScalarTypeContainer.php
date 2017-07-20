@@ -5,7 +5,7 @@ namespace PhpBoot\Entity;
 use PhpBoot\Utils\TypeCast;
 use PhpBoot\Utils\TypeHint;
 
-class ScalarTypeContainer implements ContainerInterface
+class ScalarTypeContainer implements TypeContainerInterface
 {
     public function __construct($type)
     {

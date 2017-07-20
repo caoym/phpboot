@@ -68,7 +68,7 @@ class RouteAnnotationHandler extends ControllerAnnotationHandler
             if($paramClass){
                 $paramClass = $paramClass->getName();
             }
-            $container = ContainerFactory::create($paramClass);
+            $container = ContainerFactory::create($this->entityBuilder, $paramClass);
             $paramsMeta[] = new ParamMeta($paramName,
                 $source,
                 $paramClass?:'mixed',

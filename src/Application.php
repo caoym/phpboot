@@ -2,6 +2,7 @@
 namespace PhpBoot;
 
 use DI\Container;
+use DI\FactoryInterface;
 use Doctrine\Common\Cache\ApcCache;
 use FastRoute\DataGenerator\GroupCountBased as GroupCountBasedDataGenerator;
 use FastRoute\Dispatcher\GroupCountBased as GroupCountBasedDispatcher;
@@ -23,7 +24,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class Application implements ContainerInterface
+class Application implements ContainerInterface, FactoryInterface
 {
     /**
      * @param string|array
@@ -53,10 +54,14 @@ class Application implements ContainerInterface
         );
         $container->set('container', $container);
         $container->set(Request::class, \DI\factory([Request::class, 'createFromGlobals']));
+        $container->set(FactoryInterface::class, $container);
+        $container->set(ContainerInterface::class, $container);
 
         $app = $container->make(self::class);
 
         $container->set('app', $app);
+
+
         return $app;
     }
     /**
@@ -68,8 +73,8 @@ class Application implements ContainerInterface
         $this->cache = new CheckableCache($localCache);
     }
 
-    public function make($className, $params=[]){
-        return $this->container->make($className, $params);
+    public function make($name, array $parameters = []){
+        return $this->container->make($name, $parameters);
     }
 
     /**
@@ -116,7 +121,7 @@ class Application implements ContainerInterface
                 function ()use($key){
                     $routeCollector = new RouteCollector(new Std(), new GroupCountBasedDataGenerator());
                     foreach ($this->routeLoaders as $loader){
-                        $containers[] = $loader();
+                        $containers = $loader();
                         /**@var ControllerContainer[] $containers*/
                         foreach ($containers as $container){
                             foreach ($container->getRoutes() as $actionName=>$route){

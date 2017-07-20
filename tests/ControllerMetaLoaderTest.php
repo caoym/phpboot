@@ -1,6 +1,7 @@
 <?php
 
 namespace PhpBoot\Tests;
+use PhpBoot\Application;
 use PhpBoot\Controller\ControllerContainerBuilder;
 use PhpBoot\Controller\ControllerContainer;
 use PhpBoot\Controller\HookInterface;
@@ -62,7 +63,8 @@ class ControllerMetaLoaderTest extends TestCase
 {
     public function testLoad()
     {
-        $builder = new ControllerContainerBuilder();
+        $app = Application::createByDefault();
+        $builder = $app->make(ControllerContainerBuilder::class);
         $actual = $builder->build(ControllerTest::class);
         $expected = new ControllerContainer(ControllerTest::class);
         //TODO $this->assertEquals($expected, $actual);

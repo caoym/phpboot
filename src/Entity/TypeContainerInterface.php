@@ -2,7 +2,7 @@
 
 namespace PhpBoot\Entity;
 
-interface ContainerInterface
+interface TypeContainerInterface
 {
     /**
      * @param mixed $data

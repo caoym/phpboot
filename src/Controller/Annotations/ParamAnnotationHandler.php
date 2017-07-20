@@ -60,7 +60,7 @@ class ParamAnnotationHandler extends ControllerAnnotationHandler
         //TODO 检测声明的类型和注释的类型是否匹配
         if($paramType){
             $paramMeta->type = TypeHint::normalize($paramType, $className);//or fail(new AnnotationSyntaxException("{$this->container->getClassName()}::{$ann->parent->name} @{$ann->name} syntax error, param $paramName unknown type:$paramType "));
-            $container = ContainerFactory::create($paramMeta->type);
+            $container = ContainerFactory::create($this->entityBuilder, $paramMeta->type);
             $paramMeta->container = $container;
         }
         $paramMeta->description = $paramDoc;

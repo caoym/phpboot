@@ -25,7 +25,7 @@ class VarAnnotationHandler extends EntityAnnotationHandler
                 // TODO 判断$type是否匹配
                 $property->type = TypeHint::normalize($type, $this->container->getClassName());
 
-                $property->container = ContainerFactory::create($property->type);
+                $property->container = ContainerFactory::create($this->builder, $property->type);
             }
         }else{
             fail(new AnnotationSyntaxException(

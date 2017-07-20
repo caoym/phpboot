@@ -6,17 +6,16 @@ use PhpBoot\Utils\TypeHint;
 
 class ContainerFactory
 {
-    static public function create($type)
+    static public function create(EntityContainerBuilder $builder, $type)
     {
         //TODO 支持|分隔的多类型
 
-        $getter = function($type){
+        $getter = function($type)use($builder){
             if(!$type || $type == 'mixed'){
                 return new MixedTypeContainer();
             }elseif (TypeHint::isScalarType($type)){
                 return new ScalarTypeContainer($type);
             }else{
-                $builder = new EntityContainerBuilder();
                 return $builder->build($type);
             }
         };

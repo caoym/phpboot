@@ -44,7 +44,7 @@ class ReturnAnnotationHandler extends ControllerAnnotationHandler
         if($meta){
             $meta->description = $doc;
             $meta->type = $type;
-            $meta->container = ContainerFactory::create($type);
+            $meta->container = ContainerFactory::create($this->entityBuilder, $type);
         }
     }
 }

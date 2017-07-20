@@ -5,7 +5,7 @@ namespace PhpBoot\Entity;
 
 use PhpBoot\Utils\TypeHint;
 
-class ArrayContainer implements ContainerInterface
+class ArrayContainer implements TypeContainerInterface
 {
     /**
      * @param string $type
@@ -49,7 +49,7 @@ class ArrayContainer implements ContainerInterface
     }
 
     /**
-     * @var ContainerInterface
+     * @var TypeContainerInterface
      */
     private $container;
 }

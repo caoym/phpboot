@@ -50,7 +50,7 @@ class BindAnnotationHandler extends ControllerAnnotationHandler
                     new ReturnMeta(
                         'params.'.$paramMeta->name,
                         $paramMeta->type, $paramDoc,
-                        ContainerFactory::create($paramMeta->type)
+                        ContainerFactory::create($this->entityBuilder, $paramMeta->type)
                     )
                 );
             }else{

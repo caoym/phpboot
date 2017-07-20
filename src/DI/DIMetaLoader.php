@@ -35,4 +35,9 @@ class DIMetaLoader extends ContainerBuilder
         $res->definition = new ObjectDefinition($className);
         return $res;
     }
+
+    protected function getHandler($handlerName, $container)
+    {
+        return new $handlerName($container);
+    }
 }
