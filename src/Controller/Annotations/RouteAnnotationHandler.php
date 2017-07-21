@@ -86,9 +86,11 @@ class RouteAnnotationHandler extends ControllerAnnotationHandler
         $exceptionHandler = new ExceptionHandler();
         $responseHandler->setMapping('response.content', new ReturnMeta('return','mixed','', new MixedTypeContainer()));
 
+        $uri = $params->getParam(1);
+        $uri = rtrim($this->container->getPathPrefix(), '/').'/'.ltrim($uri, '/');
         $route = new Route(
             $httpMethod,
-            $params->getParam(1),
+            $uri,
             $requestHandler,
             $responseHandler,
             $exceptionHandler,

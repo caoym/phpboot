@@ -39,10 +39,10 @@ class Route
         $this->responseHandler or fail('undefined responseHandler');
         $this->exceptionHandler or fail('undefined exceptionHandler');
 
-        $res = $this->exceptionHandler->handler(function()use($app, $request, $function){
-            $next = function($request)use($function){
+        $res = $this->exceptionHandler->handler($app, function()use($app, $request, $function){
+            $next = function($request)use($app, $function){
                 $params = [];
-                $this->requestHandler->handle($request, $params);
+                $this->requestHandler->handle($app, $request, $params);
                 $res = call_user_func_array($function, $params);
                 return $this->responseHandler->handle($res, $params);
             };
