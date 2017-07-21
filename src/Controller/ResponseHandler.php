@@ -26,6 +26,9 @@ class ResponseHandler
      */
     public function eraseMapping($target)
     {
+        if(!isset($this->mappings[$target])){
+            return null;
+        }
         $ori = $this->mappings[$target];
         unset($this->mappings[$target]);
         return $ori;
@@ -57,14 +60,28 @@ class ResponseHandler
         }
 
         $response = new Response();
-        $output = new ArrayAdaptor($response);
-
+        $output = [];
         foreach($mappings as $key=>$map){
             $val = \JmesPath\search($map->source, $input);
             if(substr($key, 0, strlen('response.')) == 'response.'){
                 $key = substr($key, strlen('response.'));
             }
             ArrayHelper::set($output, $key, $val);
+        }
+        $response = new Response();
+        foreach ($output as $key=>$value){
+            //TODO 支持自定义格式输出
+            //TODO 支持更多的输出目标
+            if($key == 'content'){
+                $response->setContent(json_encode($value, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+            }elseif($key == 'headers'){
+                foreach ($value as $k=>$v){
+                    $response->headers->set($k, $v);
+                }
+            }else{
+                fail(new \UnexpectedValueException("Unexpected output target $key"));
+            }
+
         }
         return $response;
     }

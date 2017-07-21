@@ -36,9 +36,11 @@ class BindAnnotationHandler extends ControllerAnnotationHandler
         $handler = $route->getResponseHandler();
 
         if ($ann->parent->name == 'return'){
-            foreach ($handler->getMappings() as $mapping){
-                $mapping->source = $params->getParam(0);
+            $return = $handler->eraseMapping('response.content');
+            if($return){
+                $handler->setMapping($params[0], $return);
             }
+
         }elseif($ann->parent->name == 'param'){
             list($paramType, $paramName, $paramDoc) = ParamAnnotationHandler::getParamInfo($ann->parent->description);
 

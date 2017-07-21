@@ -22,9 +22,10 @@ class RequestHandler
      * @param Application $app
      * @param Request $request
      * @param array $params
+     * @param array $reference
      * @return void
      */
-    public function handle(Application $app, Request $request, array &$params){
+    public function handle(Application $app, Request $request, array &$params, array &$reference){
 
         $vld = new Validator();
         $requestArray = new ArrayAdaptor($request);
@@ -61,7 +62,7 @@ class RequestHandler
         $pos = 0;
         foreach ($this->paramMetas as $meta){
             if($meta->isPassedByReference){
-                $params[$pos] = null;
+                $params[$pos] = &$reference[$meta->name];
             }else{
                 $params[$pos] = $inputs[$meta->name];
             }

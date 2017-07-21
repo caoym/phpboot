@@ -42,9 +42,10 @@ class Route
         $res = $this->exceptionHandler->handler($app, function()use($app, $request, $function){
             $next = function($request)use($app, $function){
                 $params = [];
-                $this->requestHandler->handle($app, $request, $params);
+                $reference = [];
+                $this->requestHandler->handle($app, $request, $params, $reference);
                 $res = call_user_func_array($function, $params);
-                return $this->responseHandler->handle($res, $params);
+                return $this->responseHandler->handle($res, $reference);
             };
             foreach (array_reverse($this->hooks) as $hookName){
                 $next = function($request)use($app, $hookName, $next){

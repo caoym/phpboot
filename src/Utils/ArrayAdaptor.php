@@ -28,19 +28,17 @@ class ArrayAdaptor implements \ArrayAccess
     {
         if(is_array($this->obj)){
             return array_key_exists($offset, $this->obj);
-        }
-        if(method_exists($this->obj, 'has')){
+        }elseif(self::hasProperty($this->obj, $offset)){
+            return true;
+        }elseif(method_exists($this->obj, 'has')){
             return $this->obj->has($offset);
-        }
-        $method = 'has'.ucfirst($offset);
-        if(method_exists($this->obj, $method)){
+        }elseif(method_exists($this->obj, $method = 'has'.ucfirst($offset))){
             return $this->obj->{$method}($offset);
-        }
-        $method = 'get'.ucfirst($offset);
-        if(method_exists($this->obj, $method)){
+        }elseif(method_exists($this->obj, $method = 'get'.ucfirst($offset))){
             return $this->obj->{$method}() !== null;
+        }else{
+            return false;
         }
-        return false;
     }
 
     /**
@@ -57,13 +55,14 @@ class ArrayAdaptor implements \ArrayAccess
         $res = null;
         if(is_array($this->obj)){
             $res = &$this->obj[$offset];
-        }
-        if(method_exists($this->obj, 'get')){
-            $res = &$this->obj->get($offset);
-        }
-        $method = 'get'.ucfirst($offset);
-        if(method_exists($this->obj, $method)){
-            $res = &$this->obj->{$method}();
+        }elseif(self::hasProperty($this->obj, $offset)){
+            $res = &$this->obj->{$offset};
+        }elseif(method_exists($this->obj, 'get')){
+            $res = $this->obj->get($offset);
+        }elseif(method_exists($this->obj, $method = 'get'.ucfirst($offset))){
+            $res = $this->obj->{$method}();
+        }else{
+            throw new \InvalidArgumentException("offsetGet($offset) failed");
         }
         if(is_array($res) || is_object($res)){
             return new self($res);
@@ -87,13 +86,14 @@ class ArrayAdaptor implements \ArrayAccess
     {
         if(is_array($this->obj)){
             $this->obj[$offset] = $value;
-        }
-        if(method_exists($this->obj, 'set')){
+        }elseif(self::hasProperty($this->obj, $offset)){
+            $this->obj->{$offset} = $value;
+        }elseif(method_exists($this->obj, 'set')){
             $this->obj->set($offset, $value);
-        }
-        $method = 'set'.ucfirst($offset);
-        if(method_exists($this->obj, $method)){
+        }elseif(method_exists($this->obj, $method = 'set'.ucfirst($offset))){
             $this->obj->{$method}($value);
+        }else{
+            throw new \BadMethodCallException("can not set $offset");
         }
     }
 
@@ -110,9 +110,14 @@ class ArrayAdaptor implements \ArrayAccess
     {
         if(is_array($this->obj)){
             unset($this->obj[$offset]);
-        }
-        if(method_exists($this->obj, 'remove')){
+        }elseif(self::hasProperty($this->obj, $offset)){
+            unset($this->obj->{$offset});
+        }elseif(method_exists($this->obj, 'remove')){
             $this->obj->remove($offset);
+        }elseif(method_exists($this->obj, $method = 'remove'.ucfirst($offset))){
+            $this->obj->$method();
+        }else{
+            throw new \InvalidArgumentException("offsetUnset($offset) failed");
         }
     }
     static public function strip($obj){
@@ -120,6 +125,21 @@ class ArrayAdaptor implements \ArrayAccess
             return $obj->obj;
         }
         return $obj;
+    }
+    static function hasProperty($object, $name)
+    {
+        if(!is_object($object)){
+            return false;
+        }
+        $class = new \ReflectionClass($object);
+        if(!$class->hasProperty($name)){
+            return false;
+        }
+        $property = $class->getProperty($name);
+        if(!$property){
+            return false;
+        }
+        return $property->isPublic();
     }
     private $obj;
 }

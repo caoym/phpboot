@@ -16,7 +16,7 @@ class ArrayHelper
         $cur = &$arr;
         while($p = array_pop($keys)){
             $cur instanceof \ArrayAccess || is_array($cur) or fail(new \InvalidArgumentException('array or object of ArrayAccess required'));
-            if(!array_key_exists($p, $cur)){
+            if(!isset($cur[$p])){
                 if(count($keys) == 0){
                     $cur[$p] = $val;
                 }else{
