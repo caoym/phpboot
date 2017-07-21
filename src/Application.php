@@ -15,6 +15,7 @@ use PhpBoot\Cache\FileExpiredChecker;
 use PhpBoot\Controller\ControllerContainer;
 use PhpBoot\Controller\Route;
 use PhpBoot\DI\DIContainerBuilder;
+use PhpBoot\DI\Traits\EnableDIAnnotations;
 use PhpBoot\Lock\LocalAutoLock;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
@@ -26,6 +27,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Application implements ContainerInterface, FactoryInterface
 {
+    use EnableDIAnnotations;
     /**
      * @param string|array
      * .php file
@@ -126,7 +128,7 @@ class Application implements ContainerInterface, FactoryInterface
                         foreach ($containers as $container){
                             foreach ($container->getRoutes() as $actionName=>$route){
                                 $routeCollector->addRoute($route->getMethod(), $route->getUri(), [$container->getClassName(), $actionName]);
-                                $this->cache->set('route:'.md5($container->getClassName().'::'.$actionName),$route, new FileExpiredChecker($container->getFileName()));
+                                $this->cache->set('route:'.md5($container->getClassName().'::'.$actionName),$route, 0, new FileExpiredChecker($container->getFileName()));
                             }
                         }
                     }
@@ -202,7 +204,7 @@ class Application implements ContainerInterface, FactoryInterface
             return LocalAutoLock::lock($key, 60, function()use($className, $actionName, $key){
                 $container = $this->controllerContainerBuilder->build($className);
                 $route = $container->getRoute($actionName);
-                $this->cache->set('route:'.$key, $route, new FileExpiredChecker($container->getFileName()));
+                $this->cache->set('route:'.$key, $route, 0, new FileExpiredChecker($container->getFileName()));
                 return $route;
             }, function()use($expiredData){
                 return $expiredData;

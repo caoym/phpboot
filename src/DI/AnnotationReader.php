@@ -23,14 +23,14 @@ class AnnotationReader implements DefinitionSource
         }
 
         $class = new \ReflectionClass($name);
-//        if(isset($name::$__enableAnnotations__) && $name::$__enableAnnotations__){
+        if(isset($name::$__enableDIAnnotations__) && $name::$__enableDIAnnotations__){
             $loader = new DIMetaLoader();
             $context = $loader->build($name);
             /**@var $context ObjectDefinitionContext */
             $definition = $context->definition;
-//        }else{
-//            $definition = new ObjectDefinition($name);
-//        }
+        }else{
+            $definition = new ObjectDefinition($name);
+        }
 
         $constructor = $class->getConstructor();
         if ($constructor && $constructor->isPublic()) {
