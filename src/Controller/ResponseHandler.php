@@ -2,6 +2,7 @@
 
 namespace PhpBoot\Controller;
 
+use PhpBoot\Application;
 use PhpBoot\Metas\ReturnMeta;
 use PhpBoot\Utils\ArrayAdaptor;
 use PhpBoot\Utils\ArrayHelper;
@@ -46,8 +47,13 @@ class ResponseHandler
         return $this->mappings[$target];
     }
 
-
-    public function handle($return, $params)
+    /**
+     * @param Application $app
+     * @param $return
+     * @param $params
+     * @return Response
+     */
+    public function handle(Application $app, $return, $params)
     {
         $input = [
             'return'=>$return,
@@ -73,7 +79,9 @@ class ResponseHandler
             //TODO 支持自定义格式输出
             //TODO 支持更多的输出目标
             if($key == 'content'){
-                $response->setContent(json_encode($value, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+                $render = $app->get(ResponseRenderer::class);
+                $content = $render->render($value);
+                $response->setContent($content);
             }elseif($key == 'headers'){
                 foreach ($value as $k=>$v){
                     $response->headers->set($k, $v);

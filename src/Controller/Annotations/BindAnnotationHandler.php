@@ -46,6 +46,7 @@ class BindAnnotationHandler extends ControllerAnnotationHandler
 
             $paramMeta = $route->getRequestHandler()->getParamMeta($paramName);
             if($paramMeta->isPassedByReference){
+                $handler->eraseMapping($params[0]);
                 //输出绑定
                 $handler->setMapping(
                     $params[0],

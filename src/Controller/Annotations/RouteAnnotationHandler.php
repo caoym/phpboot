@@ -54,6 +54,10 @@ class RouteAnnotationHandler extends ControllerAnnotationHandler
                 $routeParams[$i[0]] = true;
             }
         }
+
+        $responseHandler = new ResponseHandler();
+        $exceptionHandler = new ExceptionHandler();
+
         //设置参数列表
         $paramsMeta = [];
         foreach ($methodParams as $param){
@@ -69,7 +73,7 @@ class RouteAnnotationHandler extends ControllerAnnotationHandler
                 $paramClass = $paramClass->getName();
             }
             $container = ContainerFactory::create($this->entityBuilder, $paramClass);
-            $paramsMeta[] = new ParamMeta($paramName,
+            $meta = new ParamMeta($paramName,
                 $source,
                 $paramClass?:'mixed',
                 $param->isOptional(),
@@ -79,11 +83,17 @@ class RouteAnnotationHandler extends ControllerAnnotationHandler
                 '',
                 $container
             );
+            $paramsMeta[] = $meta;
+            if($meta->isPassedByReference){
+                $responseHandler->setMapping('response.content.'.$meta->name, new ReturnMeta(
+                    'params.'.$meta->name,
+                    $meta->type, $meta->description,
+                    ContainerFactory::create($this->entityBuilder, $meta->type)
+                ));
+            }
         }
-
         $requestHandler = new RequestHandler($paramsMeta);
-        $responseHandler = new ResponseHandler();
-        $exceptionHandler = new ExceptionHandler();
+
         $responseHandler->setMapping('response.content', new ReturnMeta('return','mixed','', new MixedTypeContainer()));
 
         $uri = $params->getParam(1);

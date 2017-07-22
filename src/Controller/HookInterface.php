@@ -12,5 +12,5 @@ interface HookInterface
      * @param callable $next
      * @return Response
      */
-    public function handle(Request $request, $next);
+    public function handle(Request $request, callable $next);
 }

@@ -15,7 +15,7 @@ class HookTest1 implements HookInterface{
      * @param callable $next
      * @return Response
      */
-    public function handle(Request $request, $next)
+    public function handle(Request $request, callable $next)
     {
         return $next();
     }
@@ -27,7 +27,7 @@ class HookTest2 implements HookInterface{
      * @param callable $next
      * @return Response
      */
-    public function handle(Request $request, $next)
+    public function handle(Request $request, callable $next)
     {
         return $next();
     }
