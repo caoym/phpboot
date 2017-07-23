@@ -30,7 +30,7 @@ class ThrowsAnnotationHandler
             return ;
         }
         $params = new AnnotationParams($ann->description, 2);
-        count($params)>0 or fail(new AnnotationSyntaxException("The annotation \"@{$ann->name} {$ann->description}\" of {$container->getClassName()}::$target require at least one param, {$params->count()} given"));
+        count($params)>0 or \PhpBoot\abort(new AnnotationSyntaxException("The annotation \"@{$ann->name} {$ann->description}\" of {$container->getClassName()}::$target require at least one param, {$params->count()} given"));
 
         $type = TypeHint::normalize($params[0], $container->getClassName()); // TODO 缺少类型时忽略错误
         $doc = $params->getRawParam(1, '');

@@ -21,7 +21,7 @@ class ControllerContainer
      */
     public function addRoute($actionName, Route $route)
     {
-        !array_key_exists($actionName, $this->routes) or fail("repeated @route for {$this->className}::$actionName");
+        !array_key_exists($actionName, $this->routes) or \PhpBoot\abort("repeated @route for {$this->className}::$actionName");
         $this->routes[$actionName] = $route;
     }
     /**

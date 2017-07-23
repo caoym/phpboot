@@ -1,15 +1,16 @@
 <?php
-use  PhpBoot\Utils\Logger;
+namespace PhpBoot;
+use PhpBoot\Utils\Logger;
 
-if (! function_exists('fail')) {
+if (! function_exists('PhpBoot\abort')) {
     /**
      * 抛出异常, 并记录日志
-     * @param string|Exception $error
+     * @param string|\Exception $error
      * @param array $context
      * @param string $level "error"|"warning"|"info"|"debug"|null
-     * @throws Exception
+     * @throws \Exception
      */
-    function fail($error = '', $context=[], $level='warning')
+    function abort($error = '', $context=[], $level='warning')
     {
         if(is_object($context)){
             $context = get_object_vars($context);

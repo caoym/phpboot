@@ -22,7 +22,7 @@ class ValidateAnnotationHandler
 
             $target = $ann->parent->name;
             $property = $container->getProperty($target);
-            $property or fail($container->getClassName()." property $target not exist ");
+            $property or \PhpBoot\abort($container->getClassName()." property $target not exist ");
             if($params->count()>1){
                 $expr = [$params->getParam(0), $params->getParam(1)];
             }else{
@@ -30,7 +30,7 @@ class ValidateAnnotationHandler
             }
             $property->validation = $expr;
         }else{
-            fail(new AnnotationSyntaxException(
+            \PhpBoot\abort(new AnnotationSyntaxException(
                 "The annotation \"@{$ann->name} {$ann->description}\" of {$container->getClassName()}::{$ann->parent->name} require 1 param, 0 given"
             ));
         }

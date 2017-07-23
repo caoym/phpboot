@@ -34,7 +34,7 @@
             "PhpBoot\\Tests\\": "tests/"
         },
         "files": [
-            "src/Utils/fail.php",
+            "src/functions.php",
             "src/Annotation/names.php"
         ]
     },

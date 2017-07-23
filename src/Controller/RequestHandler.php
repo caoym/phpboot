@@ -46,11 +46,11 @@ class RequestHandler
                     $vld->rule($meta->validation, $meta->name);
                 }
             }else{
-                $meta->isOptional or fail(new BadRequestHttpException("param $source is required"));
+                $meta->isOptional or \PhpBoot\abort(new BadRequestHttpException("param $source is required"));
                 $inputs[$meta->name] = $meta->default;
             }
         }
-        $vld->withData($inputs)->validate() or fail(
+        $vld->withData($inputs)->validate() or \PhpBoot\abort(
             new \InvalidArgumentException(
                 json_encode(
                     $vld->errors(),

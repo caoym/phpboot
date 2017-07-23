@@ -3,8 +3,9 @@
 namespace PhpBoot\Annotation;
 
 use Doctrine\Common\Cache\ApcCache;
+use Doctrine\Common\Cache\CacheProvider;
 use PhpBoot\Cache\CheckableCache;
-use PhpBoot\Cache\FileExpiredChecker;
+use PhpBoot\Cache\ClassModifiedChecker;
 use PhpBoot\Utils\Logger;
 
 abstract class ContainerBuilder
@@ -27,6 +28,10 @@ abstract class ContainerBuilder
         $this->cache = new CheckableCache(new ApcCache());
     }
 
+    public function setCache(CacheProvider $cache)
+    {
+        $this->cache = new CheckableCache($cache);
+    }
     /**
      * load from class with local cache
      * @param string $className
@@ -35,7 +40,7 @@ abstract class ContainerBuilder
     public function build($className)
     {
         //TODO【重要】 使用全局的缓存版本号, 而不是针对每个文件判断缓存过期与否
-        $rfl = new \ReflectionClass($className) or fail("load class $className failed");
+        $rfl = new \ReflectionClass($className) or \PhpBoot\abort("load class $className failed");
         $fileName = $rfl->getFileName();
         $key = str_replace('\\','.',get_class($this)).md5(serialize($this->annotations).$fileName.$className);
         $oldData = null;
@@ -43,15 +48,15 @@ abstract class ContainerBuilder
         if($res === null){
             try{
                 $meta = $this->buildWithoutCache($className);
-                $this->cache->set($key, $meta, 0, $fileName?new FileExpiredChecker($fileName):null);
+                $this->cache->set($key, $meta, 0, $fileName?new ClassModifiedChecker($className):null);
                 return $meta;
             }catch (\Exception $e){
                 Logger::warning(__METHOD__.' failed with '.$e->getMessage());
-                $this->cache->set($key, $e->getMessage(), 0, $fileName?new FileExpiredChecker($fileName):null);
+                $this->cache->set($key, $e->getMessage(), 0, $fileName?new ClassModifiedChecker($className):null);
                 throw $e;
             }
         }elseif(is_string($res)){
-            fail($res);
+            \PhpBoot\abort($res);
         }else{
             return $res;
         }
@@ -82,7 +87,6 @@ abstract class ContainerBuilder
         foreach ($this->annotations as $i){
             list($class, $target) = $i;
 
-            /** @var $handler AnnotationHandler*/
             $found = \JmesPath\search($target, $anns);
             if(is_array($found)){
                 foreach ($found as $f){

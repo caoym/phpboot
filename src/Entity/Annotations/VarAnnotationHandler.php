@@ -28,7 +28,7 @@ class VarAnnotationHandler
             //TODO 校验type类型
             $target = $ann->parent->name;
             $property = $container->getProperty($target);
-            $property or fail($container->getClassName()." property $target not exist ");
+            $property or \PhpBoot\abort($container->getClassName()." property $target not exist ");
             if($type == null || $type == 'mixed'){
                 $property->container = new MixedTypeContainer();
             } else{
@@ -38,7 +38,7 @@ class VarAnnotationHandler
                 $property->container = ContainerFactory::create($builder, $property->type);
             }
         }else{
-            fail(new AnnotationSyntaxException(
+            \PhpBoot\abort(new AnnotationSyntaxException(
                 "The annotation \"@{$ann->name} {$ann->description}\" of {$container->getClassName()}::{$ann->parent->name} require 1 param, 0 given"
             ));
         }

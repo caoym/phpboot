@@ -35,9 +35,9 @@ class Route
      */
     public function invoke(Application $app, callable $function, Request $request)
     {
-        $this->requestHandler or fail('undefined requestHandler');
-        $this->responseHandler or fail('undefined responseHandler');
-        $this->exceptionHandler or fail('undefined exceptionHandler');
+        $this->requestHandler or \PhpBoot\abort('undefined requestHandler');
+        $this->responseHandler or \PhpBoot\abort('undefined responseHandler');
+        $this->exceptionHandler or \PhpBoot\abort('undefined exceptionHandler');
 
         $res = $this->exceptionHandler->handler($app, function()use($app, $request, $function){
             $next = function($request)use($app, $function){

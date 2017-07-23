@@ -86,7 +86,7 @@ class ResponseHandler
                     $response->headers->set($k, $v);
                 }
             }else{
-                fail(new \UnexpectedValueException("Unexpected output target $key"));
+                \PhpBoot\abort(new \UnexpectedValueException("Unexpected output target $key"));
             }
 
         }

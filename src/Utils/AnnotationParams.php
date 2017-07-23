@@ -159,7 +159,7 @@ class AnnotationParams implements \Countable, \ArrayAccess
                 if($ignoreError){
                     return $text;
                 }else{
-                    fail('json_decode failed with '.json_last_error_msg(), [$text]);
+                    \PhpBoot\abort('json_decode failed with '.json_last_error_msg(), [$text]);
                 }
             }
             return $decoded;
@@ -215,7 +215,7 @@ class AnnotationParams implements \Countable, \ArrayAccess
      */
     public function offsetSet($offset, $value)
     {
-        fail(new \BadMethodCallException('not impl'));
+        \PhpBoot\abort(new \BadMethodCallException('not impl'));
     }
 
     /**
@@ -229,6 +229,6 @@ class AnnotationParams implements \Countable, \ArrayAccess
      */
     public function offsetUnset($offset)
     {
-        fail(new \BadMethodCallException('not impl'));
+        \PhpBoot\abort(new \BadMethodCallException('not impl'));
     }
 }

@@ -4,6 +4,7 @@ namespace PhpBoot;
 use DI\Container;
 use DI\FactoryInterface;
 use Doctrine\Common\Cache\ApcCache;
+use Doctrine\Common\Cache\CacheProvider;
 use FastRoute\DataGenerator\GroupCountBased as GroupCountBasedDataGenerator;
 use FastRoute\Dispatcher\GroupCountBased as GroupCountBasedDispatcher;
 use FastRoute\Dispatcher;
@@ -12,17 +13,20 @@ use FastRoute\RouteParser\Std;
 use Invoker\Exception\InvocationException;
 use Invoker\Exception\NotCallableException;
 use Invoker\Exception\NotEnoughParametersException;
+use PhpBoot\Annotation\ContainerBuilder;
 use PhpBoot\Controller\ControllerContainerBuilder;
 use PhpBoot\Cache\CheckableCache;
-use PhpBoot\Cache\FileExpiredChecker;
+use PhpBoot\Cache\ClassModifiedChecker;
 use PhpBoot\Controller\ControllerContainer;
 use PhpBoot\Controller\Route;
 use PhpBoot\DI\DIContainerBuilder;
 use PhpBoot\DI\Traits\EnableDIAnnotations;
 use PhpBoot\Lock\LocalAutoLock;
+use PhpBoot\Utils\Logger;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
@@ -31,14 +35,15 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class Application implements ContainerInterface, FactoryInterface, \DI\InvokerInterface
 {
     use EnableDIAnnotations;
+
     /**
      * @param string|array
      * .php file
      * ```
      * return
      * [
-     *      'DB'=>['user'=>'', 'password'=>'']
-     *      'localCache'
+     *      'DB'=>['user'=>'', 'password'=>''],
+     *      'LocalCache'=> \DI\object(ApcCache::class),
      * ];
      * ```
      * or just the array
@@ -46,38 +51,38 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
      */
     static public function createByDefault($conf=[]){
         $builder = new DIContainerBuilder();
+
+        $default = [
+            'AppName'=>'App',
+            LoggerInterface::class  =>  \DI\object(\Monolog\Logger::class)->constructor(\DI\get('AppName')),
+            Request::class          =>  \DI\factory([Request::class, 'createFromGlobals']),
+        ];
+        $builder->addDefinitions($default);
         $builder->addDefinitions($conf);
         $container = $builder->build();
-
-        if(!$container->has('app.localCache')){
-            $container->set('app.localCache', \DI\object(ApcCache::class));
-        }
-        $container->set(
-            self::class,
-            \DI\object()
-                ->constructorParameter('localCache',\DI\get('app.localCache'))
-        );
-        $container->set('container', $container);
-        $container->set(Request::class, \DI\factory([Request::class, 'createFromGlobals']));
-        $container->set(FactoryInterface::class, $container);
-        $container->set(ContainerInterface::class, $container);
-
+        Logger::setDefaultLogger($container->get(LoggerInterface::class));
         $app = $container->make(self::class);
-
-        $container->set('app', $app);
-
-
         return $app;
     }
-    /**
-     * Application constructor.
-     * @param string|array $conf
-     */
-    public function __construct($localCache)
+    public function __construct()
     {
-        $this->cache = new CheckableCache($localCache);
+        $this->cache = new CheckableCache(new ApcCache());
     }
 
+    /**
+     * @return CacheProvider
+     */
+    public function getCache()
+    {
+        return $this->cache;
+    }
+    /**
+     * @param CacheProvider $localCache
+     */
+    public function setCache(CacheProvider $localCache)
+    {
+        $this->cache = $localCache;
+    }
     public function make($name, array $parameters = []){
         return $this->container->make($name, $parameters);
     }
@@ -131,7 +136,7 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
                         foreach ($containers as $container){
                             foreach ($container->getRoutes() as $actionName=>$route){
                                 $routeCollector->addRoute($route->getMethod(), $route->getUri(), [$container->getClassName(), $actionName]);
-                                $this->cache->set('route:'.md5($container->getClassName().'::'.$actionName),$route, 0, new FileExpiredChecker($container->getFileName()));
+                                $this->cache->set('route:'.md5($container->getClassName().'::'.$actionName),$route, 0, new ClassModifiedChecker($container->getClassName()));
                             }
                         }
                     }
@@ -161,7 +166,7 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
 
         $dispatcher = $this->getDispatcher();
         if(!$dispatcher){
-            fail(new NotFoundHttpException('none'), [$request->getMethod(), $uri]);
+            \PhpBoot\abort(new NotFoundHttpException('none'), [$request->getMethod(), $uri]);
         }
 
         $res = $dispatcher->dispatch($request->getMethod(), $uri);
@@ -170,7 +175,7 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
             list($className, $actionName) = $res[1];
             $route = $this->getRoute($className, $actionName);
             if(!$route){
-                fail(new NotFoundHttpException('dirty data'), [$request->getMethod(), $uri]);
+                \PhpBoot\abort(new NotFoundHttpException('dirty data'), [$request->getMethod(), $uri]);
             }
             $request = Request::createFromGlobals();
             $request->attributes->add($res[2]);
@@ -182,11 +187,11 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
             }
             return $response;
         }elseif ($res[0] == Dispatcher::NOT_FOUND){
-            fail(new NotFoundHttpException(), [$request->getMethod(), $uri]);
+            \PhpBoot\abort(new NotFoundHttpException(), [$request->getMethod(), $uri]);
         }elseif ($res[0] == Dispatcher::METHOD_NOT_ALLOWED){
-            fail(new MethodNotAllowedHttpException($res[1]), [$request->getMethod(), $uri]);
+            \PhpBoot\abort(new MethodNotAllowedHttpException($res[1]), [$request->getMethod(), $uri]);
         }else{
-            fail("unknown dispatch return {$res[0]}");
+            \PhpBoot\abort("unknown dispatch return {$res[0]}");
         }
     }
 
@@ -199,15 +204,16 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
     {
         $key = md5($className.'::'.$actionName);
         $expiredData = null;
-        $route = $this->cache->get('route:'.$key, $this, $expiredData, false);
+        $cache = new CheckableCache($this->cache);
+        $route = $cache->get('route:'.$key, $this, $expiredData, false);
         if(!$route){
             return false;
         }
         if($route == $this){
-            return LocalAutoLock::lock($key, 60, function()use($className, $actionName, $key){
+            return LocalAutoLock::lock($key, 60, function()use($cache, $className, $actionName, $key){
                 $container = $this->controllerContainerBuilder->build($className);
                 $route = $container->getRoute($actionName);
-                $this->cache->set('route:'.$key, $route, 0, new FileExpiredChecker($container->getFileName()));
+                $cache->set('route:'.$key, $route, 0, new ClassModifiedChecker($className));
                 return $route;
             }, function()use($expiredData){
                 return $expiredData;
@@ -248,7 +254,7 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
     }
 
     /**
-     * @inject container
+     * @inject
      * @var Container
      */
     public $container;
@@ -260,7 +266,7 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
     public $controllerContainerBuilder;
 
     /**
-     * @var CheckableCache
+     * @var CacheProvider
      */
     private $cache;
 

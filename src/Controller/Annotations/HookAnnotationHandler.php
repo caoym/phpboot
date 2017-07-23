@@ -29,10 +29,10 @@ class HookAnnotationHandler
             return ;
         }
         $params = new AnnotationParams($ann->description, 2);
-        count($params)>0 or fail("The annotation \"@{$ann->name} {$ann->description}\" of {$container->getClassName()}::$target require at least one param, 0 given");
+        count($params)>0 or \PhpBoot\abort("The annotation \"@{$ann->name} {$ann->description}\" of {$container->getClassName()}::$target require at least one param, 0 given");
         $className = $params[0];
         $className = TypeHint::normalize($className, $container->getClassName());
-        is_subclass_of($className, HookInterface::class) or fail("$className is not a HookInterface on the annotation \"@{$ann->name} {$ann->description}\" of {$container->getClassName()}::$target");
+        is_subclass_of($className, HookInterface::class) or \PhpBoot\abort("$className is not a HookInterface on the annotation \"@{$ann->name} {$ann->description}\" of {$container->getClassName()}::$target");
         $route->addHook($className);
     }
 }

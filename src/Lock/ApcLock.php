@@ -16,7 +16,7 @@ class ApcLock implements LockInterface
 
     public function unlock($key)
     {
-        $this->locked or fail("unlock unlocked $key");
+        $this->locked or \PhpBoot\abort("unlock unlocked $key");
         $res = apc_delete($key);
         $this->locked = false;
         return $res;

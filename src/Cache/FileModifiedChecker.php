@@ -5,7 +5,7 @@ namespace PhpBoot\Cache;
  * 检查文件是否过期
  * @author caoym
  */
-class FileExpiredChecker
+class FileModifiedChecker
 {
     /**
      * @param string|array $fileName 文件的绝对路径
@@ -15,7 +15,7 @@ class FileExpiredChecker
         if(is_string($fileName)){
             $fileNames[]=$fileName;
         }else{
-            is_array($fileName) or fail(new \InvalidArgumentException("string or array is required by param 0"));
+            is_array($fileName) or \PhpBoot\abort(new \InvalidArgumentException("string or array is required by param 0"));
             $fileNames = $fileName;
         }
         foreach ($fileNames as $fileName){
@@ -26,7 +26,7 @@ class FileExpiredChecker
                 if(!is_dir($fileName)){
                     continue;
                 }
-                $files = @dir($fileName) or fail("open dir $fileName failed");
+                $files = @dir($fileName) or \PhpBoot\abort("open dir $fileName failed");
                 while (!!($file = $files->read())){
                     if($file == '.' || $file == '..') {
                         continue;

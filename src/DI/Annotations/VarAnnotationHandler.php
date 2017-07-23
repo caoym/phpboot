@@ -30,7 +30,7 @@ class VarAnnotationHandler
         //
         $params = new AnnotationParams($ann->description, 2);
 
-        count($params)>0 or fail(new AnnotationSyntaxException("The annotation \"@{$ann->name} {$ann->description}\" of $className::$target require at least one param, 0 given"));
+        count($params)>0 or \PhpBoot\abort(new AnnotationSyntaxException("The annotation \"@{$ann->name} {$ann->description}\" of $className::$target require at least one param, 0 given"));
 
         $context->vars[$target] = TypeHint::normalize($params[0], $className);
     }

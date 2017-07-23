@@ -28,7 +28,7 @@ class RouteAnnotationHandler
     public function __invoke(ControllerContainer $container, $ann, EntityContainerBuilder $entityBuilder)
     {
         $params = new AnnotationParams($ann->description, 3);
-        $params->count()>=2 or fail(new AnnotationSyntaxException("The annotation \"@{$ann->name} {$ann->description}\" of {$container->getClassName()}::{$ann->parent->name} require 2 params, {$params->count()} given"));
+        $params->count()>=2 or \PhpBoot\abort(new AnnotationSyntaxException("The annotation \"@{$ann->name} {$ann->description}\" of {$container->getClassName()}::{$ann->parent->name} require 2 params, {$params->count()} given"));
 
         //TODO 错误判断: METHOD不支持, path不规范等
         $httpMethod = strtoupper($params->getParam(0));
@@ -41,7 +41,7 @@ class RouteAnnotationHandler
             'PATCH',
             'OPTIONS',
             'DELETE'
-        ]) or fail(new AnnotationSyntaxException("unknown method http $httpMethod in {$container->getClassName()}::$target"));
+        ]) or \PhpBoot\abort(new AnnotationSyntaxException("unknown method http $httpMethod in {$container->getClassName()}::$target"));
         //获取方法参数信息
         $rfl =  new \ReflectionClass($container->getClassName());
         $method = $rfl->getMethod($target);

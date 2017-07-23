@@ -20,13 +20,13 @@ class SafeFileWriter
         $path = str_replace('\\', '/', $path);
         $fileDir = dirname($path);
         $tmpFile = tempnam($fileDir);
-        false !== @file_put_contents($tmpFile, $data) or fail("write to file: $tmpFile failed");
+        false !== @file_put_contents($tmpFile, $data) or \PhpBoot\abort("write to file: $tmpFile failed");
         if($overwrite){
             @unlink($path); //删除原始文件
         }
         if(!@rename($tmpFile, $path)){
             @unlink($tmpFile); //删除原始文件
-            fail("write to file: $tmpFile failed");
+            \PhpBoot\abort("write to file: $tmpFile failed");
             return false;
         }
         return true;

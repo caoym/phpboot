@@ -23,6 +23,7 @@ class TypeHint
             $context = $contextFactory->createFromReflector(new \ReflectionClass($contextClass));
         }
         $type = $resolver->resolve($type, $context);
+        $type = ltrim($type, '\\');
         return (string)$type;
     }
     /**
@@ -52,7 +53,7 @@ class TypeHint
      * @return string|null
      */
     static function getArrayType($type){
-        self::isArray($type) or fail(new \InvalidArgumentException("$type is not array"));
+        self::isArray($type) or \PhpBoot\abort(new \InvalidArgumentException("$type is not array"));
         if($type == 'array') {
             return 'mixed';
         }else{

@@ -34,7 +34,7 @@ class BindAnnotationHandler
 
         $params = new AnnotationParams($ann->description, 2);
 
-        $params->count()>0 or fail(new AnnotationSyntaxException("The annotation \"@{$ann->name} {$ann->description}\" of {$container->getClassName()}::$target require 1 param, {$params->count()} given"));
+        $params->count()>0 or \PhpBoot\abort(new AnnotationSyntaxException("The annotation \"@{$ann->name} {$ann->description}\" of {$container->getClassName()}::$target require 1 param, {$params->count()} given"));
 
         $handler = $route->getResponseHandler();
 

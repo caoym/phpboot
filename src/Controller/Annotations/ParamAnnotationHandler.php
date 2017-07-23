@@ -32,7 +32,7 @@ class ParamAnnotationHandler
                 $paramName = substr($params->getParam(1), 1);
                 $paramDoc = $params->getRawParam(2, '');
             }else{
-                fail(new AnnotationSyntaxException("@param $text syntax error"));
+                \PhpBoot\abort(new AnnotationSyntaxException("@param $text syntax error"));
             }
         }
         return [$paramType, $paramName, $paramDoc];
@@ -59,10 +59,10 @@ class ParamAnnotationHandler
         list($paramType, $paramName, $paramDoc) = self::getParamInfo($ann->description);
 
         $paramMeta = $route->getRequestHandler()->getParamMeta($paramName);
-        $paramMeta or fail(new AnnotationSyntaxException("$className::$target param $paramName not exist "));
+        $paramMeta or \PhpBoot\abort(new AnnotationSyntaxException("$className::$target param $paramName not exist "));
         //TODO 检测声明的类型和注释的类型是否匹配
         if($paramType){
-            $paramMeta->type = TypeHint::normalize($paramType, $className);//or fail(new AnnotationSyntaxException("{$container->getClassName()}::{$ann->parent->name} @{$ann->name} syntax error, param $paramName unknown type:$paramType "));
+            $paramMeta->type = TypeHint::normalize($paramType, $className);//or \PhpBoot\abort(new AnnotationSyntaxException("{$container->getClassName()}::{$ann->parent->name} @{$ann->name} syntax error, param $paramName unknown type:$paramType "));
             $container = ContainerFactory::create($entityBuilder, $paramMeta->type);
             $paramMeta->container = $container;
         }

@@ -3,7 +3,7 @@
 namespace PhpBoot\Annotation;
 use Doctrine\Common\Cache\ApcCache;
 use PhpBoot\Cache\CheckableCache;
-use PhpBoot\Cache\FileExpiredChecker;
+use PhpBoot\Cache\ClassModifiedChecker;
 use phpDocumentor\Reflection\DocBlock\DescriptionFactory;
 use phpDocumentor\Reflection\DocBlock\StandardTagFactory;
 use phpDocumentor\Reflection\DocBlock\Tag;
@@ -49,7 +49,7 @@ class AnnotationReader implements \ArrayAccess
      */
     static public function read($className)
     {
-        $rfl = new \ReflectionClass($className) or fail("load class $className failed");
+        $rfl = new \ReflectionClass($className) or \PhpBoot\abort("load class $className failed");
         $fileName = $rfl->getFileName();
         $key = str_replace('\\','.',self::class).md5($fileName.$className);
         $oldData = null;
@@ -58,14 +58,14 @@ class AnnotationReader implements \ArrayAccess
         if($res === null){
             try{
                 $meta = self::readWithoutCache($className);
-                $cache->set($key, $meta, 0, $fileName?new FileExpiredChecker($fileName):null);
+                $cache->set($key, $meta, 0, $fileName?new ClassModifiedChecker($className):null);
                 return $meta;
             }catch (\Exception $e){
-                $cache->set($key, $e->getMessage(), 0, $fileName?new FileExpiredChecker($fileName):null);
+                $cache->set($key, $e->getMessage(), 0, $fileName?new ClassModifiedChecker($className):null);
                 throw $e;
             }
         }elseif(is_string($res)){
-            fail($res);
+            \PhpBoot\abort($res);
         }else{
             return $res;
         }

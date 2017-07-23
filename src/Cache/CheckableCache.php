@@ -78,6 +78,10 @@ class CheckableCache
     public function del($name){
         return  $this->impl->delete($name);
     }
+    public function getImpl()
+    {
+        return $this->impl;
+    }
     /**
      * @var Cache
      */

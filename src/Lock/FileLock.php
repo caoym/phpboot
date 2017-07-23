@@ -20,7 +20,7 @@ class FileLock implements LockInterface
 
     public function unlock($key)
     {
-        $this->locked or fail("unlock unlocked $key");
+        $this->locked or \PhpBoot\abort("unlock unlocked $key");
         $path = sys_get_temp_dir().'/lock_252a8fdc9b944af99a9bc53d2aea08f1/'.$key;
         $res = @unlink($path);
         $this->locked = false;

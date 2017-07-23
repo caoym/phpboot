@@ -10,7 +10,7 @@ class ScalarTypeContainer implements TypeContainerInterface
     public function __construct($type)
     {
         $this->type = $type;
-        !$type || TypeHint::isScalarType($type)  or fail(new \InvalidArgumentException("$type is not scalar type"));
+        !$type || TypeHint::isScalarType($type)  or \PhpBoot\abort(new \InvalidArgumentException("$type is not scalar type"));
     }
 
     public function make($data, $validate = true){

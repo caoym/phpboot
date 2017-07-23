@@ -10,12 +10,12 @@ class ArrayHelper
      */
     static public function set(&$arr, $key, $val)
     {
-        $arr instanceof \ArrayAccess || is_array($arr) or fail(new \InvalidArgumentException('the first param require array or object of ArrayAccess'));
+        $arr instanceof \ArrayAccess || is_array($arr) or \PhpBoot\abort(new \InvalidArgumentException('the first param require array or object of ArrayAccess'));
         $keys = explode('.', $key);
         $keys = array_reverse($keys);
         $cur = &$arr;
         while($p = array_pop($keys)){
-            $cur instanceof \ArrayAccess || is_array($cur) or fail(new \InvalidArgumentException('array or object of ArrayAccess required'));
+            $cur instanceof \ArrayAccess || is_array($cur) or \PhpBoot\abort(new \InvalidArgumentException('array or object of ArrayAccess required'));
             if(!isset($cur[$p])){
                 if(count($keys) == 0){
                     $cur[$p] = $val;
