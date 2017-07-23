@@ -3,11 +3,11 @@ An an easy-to-use SQL builder.
 
 ## HOW TO USE
 
-    $db = new \PDO($dsn, $username, $passwd);
+    $db = DB::connect($dsn, $username, $passwd);
     
 ### SELECT
 
-    $res = Sql::select('a, b')
+    $res = $db->select('a, b')
        ->from('table')
        ->leftJoin('table1')->on('table.id=table1.id')
        ->where('a=?',1)
@@ -15,30 +15,30 @@ An an easy-to-use SQL builder.
        ->orderBy('c', Sql::ORDER_BY_ASC)
        ->limit(0,1)
        ->forUpdate()->of('d')
-       ->get($db);
+       ->get();
 ### UPDATE
     
-    $rows = Sql::update('table')
+    $rows = $db->update('table')
        ->set('a', 1)
        ->where('b=?', 2)
        ->orderBy('c', Sql::ORDER_BY_ASC)
        ->limit(1)
-       ->exec($db)
+       ->exec()
        ->rows
        
 ### INSERT
 
-    $newId = Sql::insertInto('table')
+    $newId = $db->insertInto('table')
        ->values(['a'=>1])
-       ->exec($db)
+       ->exec()
        ->lastInsertId()
        
 ### DELETE
    
-    $rows = Sql::deleteFrom('table')
+    $rows = $db->deleteFrom('table')
        ->where('b=?', 2)
        ->orderBy('c', Sql::ORDER_BY_ASC)
        ->limit(1)
-       ->exec($db)
+       ->exec()
        ->rows
 

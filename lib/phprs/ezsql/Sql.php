@@ -30,7 +30,7 @@ require_once __DIR__.'/rules/replace.php';
  *      ->leftJoin('table1')->on('table.id=table1.id')
  *      ->where('a=?',1)
  *      ->groupBy('b')->having('sum(b)=?', 2)
- *      ->orderBy('c', Sql::$ORDER_BY_ASC)
+ *      ->orderBy('c', Sql::ORDER_BY_ASC)
  *      ->limit(0,1)
  *      ->forUpdate()->of('d')
  *      ->get($db);
@@ -39,7 +39,7 @@ require_once __DIR__.'/rules/replace.php';
  * $rows = Sql::update('table')
  *      ->set('a', 1)
  *      ->where('b=?', 2)
- *      ->orderBy('c', Sql::$ORDER_BY_ASC)
+ *      ->orderBy('c', Sql::ORDER_BY_ASC)
  *      ->limit(1)
  *      ->exec($db)
  *      ->rows
@@ -53,7 +53,7 @@ require_once __DIR__.'/rules/replace.php';
  * //4. delete
  * $rows = Sql::deleteFrom('table')
  *      ->where('b=?', 2)
- *      ->orderBy('c', Sql::$ORDER_BY_ASC)
+ *      ->orderBy('c', Sql::ORDER_BY_ASC)
  *      ->limit(1)
  *      ->exec($db)
  *      ->rows
@@ -71,7 +71,7 @@ class Sql{
      * @return \phprs\ezsql\rules\select\FromRule
      */
     static public function select($param0='*', $_=null){
-        $obj = new SelectRule(new SqlConetxt());
+        $obj = new SelectRule(new Context());
         $args = func_get_args();
         if(empty($args)){
             $args = ['*'];
@@ -85,7 +85,7 @@ class Sql{
      * @return \phprs\ezsql\rules\insert\ValuesRule
      */
     static public function insertInto($table) {
-        $obj = new InsertRule(new SqlConetxt());
+        $obj = new InsertRule(new Context());
         return $obj->insertInto($table);
     }
     /**
@@ -94,7 +94,7 @@ class Sql{
      * @return \phprs\ezsql\rules\update\UpdateSetRule
      */
     static public function update($table) {
-        $obj = new UpdateRule(new SqlConetxt());
+        $obj = new UpdateRule(new Context());
         return $obj->update($table);
     }
     
@@ -104,7 +104,7 @@ class Sql{
      * @return \phprs\ezsql\rules\basic\WhereRule
      */
     static public function deleteFrom($table){
-        $obj  =  new DeleteRule(new SqlConetxt());
+        $obj  =  new DeleteRule(new Context());
         return $obj->deleteFrom($table);
     }
     /**
@@ -113,7 +113,7 @@ class Sql{
      * @return \phprs\ezsql\rules\replace\ValuesRule
      */
     static public function replaceInto($table){
-        $obj  =  new ReplaceIntoRule(new SqlConetxt());
+        $obj  =  new ReplaceIntoRule(new Context());
         return $obj->replaceInto($table);
     }
     /**
@@ -127,7 +127,7 @@ class Sql{
     static public function native($str){
         return new Native($str);
     }
-    
-    static public $ORDER_BY_ASC ='ASC';
-    static public $ORDER_BY_DESC ='DESC';
+
+    const ORDER_BY_ASC ='ASC';
+    const ORDER_BY_DESC ='DESC';
 }

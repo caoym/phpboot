@@ -1,15 +1,15 @@
 <?php
-/**
- * $Id: Context.php 131 2015-10-10 02:25:57Z yangmin.cao $
- * @author caoym(caoyangmin@gmail.com)
- */
-namespace phprs\ezsql;
-
+namespace PhpBoot\DB;
 /**
  * @author caoym
  */
 class Context{
-    
+
+    public function __construct($connection)
+    {
+        $this->connection = $connection;
+    }
+
     /**
      * 拼接sql语句，并自动插入空格
      * @param string $sql 表达式
@@ -34,4 +34,8 @@ class Context{
     }
     public $sql='';
     public $params=[];
+    /**
+     * @var \PDO
+     */
+    public $connection;
 }

@@ -1,16 +1,14 @@
 <?php
-/**
- * $Id: impls.php 401 2015-11-06 08:28:26Z dong.chen $
- * @author caoym(caoyangmin@gmail.com)
- */
-namespace phprs\ezsql\impls;
-use phprs\ezsql\rules\basic\BasicRule;
+
+namespace PhpBoot\DB\impls;
+use PhpBoot\DB\Raw;
+use PhpBoot\DB\rules\basic\BasicRule;
 use phprs\util\NestedStringCut;
 use phprs\util\Verify;
-use phprs\ezsql\Context;
+use PhpBoot\DB\Context;
 
 class Response{
-    public function __construct($success,$pdo, $st){
+    public function __construct($success, $pdo, $st){
         $this->pdo = $pdo;
         $this->st = $st;
 		$this->success = $success;
@@ -121,7 +119,7 @@ class ValuesImpl
         $params = [];
         $stubs = [];
         foreach ($values as $v){
-            if(is_a($v, 'phprs\\ezsql\\Native')){//直接拼接sql，不需要转义
+            if(is_a($v, Raw::class)){//直接拼接sql，不需要转义
                 $stubs[]=$v->get();
             }else{
                 $stubs[]='?';
@@ -161,7 +159,7 @@ class UpdateSetImpl
         }else{
             $prefix = ',';
         }
-        if(is_a($value, 'phprs\\ezsql\\Native')){
+        if(is_a($value, Raw::class)){
             $context->appendSql("$prefix$column=$value",$prefix == 'SET ');
         }else{
             $context->appendSql("$prefix$column=?",$prefix == 'SET ');
@@ -186,7 +184,7 @@ class UpdateSetImpl
         $set = [];
         $params = [];
         foreach ($values as $k=>$v){
-            if(is_a($v, 'phprs\\ezsql\\Native')){//直接拼接sql，不需要转义
+            if(is_a($v, Raw::class)){//直接拼接sql，不需要转义
                 $set[]= "$k=".$v->get();
             }else{
                 $set[]= "$k=?";
@@ -331,7 +329,7 @@ class WhereImpl{
                 if($op == 'IN' || $op == 'NOT IN'){
                     $stubs = [];
                     foreach ($var as $i){
-                        if(is_a($i, 'phprs\\ezsql\\Native')){
+                        if(is_a($i, Raw::class)){
                             $stubs[]=strval($i);
                         }else{
                             $stubs[]='?';
@@ -342,13 +340,13 @@ class WhereImpl{
                     $exprs[] = "$k $op ($stubs)";
                 }else if($op == 'BETWEEN'){
                     $cond = "$k BETWEEN";
-                    if(is_a($var[0], 'phprs\\ezsql\\Native')){
+                    if(is_a($var[0], Raw::class)){
                         $cond = "$cond ".strval($var[0]);
                     }else{
                         $cond = "$cond ?";
                         $params[] = $var[0];
                     }
-                    if(is_a($var[1], 'phprs\\ezsql\\Native')){
+                    if(is_a($var[1], Raw::class)){
                         $cond = "$cond AND ".strval($var[1]);
                     }else{
                         $cond = "$cond AND ?";
@@ -356,7 +354,7 @@ class WhereImpl{
                     }
                     $exprs[] = $cond;
                 }else{
-                    if(is_a($var, 'phprs\\ezsql\\Native')){
+                    if(is_a($var, Raw::class)){
                         $exprs[] = "$k $op ".strval($var);
                     }else{
                         $exprs[] = "$k $op ?";
@@ -364,7 +362,7 @@ class WhereImpl{
                     }
                 }
             }else{
-                if(is_a($v, 'phprs\\ezsql\\Native')){
+                if(is_a($v, Raw::class)){
                     $exprs[] = "$k = ".strval($v);
                     
                 }else{
@@ -388,7 +386,7 @@ class WhereImpl{
                 $newArgs=array();
                 //找到所有数组对应的?符位置
                 foreach ($args as $k =>$arg){
-                    if(is_array($arg) || is_a($arg, 'phprs\\ezsql\\Native')){
+                    if(is_array($arg) || is_a($arg, Raw::class)){
                         if(!$cutted){
                             $cut = new NestedStringCut($expr);
                             $cutted = $cut->getText();
@@ -402,7 +400,7 @@ class WhereImpl{
                         if(is_array($arg)){
                             $stubs = [];
                             foreach ($arg as $i){
-                                if(is_a($i, 'phprs\\ezsql\\Native')){
+                                if(is_a($i, Raw::class)){
                                     $stubs[] = strval($i);
                                 }else{
                                     $stubs[] = '?';
@@ -447,34 +445,24 @@ class ExecImpl
 {
     /**
      * 
-     * @param $context Context
-     * @param $db \PDO 
+     * @param Context $context
      * @param $exceOnError boolean whether throw exceptions
      * @return Response
      */
-    static public function exec($context, $db, $exceOnError=true) {
-        if($exceOnError){
-            $db->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-        }
-        $db->setAttribute(\PDO::MYSQL_ATTR_FOUND_ROWS,true);
-        $st = $db->prepare($context->sql);
+    static public function exec($context) {
+        $st = $context->connection->prepare($context->sql);
         $success = $st->execute($context->params);
-        return new Response($success, $db,$st);
+        return new Response($success, $context->connection, $st);
     }
     /**
      * 
      * @param Context $context
-     * @param PDO $db
-     * @param boolean $errExce
-     * @param string $asDict return  as dict or array
+     * @param string|false $asDict return  as dict or array
      * @return false|array
      */
-    static public function get($context, $db, $dictAs=null ,$errExce=true){
-        if($errExce){
-            $db->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-        }
-        $db->setAttribute(\PDO::MYSQL_ATTR_FOUND_ROWS ,true);
-        $st = $db->prepare($context->sql);
+    static public function get($context, $dictAs=false){
+
+        $st = $context->connection->prepare($context->sql);
         if($st->execute($context->params)){
             $res = $st->fetchAll(\PDO::FETCH_ASSOC);
             if ($dictAs){
@@ -501,7 +489,7 @@ class OnDuplicateKeyUpdateImpl
         }else{
             $prefix = ',';
         }
-        if(is_a($value, 'phprs\\ezsql\\Native')){
+        if(is_a($value, Raw::class)){
             $context->appendSql("$prefix$column=$value",$prefix == 'ON DUPLICATE KEY UPDATE ');
         }else{
             $context->appendSql("$prefix$column=?",$prefix == 'ON DUPLICATE KEY UPDATE ');
@@ -526,7 +514,7 @@ class OnDuplicateKeyUpdateImpl
         $set = [];
         $params = [];
         foreach ($values as $k=>$v){
-            if(is_a($v, 'phprs\\ezsql\\Native')){//直接拼接sql，不需要转义
+            if(is_a($v, Raw::class)){//直接拼接sql，不需要转义
                 $set[]= "$k=".$v->get();
             }else{
                 $set[]= "$k=?";
