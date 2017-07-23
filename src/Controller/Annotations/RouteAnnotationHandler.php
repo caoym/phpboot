@@ -3,12 +3,13 @@
 namespace PhpBoot\Controller\Annotations;
 
 use FastRoute\RouteParser\Std;
+use PhpBoot\Controller\ControllerContainer;
 use PhpBoot\Controller\ExceptionHandler;
 use PhpBoot\Entity\ContainerFactory;
+use PhpBoot\Entity\EntityContainerBuilder;
 use PhpBoot\Metas\ReturnMeta;
 use PhpBoot\Annotation\AnnotationBlock;
 use PhpBoot\Annotation\AnnotationTag;
-use PhpBoot\Controller\Annotations\ControllerAnnotationHandler;
 use PhpBoot\Controller\RequestHandler;
 use PhpBoot\Controller\ResponseHandler;
 use PhpBoot\Controller\Route;
@@ -17,16 +18,17 @@ use PhpBoot\Exceptions\AnnotationSyntaxException;
 use PhpBoot\Metas\ParamMeta;
 use PhpBoot\Utils\AnnotationParams;
 
-class RouteAnnotationHandler extends ControllerAnnotationHandler
+class RouteAnnotationHandler
 {
     /**
+     * @param ControllerContainer $container
      * @param AnnotationBlock|AnnotationTag $ann
-     * @return void
+     * @param EntityContainerBuilder $entityBuilder
      */
-    public function handle($ann)
+    public function __invoke(ControllerContainer $container, $ann, EntityContainerBuilder $entityBuilder)
     {
         $params = new AnnotationParams($ann->description, 3);
-        $params->count()>=2 or fail(new AnnotationSyntaxException("The annotation \"@{$ann->name} {$ann->description}\" of {$this->container->getClassName()}::{$ann->parent->name} require 2 params, {$params->count()} given"));
+        $params->count()>=2 or fail(new AnnotationSyntaxException("The annotation \"@{$ann->name} {$ann->description}\" of {$container->getClassName()}::{$ann->parent->name} require 2 params, {$params->count()} given"));
 
         //TODO 错误判断: METHOD不支持, path不规范等
         $httpMethod = strtoupper($params->getParam(0));
@@ -39,9 +41,9 @@ class RouteAnnotationHandler extends ControllerAnnotationHandler
             'PATCH',
             'OPTIONS',
             'DELETE'
-        ]) or fail(new AnnotationSyntaxException("unknown method http $httpMethod in {$this->container->getClassName()}::$target"));
+        ]) or fail(new AnnotationSyntaxException("unknown method http $httpMethod in {$container->getClassName()}::$target"));
         //获取方法参数信息
-        $rfl =  new \ReflectionClass($this->container->getClassName());
+        $rfl =  new \ReflectionClass($container->getClassName());
         $method = $rfl->getMethod($target);
         $methodParams = $method->getParameters();
 
@@ -72,7 +74,7 @@ class RouteAnnotationHandler extends ControllerAnnotationHandler
             if($paramClass){
                 $paramClass = $paramClass->getName();
             }
-            $container = ContainerFactory::create($this->entityBuilder, $paramClass);
+            $entityContainer = ContainerFactory::create($entityBuilder, $paramClass);
             $meta = new ParamMeta($paramName,
                 $source,
                 $paramClass?:'mixed',
@@ -81,14 +83,14 @@ class RouteAnnotationHandler extends ControllerAnnotationHandler
                 $param->isPassedByReference(),
                 null,
                 '',
-                $container
+                $entityContainer
             );
             $paramsMeta[] = $meta;
             if($meta->isPassedByReference){
                 $responseHandler->setMapping('response.content.'.$meta->name, new ReturnMeta(
                     'params.'.$meta->name,
                     $meta->type, $meta->description,
-                    ContainerFactory::create($this->entityBuilder, $meta->type)
+                    ContainerFactory::create($entityBuilder, $meta->type)
                 ));
             }
         }
@@ -97,7 +99,7 @@ class RouteAnnotationHandler extends ControllerAnnotationHandler
         $responseHandler->setMapping('response.content', new ReturnMeta('return','mixed','', new MixedTypeContainer()));
 
         $uri = $params->getParam(1);
-        $uri = rtrim($this->container->getPathPrefix(), '/').'/'.ltrim($uri, '/');
+        $uri = rtrim($container->getPathPrefix(), '/').'/'.ltrim($uri, '/');
         $route = new Route(
             $httpMethod,
             $uri,
@@ -108,6 +110,6 @@ class RouteAnnotationHandler extends ControllerAnnotationHandler
             $ann->parent->summary,
             $ann->parent->description
         );
-        $this->container->addRoute($target, $route);
+        $container->addRoute($target, $route);
     }
 }

@@ -3,6 +3,7 @@
 namespace PhpBoot\Controller;
 
 use DI\FactoryInterface;
+use \DI\InvokerInterface as DIInvokerInterface;
 use PhpBoot\Controller\Annotations\BindAnnotationHandler;
 use PhpBoot\Controller\Annotations\ClassAnnotationHandler;
 use PhpBoot\Controller\Annotations\HookAnnotationHandler;
@@ -32,12 +33,15 @@ class ControllerContainerBuilder extends ContainerBuilder
     /**
      * ControllerContainerBuilder constructor.
      * @param FactoryInterface $factory
+     * @param DIInvokerInterface $diInvoker
+     *
      * @param array $annotations
      */
-    public function __construct(FactoryInterface $factory, array $annotations = self::DEFAULT_ANNOTATIONS)
+    public function __construct(FactoryInterface $factory, DIInvokerInterface $diInvoker, array $annotations = self::DEFAULT_ANNOTATIONS)
     {
         parent::__construct($annotations);
         $this->factory = $factory;
+        $this->diInvoker = $diInvoker;
     }
     /**
      * load from class with local cache
@@ -67,9 +71,10 @@ class ControllerContainerBuilder extends ContainerBuilder
         return $this->factory->make(ControllerContainer::class, ['className'=>$className]);
     }
 
-    protected function getHandler($handlerName, $container)
+    protected function handleAnnotation($handlerName, $container, $ann)
     {
-        return $this->factory->make($handlerName, ['container'=>$container]);
+        $handler = $this->factory->make($handlerName);
+        return $this->diInvoker->call($handler, [$container, $ann]);
     }
 
 
@@ -77,4 +82,8 @@ class ControllerContainerBuilder extends ContainerBuilder
      * @var FactoryInterface
      */
     private $factory;
+    /**
+     * @var DIInvokerInterface
+     */
+    private $diInvoker;
 }

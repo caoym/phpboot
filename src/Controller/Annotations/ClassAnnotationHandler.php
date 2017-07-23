@@ -5,21 +5,21 @@ namespace PhpBoot\Controller\Annotations;
 
 use PhpBoot\Annotation\AnnotationBlock;
 use PhpBoot\Annotation\AnnotationTag;
-use PhpBoot\Controller\Annotations\ControllerAnnotationHandler;
+use PhpBoot\Controller\ControllerContainer;
 
-class ClassAnnotationHandler extends ControllerAnnotationHandler
+class ClassAnnotationHandler
 {
     /**
+     * @param ControllerContainer $container
      * @param AnnotationBlock|AnnotationTag $ann
-     * @return void
      */
-    public function handle($ann)
+    public function __invoke(ControllerContainer $container, $ann)
     {
-        $ref = new \ReflectionClass($this->container->getClassName());
-        $this->container->getClassName();
+        $ref = new \ReflectionClass($container->getClassName());
+        $container->getClassName();
 
-        $this->container->setDescription($ann->description);
-        $this->container->setSummary($ann->summary);
-        $this->container->setFileName($ref->getFileName());
+        $container->setDescription($ann->description);
+        $container->setSummary($ann->summary);
+        $container->setFileName($ref->getFileName());
     }
 }

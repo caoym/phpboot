@@ -12,23 +12,17 @@ use PhpBoot\Utils\AnnotationParams;
 use PhpBoot\Utils\Logger;
 use PhpBoot\Utils\TypeHint;
 
-class VarAnnotationHandler implements AnnotationHandler
+class VarAnnotationHandler
 {
-    public function __construct(ObjectDefinitionContext $context){
-        $this->context = $context;
-    }
-    /**
-     * @var ObjectDefinitionContext
-     */
-    protected $context;
 
     /**
+     * @param ObjectDefinitionContext $context
      * @param AnnotationBlock|AnnotationTag $ann
      * @return void
      */
-    public function handle($ann)
+    public function __invoke(ObjectDefinitionContext $context, $ann)
     {
-        $className = $this->context->definition->getClassName();
+        $className = $context->definition->getClassName();
         if(!$ann->parent){
             Logger::debug("The annotation \"@{$ann->name} {$ann->description}\" of $className should be used with parent");
         }
@@ -38,6 +32,6 @@ class VarAnnotationHandler implements AnnotationHandler
 
         count($params)>0 or fail(new AnnotationSyntaxException("The annotation \"@{$ann->name} {$ann->description}\" of $className::$target require at least one param, 0 given"));
 
-        $this->context->vars[$target] = TypeHint::normalize($params[0], $className);
+        $context->vars[$target] = TypeHint::normalize($params[0], $className);
     }
 }

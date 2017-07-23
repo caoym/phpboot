@@ -2,22 +2,21 @@
 
 namespace PhpBoot\Controller\Annotations;
 
-
 use PhpBoot\Annotation\AnnotationBlock;
 use PhpBoot\Annotation\AnnotationTag;
-use PhpBoot\Controller\Annotations\ControllerAnnotationHandler;
+use PhpBoot\Controller\ControllerContainer;
 use PhpBoot\Utils\AnnotationParams;
 
-class PathAnnotationHandler extends ControllerAnnotationHandler
+class PathAnnotationHandler
 {
 
     /**
+     * @param ControllerContainer $container
      * @param AnnotationBlock|AnnotationTag $ann
-     * @return void
      */
-    public function handle($ann)
+    public function __invoke(ControllerContainer $container, $ann)
     {
         $params = new AnnotationParams($ann->description, 2);
-        $this->container->setPathPrefix($params->getParam(0, ''));
+        $container->setPathPrefix($params->getParam(0, ''));
     }
 }

@@ -4,28 +4,30 @@ namespace PhpBoot\Entity\Annotations;
 
 use PhpBoot\Annotation\AnnotationBlock;
 use PhpBoot\Annotation\AnnotationTag;
+use PhpBoot\Entity\EntityContainer;
 use PhpBoot\Metas\PropertyMeta;
 
-class ClassAnnotationHandler extends EntityAnnotationHandler
+class ClassAnnotationHandler
 {
     /**
+     * @param EntityContainer $container
      * @param AnnotationBlock|AnnotationTag $ann
      * @return void
      */
-    public function handle($ann)
+    public function __invoke(EntityContainer $container, $ann)
     {
-        $ref = new \ReflectionClass($this->container->getClassName());
-        $this->container->getClassName();
+        $ref = new \ReflectionClass($container->getClassName());
+        $container->getClassName();
         $properties = $ref->getProperties(\ReflectionProperty::IS_PUBLIC);
         $default = $ref->getDefaultProperties();
-        $this->container->setFileName($ref->getFileName());
+        $container->setFileName($ref->getFileName());
 
-        $this->container->setDescription($ann->description);
-        $this->container->setSummary($ann->summary);
+        $container->setDescription($ann->description);
+        $container->setSummary($ann->summary);
 
         foreach ($properties as $i){
             $isOption = array_key_exists($i->getName(), $default) && $default[$i->getName()] !==null;
-            $this->container->setProperty($i->getName(), new PropertyMeta(
+            $container->setProperty($i->getName(), new PropertyMeta(
                 $i->getName(),
                 null,
                 $isOption,

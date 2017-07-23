@@ -61,8 +61,16 @@ abstract class ContainerBuilder
      * @param string $className
      * @return object
      */
-    abstract protected function createContainer($className);
-    abstract protected function getHandler($handlerName, $container);
+    protected function createContainer($className)
+    {
+        return new $className();
+    }
+
+
+    protected function handleAnnotation($handlerName, $container, $ann){
+        $handler = new $handlerName();
+        return $handler($container, $ann);
+    }
     /**
      * @param $className
      * @return object
@@ -74,15 +82,14 @@ abstract class ContainerBuilder
         foreach ($this->annotations as $i){
             list($class, $target) = $i;
 
-            $handler = $this->getHandler($class, $container);
             /** @var $handler AnnotationHandler*/
             $found = \JmesPath\search($target, $anns);
             if(is_array($found)){
                 foreach ($found as $f){
-                    $handler->handle($f);
+                    $this->handleAnnotation($class, $container,$f); //TODO 支持
                 }
             }else{
-                $handler->handle($found);
+                $this->handleAnnotation($class, $container, $found);
             }
         }
         return $container;

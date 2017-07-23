@@ -4,32 +4,32 @@ namespace PhpBoot\Controller\Annotations;
 
 use PhpBoot\Annotation\AnnotationBlock;
 use PhpBoot\Annotation\AnnotationTag;
-use PhpBoot\Controller\Annotations\ControllerAnnotationHandler;
+use PhpBoot\Controller\ControllerContainer;
 use PhpBoot\Exceptions\AnnotationSyntaxException;
 use PhpBoot\Utils\AnnotationParams;
 use PhpBoot\Utils\Logger;
 
-class ValidateAnnotationHandler extends ControllerAnnotationHandler
+class ValidateAnnotationHandler
 {
     /**
+     * @param ControllerContainer $container
      * @param AnnotationBlock|AnnotationTag $ann
-     * @return void
      */
-    public function handle($ann)
+    public function __invoke(ControllerContainer $container, $ann)
     {
         if(!$ann->parent || !$ann->parent->parent){
-            Logger::debug("The annotation \"@{$ann->name} {$ann->description}\" of {$this->container->getClassName()} should be used with parent parent");
+            Logger::debug("The annotation \"@{$ann->name} {$ann->description}\" of {$container->getClassName()} should be used with parent parent");
             return;
         }
         $target = $ann->parent->parent->name;
-        $route = $this->container->getRoute($target);
+        $route = $container->getRoute($target);
         if(!$route){
-            Logger::debug("The annotation \"@{$ann->name} {$ann->description}\" of {$this->container->getClassName()}::$target should be used with parent parent");
+            Logger::debug("The annotation \"@{$ann->name} {$ann->description}\" of {$container->getClassName()}::$target should be used with parent parent");
             return ;
         }
         $params = new AnnotationParams($ann->description, 2);
 
-        count($params)>0 or fail(new AnnotationSyntaxException("The annotation \"@{$ann->name} {$ann->description}\" of {$this->container->getClassName()}::$target require 1 param, {$params->count()} given"));
+        count($params)>0 or fail(new AnnotationSyntaxException("The annotation \"@{$ann->name} {$ann->description}\" of {$container->getClassName()}::$target require 1 param, {$params->count()} given"));
 
         if($ann->parent->name == 'param'){
             list($paramType, $paramName, $paramDoc) = ParamAnnotationHandler::getParamInfo($ann->parent->description);
@@ -43,6 +43,6 @@ class ValidateAnnotationHandler extends ControllerAnnotationHandler
 
             return;
         }
-        Logger::debug("The annotation \"@{$ann->name} {$ann->description}\" of {$this->container->getClassName()}::$target should be used with parent parent");
+        Logger::debug("The annotation \"@{$ann->name} {$ann->description}\" of {$container->getClassName()}::$target should be used with parent parent");
     }
 }

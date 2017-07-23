@@ -48,12 +48,12 @@ class ResponseHandler
     }
 
     /**
-     * @param Application $app
+     * @param ResponseRenderer $renderer
      * @param $return
      * @param $params
      * @return Response
      */
-    public function handle(Application $app, $return, $params)
+    public function handle(ResponseRenderer $renderer, $return, $params)
     {
         $input = [
             'return'=>$return,
@@ -79,8 +79,7 @@ class ResponseHandler
             //TODO 支持自定义格式输出
             //TODO 支持更多的输出目标
             if($key == 'content'){
-                $render = $app->get(ResponseRenderer::class);
-                $content = $render->render($value);
+                $content = $renderer->render($value);
                 $response->setContent($content);
             }elseif($key == 'headers'){
                 foreach ($value as $k=>$v){
@@ -95,30 +94,6 @@ class ResponseHandler
     }
     /**
      * @return ReturnMeta[]
-     * 返回http响应和函数返回值的映射关系
-     * http响应包括: content, (下期需要支持headers, headers.status, headers.cookies等)
-     * 函数返回值包括: return的返回值, &引用变量的输出 @see ReturnMeta
-     *
-     * 示例1:
-     * [
-     *      '$.response.content'=>ReturnMeta('source'=>'$.return', 'type'=>'string', '这是个描述')
-     * ]
-     * 如果函数的返回值是['res'=>'ok']对应的响应为
-     * ['res'=>'ok']
-     *
-     * 示例2:
-     * [
-     *      '$.response.content.code'=>ReturnMeta('source'=>200, 'type'=>'integer', 'doc'=>'这是个描述')
-     *      '$.response.content.data'=>ReturnMeta('source'=>'$.return', 'type'=>'array', 'doc'=>'这是个描述')
-     *      '$.response.content.len'=>ReturnMeta('source'=>'$.params.len', 'type'=>'integer', 'doc'=>'这是个描述')
-     * ]
-     *
-     * 如果函数的返回值是['res'=>'ok']对应的响应为
-     * [
-     *      'code'=>200,
-     *      'data'=>['res'=>'ok'],
-     *      'len'=>xxx
-     * ]
      */
     public function getMappings()
     {

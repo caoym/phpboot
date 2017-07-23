@@ -2,34 +2,44 @@
 
 namespace PhpBoot\Entity\Annotations;
 
+use PhpBoot\Annotation\AnnotationBlock;
+use PhpBoot\Annotation\AnnotationTag;
 use PhpBoot\Entity\ContainerFactory;
+use PhpBoot\Entity\EntityContainer;
+use PhpBoot\Entity\EntityContainerBuilder;
 use PhpBoot\Entity\MixedTypeContainer;
 use PhpBoot\Exceptions\AnnotationSyntaxException;
 use PhpBoot\Utils\AnnotationParams;
 use PhpBoot\Utils\TypeHint;
 
-class VarAnnotationHandler extends EntityAnnotationHandler
+class VarAnnotationHandler
 {
-    public function handle($ann)
+    /**
+     * @param EntityContainer $container
+     * @param AnnotationBlock|AnnotationTag $ann
+     * @param EntityContainerBuilder $builder
+     * @return void
+     */
+    public function __invoke(EntityContainer $container, $ann, EntityContainerBuilder $builder)
     {
         $params = new AnnotationParams($ann->description, 3);
         if($params->count()){
             $type = $params->getParam(0);
             //TODO 校验type类型
             $target = $ann->parent->name;
-            $property = $this->container->getProperty($target);
-            $property or fail($this->container->getClassName()." property $target not exist ");
+            $property = $container->getProperty($target);
+            $property or fail($container->getClassName()." property $target not exist ");
             if($type == null || $type == 'mixed'){
                 $property->container = new MixedTypeContainer();
             } else{
                 // TODO 判断$type是否匹配
-                $property->type = TypeHint::normalize($type, $this->container->getClassName());
+                $property->type = TypeHint::normalize($type, $container->getClassName());
 
-                $property->container = ContainerFactory::create($this->builder, $property->type);
+                $property->container = ContainerFactory::create($builder, $property->type);
             }
         }else{
             fail(new AnnotationSyntaxException(
-                "The annotation \"@{$ann->name} {$ann->description}\" of {$this->container->getClassName()}::{$ann->parent->name} require 1 param, 0 given"
+                "The annotation \"@{$ann->name} {$ann->description}\" of {$container->getClassName()}::{$ann->parent->name} require 1 param, 0 given"
             ));
         }
 

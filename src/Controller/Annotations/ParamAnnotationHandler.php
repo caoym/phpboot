@@ -4,13 +4,15 @@ namespace PhpBoot\Controller\Annotations;
 
 use PhpBoot\Annotation\AnnotationBlock;
 use PhpBoot\Annotation\AnnotationTag;
+use PhpBoot\Controller\ControllerContainer;
 use PhpBoot\Entity\ContainerFactory;
+use PhpBoot\Entity\EntityContainerBuilder;
 use PhpBoot\Exceptions\AnnotationSyntaxException;
 use PhpBoot\Utils\AnnotationParams;
 use PhpBoot\Utils\Logger;
 use PhpBoot\Utils\TypeHint;
 
-class ParamAnnotationHandler extends ControllerAnnotationHandler
+class ParamAnnotationHandler
 {
 
     static public function getParamInfo($text)
@@ -36,22 +38,23 @@ class ParamAnnotationHandler extends ControllerAnnotationHandler
         return [$paramType, $paramName, $paramDoc];
     }
     /**
+     * @param ControllerContainer $container
      * @param AnnotationBlock|AnnotationTag $ann
-     * @return void
+     * @param EntityContainerBuilder $entityBuilder
      */
-    public function handle($ann)
+    public function __invoke(ControllerContainer $container, $ann, EntityContainerBuilder $entityBuilder)
     {
         if(!$ann->parent){
-            Logger::debug("The annotation \"@{$ann->name} {$ann->description}\" of {$this->container->getClassName()} should be used with parent route");
+            Logger::debug("The annotation \"@{$ann->name} {$ann->description}\" of {$container->getClassName()} should be used with parent route");
             return;
         }
         $target = $ann->parent->name;
-        $route = $this->container->getRoute($target);
+        $route = $container->getRoute($target);
         if(!$route){
-            Logger::debug("The annotation \"@{$ann->name} {$ann->description}\" of {$this->container->getClassName()}::$target should be used with parent route");
+            Logger::debug("The annotation \"@{$ann->name} {$ann->description}\" of {$container->getClassName()}::$target should be used with parent route");
             return ;
         }
-        $className = $this->container->getClassName();
+        $className = $container->getClassName();
 
         list($paramType, $paramName, $paramDoc) = self::getParamInfo($ann->description);
 
@@ -59,8 +62,8 @@ class ParamAnnotationHandler extends ControllerAnnotationHandler
         $paramMeta or fail(new AnnotationSyntaxException("$className::$target param $paramName not exist "));
         //TODO 检测声明的类型和注释的类型是否匹配
         if($paramType){
-            $paramMeta->type = TypeHint::normalize($paramType, $className);//or fail(new AnnotationSyntaxException("{$this->container->getClassName()}::{$ann->parent->name} @{$ann->name} syntax error, param $paramName unknown type:$paramType "));
-            $container = ContainerFactory::create($this->entityBuilder, $paramMeta->type);
+            $paramMeta->type = TypeHint::normalize($paramType, $className);//or fail(new AnnotationSyntaxException("{$container->getClassName()}::{$ann->parent->name} @{$ann->name} syntax error, param $paramName unknown type:$paramType "));
+            $container = ContainerFactory::create($entityBuilder, $paramMeta->type);
             $paramMeta->container = $container;
         }
         $paramMeta->description = $paramDoc;

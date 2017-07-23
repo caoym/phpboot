@@ -3,6 +3,7 @@
 namespace PhpBoot\Entity;
 
 use DI\FactoryInterface;
+use DI\InvokerInterface as DIInvokerInterface;
 use PhpBoot\Entity\Annotations\ClassAnnotationHandler;
 use PhpBoot\Entity\Annotations\PropertyAnnotationHandler;
 use PhpBoot\Entity\Annotations\ValidateAnnotationHandler;
@@ -20,14 +21,17 @@ class EntityContainerBuilder extends ContainerBuilder
     ];
 
     /**
-     * EntityContainerBuilder constructor.
+     * ControllerContainerBuilder constructor.
      * @param FactoryInterface $factory
+     * @param DIInvokerInterface $diInvoker
+     *
      * @param array $annotations
      */
-    public function __construct(FactoryInterface $factory, array $annotations = self::DEFAULT_ANNOTATIONS)
+    public function __construct(FactoryInterface $factory, DIInvokerInterface $diInvoker, array $annotations = self::DEFAULT_ANNOTATIONS)
     {
-        $this->factory = $factory;
         parent::__construct($annotations);
+        $this->factory = $factory;
+        $this->diInvoker = $diInvoker;
     }
     /**
      * load from class with local cache
@@ -50,20 +54,26 @@ class EntityContainerBuilder extends ContainerBuilder
 
     /**
      * @param string $className
-     * @return object
+     * @return EntityContainer
      */
     protected function createContainer($className)
     {
         return $this->factory->make(EntityContainer::class, ['className'=>$className]);
     }
 
-    protected function getHandler($handlerName, $container)
+    protected function handleAnnotation($handlerName, $container, $ann)
     {
-        return $this->factory->make($handlerName, ['builder'=>$this, 'container'=>$container]);
+        $handler = $this->factory->make($handlerName);
+        return $this->diInvoker->call($handler, [$container, $ann]);
     }
+
 
     /**
      * @var FactoryInterface
      */
     private $factory;
+    /**
+     * @var DIInvokerInterface
+     */
+    private $diInvoker;
 }

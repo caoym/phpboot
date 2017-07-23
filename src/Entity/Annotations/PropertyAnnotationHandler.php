@@ -1,19 +1,26 @@
 <?php
 namespace PhpBoot\Entity\Annotations;
 
+use PhpBoot\Annotation\AnnotationBlock;
+use PhpBoot\Annotation\AnnotationTag;
+use PhpBoot\Entity\EntityContainer;
 use PhpBoot\Metas\PropertyMeta;
 
-class PropertyAnnotationHandler extends EntityAnnotationHandler
+class PropertyAnnotationHandler
 {
-
-    public function handle($block)
+    /**
+     * @param EntityContainer $container
+     * @param AnnotationBlock|AnnotationTag $ann
+     * @return void
+     */
+    public function __invoke(EntityContainer $container, $ann)
     {
-        $meta = $this->container->getProperty($block->name);
+        $meta = $container->getProperty($ann->name);
         if(!$meta){
-            $meta = new PropertyMeta($block->name);
-            $this->container->setProperty($block->name, $meta);
+            $meta = new PropertyMeta($ann->name);
+            $container->setProperty($ann->name, $meta);
         }
-        $meta->description = $block->description;
-        $meta->summary = $block->summary;
+        $meta->description = $ann->description;
+        $meta->summary = $ann->summary;
     }
 }

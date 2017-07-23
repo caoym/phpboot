@@ -9,6 +9,9 @@ use FastRoute\Dispatcher\GroupCountBased as GroupCountBasedDispatcher;
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
 use FastRoute\RouteParser\Std;
+use Invoker\Exception\InvocationException;
+use Invoker\Exception\NotCallableException;
+use Invoker\Exception\NotEnoughParametersException;
 use PhpBoot\Controller\ControllerContainerBuilder;
 use PhpBoot\Cache\CheckableCache;
 use PhpBoot\Cache\FileExpiredChecker;
@@ -25,7 +28,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class Application implements ContainerInterface, FactoryInterface
+class Application implements ContainerInterface, FactoryInterface, \DI\InvokerInterface
 {
     use EnableDIAnnotations;
     /**
@@ -268,4 +271,20 @@ class Application implements ContainerInterface, FactoryInterface
 
     private $dispatcher;
 
+    /**
+     * Call the given function using the given parameters.
+     *
+     * @param callable $callable Function to call.
+     * @param array $parameters Parameters to use.
+     *
+     * @return mixed Result of the function.
+     *
+     * @throws InvocationException Base exception class for all the sub-exceptions below.
+     * @throws NotCallableException
+     * @throws NotEnoughParametersException
+     */
+    public function call($callable, array $parameters = array())
+    {
+        return $this->container->call($callable, $parameters);
+    }
 }
