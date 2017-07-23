@@ -39,22 +39,25 @@ class Route
         $this->responseHandler or \PhpBoot\abort('undefined responseHandler');
         $this->exceptionHandler or \PhpBoot\abort('undefined exceptionHandler');
 
-        $res = $this->exceptionHandler->handler($app, function()use($app, $request, $function){
-            $next = function($request)use($app, $function){
-                $params = [];
-                $reference = [];
-                $this->requestHandler->handle($app, $request, $params, $reference);
-                $res = call_user_func_array($function, $params);
-                return $this->responseHandler->handle($res, $reference);
-            };
-            foreach (array_reverse($this->hooks) as $hookName){
-                $next = function($request)use($app, $hookName, $next){
-                    $hook = $app->get($hookName);
-                    /**@var $hook HookInterface*/
-                    return $hook->handle($request, $next);
+        $res = $this->exceptionHandler->handler(
+            $app->get(ExceptionRenderer::class),
+            function()use($app, $request, $function){
+
+                $next = function($request)use($app, $function){
+                    $params = [];
+                    $reference = [];
+                    $this->requestHandler->handle($app, $request, $params, $reference);
+                    $res = call_user_func_array($function, $params);
+                    return $this->responseHandler->handle($app->get(ResponseRenderer::class), $res, $reference);
                 };
-            }
-            return $next($request);
+                foreach (array_reverse($this->hooks) as $hookName){
+                    $next = function($request)use($app, $hookName, $next){
+                        $hook = $app->get($hookName);
+                        /**@var $hook HookInterface*/
+                        return $hook->handle($request, $next);
+                    };
+                }
+                return $next($request);
         });
         return $res;
     }

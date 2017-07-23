@@ -55,10 +55,10 @@ class ControllerContainer
     }
 
     static public function dispatch(
+        Application $app,
         $className,
         $actionName,
         Route $route,
-        Application $app,
         Request $request)
     {
         $ctrl = $app->get($className);

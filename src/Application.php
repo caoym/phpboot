@@ -66,7 +66,7 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
     }
     public function __construct()
     {
-        $this->cache = new CheckableCache(new ApcCache());
+        $this->cache = new ApcCache();
     }
 
     /**
@@ -123,12 +123,13 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
         }
         $key = 'controllers:'.md5(serialize(array_keys($this->routeLoaders)));
         $expiredData = null;
-        $data =  $this->cache->get($key, $this, $expiredData, false);
+        $cache = new CheckableCache($this->cache);
+        $data =  $cache->get($key, $this, $expiredData, false);
         if($data == $this){
             $data = LocalAutoLock::lock(
                 $key,
                 60,
-                function ()use($key){
+                function ()use($cache, $key){
                     $routeCollector = new RouteCollector(new Std(), new GroupCountBasedDataGenerator());
                     foreach ($this->routeLoaders as $loader){
                         $containers = $loader();
@@ -136,11 +137,11 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
                         foreach ($containers as $container){
                             foreach ($container->getRoutes() as $actionName=>$route){
                                 $routeCollector->addRoute($route->getMethod(), $route->getUri(), [$container->getClassName(), $actionName]);
-                                $this->cache->set('route:'.md5($container->getClassName().'::'.$actionName),$route, 0, new ClassModifiedChecker($container->getClassName()));
+                                $cache->set('route:'.md5($container->getClassName().'::'.$actionName),$route, 0, new ClassModifiedChecker($container->getClassName()));
                             }
                         }
                     }
-                    $this->cache->set($key, $routeCollector->getData());
+                    $cache->set($key, $routeCollector->getData());
                     return $routeCollector->getData();
                 },
                 function()use($expiredData){
@@ -179,7 +180,8 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
             }
             $request = Request::createFromGlobals();
             $request->attributes->add($res[2]);
-            $response = ControllerContainer::dispatch($className, $actionName,$route, $this, $request);
+
+            $response = ControllerContainer::dispatch($this, $className, $actionName, $route, $request);
 
             /** @var Response $response */
             if($send){

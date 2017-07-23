@@ -48,12 +48,12 @@ class ResponseHandler
     }
 
     /**
-     * @param ResponseRenderer $renderer
+     * @param Application $app
      * @param $return
      * @param $params
      * @return Response
      */
-    public function handle(ResponseRenderer $renderer, $return, $params)
+    public function handle(Application $app, $return, $params)
     {
         $input = [
             'return'=>$return,
@@ -79,6 +79,7 @@ class ResponseHandler
             //TODO 支持自定义格式输出
             //TODO 支持更多的输出目标
             if($key == 'content'){
+                $renderer = $app->get(ResponseRenderer::class);
                 $content = $renderer->render($value);
                 $response->setContent($content);
             }elseif($key == 'headers'){
