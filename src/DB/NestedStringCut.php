@@ -1,6 +1,6 @@
 <?php
-/**$Id$*/
-namespace phprs\util;
+
+namespace PhpBoot\DB;
 
 /**
  * 剪出字符串中的嵌套字符串

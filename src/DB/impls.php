@@ -1,10 +1,9 @@
 <?php
 
 namespace PhpBoot\DB\impls;
+use PhpBoot\DB\NestedStringCut;
 use PhpBoot\DB\Raw;
 use PhpBoot\DB\rules\basic\BasicRule;
-use phprs\util\NestedStringCut;
-use phprs\util\Verify;
 use PhpBoot\DB\Context;
 
 class Response{
@@ -211,16 +210,14 @@ class OrderByImpl
         $params = array();
         foreach ($orders as $k=>$v){
             if(is_integer($k)){
-                Verify::isTrue(
-                    preg_match('/^[a-zA-Z0-9_.]+$/', $v),
+                preg_match('/^[a-zA-Z0-9_.]+$/', $v) or \PhpBoot\abort(
                     new \InvalidArgumentException("invalid params for orderBy(".json_encode($orders).")"));
                 
                 $params[] = $v;
             }else{
                 $v = strtoupper($v);
-                Verify::isTrue(
-                    preg_match('/^[a-zA-Z0-9_.]+$/', $k) &&
-                    ($v =='DESC' || $v =='ASC'), new \InvalidArgumentException("invalid params for orderBy(".json_encode($orders).")"));
+                preg_match('/^[a-zA-Z0-9_.]+$/', $k) &&
+                ($v =='DESC' || $v =='ASC') or \PhpBoot\abort( new \InvalidArgumentException("invalid params for orderBy(".json_encode($orders).")"));
     
                 $params[] = "$k $v";
             }
@@ -252,14 +249,14 @@ class LimitImpl
 {
     static public function limit($context, $size){
         $intSize = intval($size);
-        Verify::isTrue(strval($intSize) == $size,
+        strval($intSize) == $size or \PhpBoot\abort(
             new \InvalidArgumentException("invalid params for limit($size)"));
         $context->appendSql("LIMIT $size");
     }
     static public function limitWithOffset($context,$start, $size){
         $intStart = intval($start);
         $intSize = intval($size);
-        Verify::isTrue(strval($intStart) == $start && strval($intSize) == $size,
+        strval($intStart) == $start && strval($intSize) == $size or \PhpBoot\abort(
             new \InvalidArgumentException("invalid params for limit($start, $size)"));
         $context->appendSql("LIMIT $start,$size");
     }
@@ -321,8 +318,7 @@ class WhereImpl{
                 $op = array_keys($v)[0];
                 $op = strtoupper($op);
                 
-                Verify::isTrue(
-                    false !== array_search($op, $ops),
+                false !== array_search($op, $ops) or \PhpBoot\abort(
                     new \InvalidArgumentException("invalid param $op for whereArgs"));
                 
                 $var = array_values($v)[0];
@@ -394,7 +390,7 @@ class WhereImpl{
                         //找到第$k个?符
                         $pos = self::findQ($cutted, 0, $k);
                         $pos = $cut->mapPos($pos);
-                        Verify::isTrue($pos !== false, 
+                        $pos !== false or \PhpBoot\abort(
                             new \InvalidArgumentException("unmatched params and ? @ $expr"));
                         
                         if(is_array($arg)){
