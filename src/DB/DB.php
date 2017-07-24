@@ -107,8 +107,8 @@ class DB{
                 continue;
             }
             $found = [];
-            if(!preg_match('/[\s(]/', $arg, $found, PREG_OFFSET_CAPTURE) ||
-                count($found)==0){
+            if(preg_match('/^[A-Za-z0-9]+$/', $arg, $found, PREG_OFFSET_CAPTURE)&&
+                count($found)){
                 $arg = "`$arg`";
             }
         }

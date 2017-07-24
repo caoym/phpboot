@@ -66,7 +66,7 @@ class FromRule extends GetRule
      * @param string $table
      * @return \PhpBoot\DB\rules\select\JoinRule
      */
-    public function from($table,$as=null){
+    public function from($table, $as=null){
         FromImpl::from($this->context, $table,$as);
         return new JoinRule($this->context);
     }

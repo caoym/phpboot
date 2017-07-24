@@ -52,10 +52,10 @@ class FromImpl
             $context->appendSql("FROM (".$tables->context->sql.')');
             $context->params = array_merge($context->params,$tables->context->params);
         }else {
-            $context->appendSql("FROM $tables");
+            $context->appendSql("FROM `$tables`");
         }
         if($as){
-            $context->appendSql("as $as");
+            $context->appendSql("as `$as`");
         }
     }
 }
@@ -64,7 +64,7 @@ class DeleteImpl
 {
     static public function deleteFrom($context, $from)
     {
-        $context->appendSql("DELETE FROM $from");
+        $context->appendSql("DELETE FROM `$from`");
     }
 }
 
@@ -103,13 +103,13 @@ class ForUpdateOfImpl
 class InsertImpl
 {
     static public function insertInto($context, $table) {
-        $context->appendSql("INSERT INTO $table");
+        $context->appendSql("INSERT INTO `$table`");
     }
 }
 class ReplaceImpl
 {
     static public function replaceInto($context, $table) {
-        $context->appendSql("REPLACE INTO $table");
+        $context->appendSql("REPLACE INTO `$table`");
     }
 }
 class ValuesImpl
@@ -144,7 +144,7 @@ class ValuesImpl
 class UpdateImpl
 {
     static public function update($context, $table){
-        $context->appendSql("UPDATE $table");
+        $context->appendSql("UPDATE `$table`");
     }
 }
 
