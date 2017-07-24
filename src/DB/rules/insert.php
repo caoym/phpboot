@@ -29,7 +29,7 @@ class ValuesRule extends BasicRule
      *
      * insertInto('table')->values([1,2]) => "INSERT INTO table VALUES(1,2)"
      * insertInto('table')->values(['a'=>1, 'b'=>Sql::raw('now()')]) => "INSERT INTO table(a,b) VALUES(1,now())"
-     * @param unknown $values
+     * @param array $values
      * @return \PhpBoot\DB\rules\insert\OnDuplicateKeyUpdateRule
      */
     public function values($values) {

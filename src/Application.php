@@ -19,6 +19,7 @@ use PhpBoot\Cache\CheckableCache;
 use PhpBoot\Cache\ClassModifiedChecker;
 use PhpBoot\Controller\ControllerContainer;
 use PhpBoot\Controller\Route;
+use PhpBoot\DB\DB;
 use PhpBoot\DI\DIContainerBuilder;
 use PhpBoot\DI\Traits\EnableDIAnnotations;
 use PhpBoot\Lock\LocalAutoLock;
@@ -54,13 +55,31 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
 
         $default = [
             'AppName'=>'App',
-            LoggerInterface::class  =>  \DI\object(\Monolog\Logger::class)->constructor(\DI\get('AppName')),
+
+            'DB.connection'=> 'mysql:dbname=default;host=localhost',
+            'DB.username'=> 'root',
+            'DB.password'=> 'root',
+            'DB.options' => [],
+
+            DB::class   =>  \DI\factory([DB::class, 'connect'])
+                ->parameter('dsn', \DI\get('DB.connection'))
+                ->parameter('username',\DI\get('DB.username'))
+                ->parameter('password', \DI\get('DB.password'))
+                ->parameter('options', \DI\get('DB.options')),
+
+            LoggerInterface::class  =>  \DI\object(\Monolog\Logger::class)
+                ->constructor(\DI\get('AppName')),
+
             Request::class          =>  \DI\factory([Request::class, 'createFromGlobals']),
         ];
+
         $builder->addDefinitions($default);
         $builder->addDefinitions($conf);
+
         $container = $builder->build();
+
         Logger::setDefaultLogger($container->get(LoggerInterface::class));
+
         $app = $container->make(self::class);
         return $app;
     }
@@ -178,7 +197,6 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
             if(!$route){
                 \PhpBoot\abort(new NotFoundHttpException('dirty data'), [$request->getMethod(), $uri]);
             }
-            $request = Request::createFromGlobals();
             $request->attributes->add($res[2]);
 
             $response = ControllerContainer::dispatch($this, $className, $actionName, $route, $request);

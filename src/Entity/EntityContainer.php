@@ -20,7 +20,7 @@ class EntityContainer implements TypeContainerInterface
         $vld = new Validator();
         foreach ($this->properties as $p){
             if($p->container && isset($data[$p->name])){
-                $data[$p->name] = $p->container->make($data[$p->name]);
+                $data[$p->name] = $p->container->make($data[$p->name], $validate);
             }
             if(!$p->isOptional){
                 $vld->rule('required', $p->name);
@@ -34,14 +34,17 @@ class EntityContainer implements TypeContainerInterface
 
             }
         }
-        $vld->withData($data)->validate() or \PhpBoot\abort(
-            new \InvalidArgumentException(
-                json_encode(
-                    $vld->errors(),
-                    JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
+        if($validate){
+            $vld->withData($data)->validate() or \PhpBoot\abort(
+                new \InvalidArgumentException(
+                    json_encode(
+                        $vld->errors(),
+                        JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
+                    )
                 )
-            )
-        );
+            );
+        }
+
         foreach ($this->properties as $p){
             if(isset($data[$p->name])){
                 $obj->{$p->name} = $data[$p->name];

@@ -1,5 +1,8 @@
 <?php
 namespace PhpBoot;
+use PhpBoot\DB\DB;
+use PhpBoot\ORM\ModelWithClass;
+use PhpBoot\ORM\ModelWithObject;
 use PhpBoot\Utils\Logger;
 
 if (! function_exists('PhpBoot\abort')) {
@@ -35,5 +38,23 @@ if (! function_exists('PhpBoot\abort')) {
            Logger::$level($message, $context +['@file'=>$file, '@line'=>$line]);
         }
         throw $e;
+    }
+
+}
+
+if (!function_exists('PhpBoot\model')) {
+
+    /**
+     * @param DB $db
+     * @param @param object|string $entity
+     * @return ModelWithClass|ModelWithObject
+     */
+    function model(DB $db, $entity)
+    {
+        if(is_object($entity)){
+            return new ModelWithObject($db, $entity);
+        }else{
+            return new ModelWithClass($db, $entity);
+        }
     }
 }

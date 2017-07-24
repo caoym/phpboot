@@ -42,15 +42,21 @@ class GetRule extends BasicRule
     }
 
     /**
+     * @return int|false
+     */
+    public function count() {
+        return ExecImpl::count($this->context);
+    }
+    /**
      * Execute sql and get one response
-     * @return false
+     * @return null
      */
     public function getFirst(){
         $res = ExecImpl::get($this->context);
         if(count($res)){
             return $res[0];
         }
-        return false;
+        return null;
     }
 }
 class FromRule extends GetRule
@@ -113,7 +119,7 @@ class OrderByRule extends LimitRule
      * orderBy('column') => "ORDER BY column"
      * orderBy('column', Sql::ORDER_BY_ASC) => "ORDER BY column ASC"
      * orderBy('column0')->orderBy('column1') => "ORDER BY column0, column1"
-     * 
+     *
      * @param string $column
      * @param string $order Sql::ORDER_BY_ASC or Sql::ORDER_BY_DESC
      * @return \PhpBoot\DB\rules\select\OrderByRule
@@ -140,11 +146,11 @@ class OrderByRule extends LimitRule
 class HavingRule extends OrderByRule
 {
     /**
-     * 
+     *
      * having('SUM(a)=?', 1) => "HAVING SUM(a)=1"
      * having('a>?', Sql::raw('now()')) => "HAVING a>now()"
      * having('a IN (?)',  [1, 2]) => "HAVING a IN (1,2)"
-     * 
+     *
      * @param string $expr
      * @param string $_
      * @return \PhpBoot\DB\rules\select\OrderByRule
@@ -154,18 +160,18 @@ class HavingRule extends OrderByRule
         return new OrderByRule($this->context);
     }
     /**
-     * 
+     *
      * havingArgs([
-     *      'a'=>1, 
+     *      'a'=>1,
      *      'b'=>['IN'=>[1,2]]
      *      'c'=>['BETWEEN'=>[1,2]]
      *      'd'=>['<>'=>1]
      *      ])
-     *      
+     *
      *      =>
      *      "HAVING a=1 AND b IN(1,2) AND c BETWEEN 1 AND 2 AND d<>1"
-     *      
-     *      
+     *
+     *
      * @param array $args
      * @return \PhpBoot\DB\rules\select\OrderByRule
      */
@@ -204,15 +210,15 @@ class WhereRule extends GroupByRule
     }
     /**
      * whereArgs([
-     *      'a'=>1, 
+     *      'a'=>1,
      *      'b'=>['IN'=>[1,2]]
      *      'c'=>['BETWEEN'=>[1,2]]
      *      'd'=>['<>'=>1]
      *      ])
-     *      
+     *
      *      =>
      *      "WHERE a=1 AND b IN(1,2) AND c BETWEEN 1 AND 2 AND d<>1"
-     * @param array $args  
+     * @param array $args
      * @return\PhpBoot\DB\rules\select\GroupByRule
      */
     public function whereArgs($args) {

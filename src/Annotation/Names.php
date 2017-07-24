@@ -19,6 +19,13 @@ if(!defined('PHPBOOT_ANNOTATION_HOOK')){
 if(!defined('PHPBOOT_ANNOTATION_INJECT')){
     define('PHPBOOT_ANNOTATION_INJECT', 'inject');
 }
+if(!defined('PHPBOOT_ANNOTATION_TABLE')){
+    define('PHPBOOT_ANNOTATION_TABLE', 'table');
+}
+
+if(!defined('PHPBOOT_ANNOTATION_PK')){
+    define('PHPBOOT_ANNOTATION_PK', 'pk');
+}
 class Names{
     const VALIDATE = PHPBOOT_ANNOTATION_VALIDATE;
     const ROUTE = PHPBOOT_ANNOTATION_ROUTE;
@@ -26,4 +33,6 @@ class Names{
     const BIND = PHPBOOT_ANNOTATION_BIND;
     const HOOK = PHPBOOT_ANNOTATION_HOOK;
     const INJECT = PHPBOOT_ANNOTATION_INJECT;
+    const TABLE = PHPBOOT_ANNOTATION_TABLE;
+    const PK = PHPBOOT_ANNOTATION_PK;
 }

@@ -40,7 +40,7 @@ class Route
         $this->exceptionHandler or \PhpBoot\abort('undefined exceptionHandler');
 
         $res = $this->exceptionHandler->handler(
-            $app->get(ExceptionRenderer::class),
+            $app,
             function()use($app, $request, $function){
 
                 $next = function($request)use($app, $function){
@@ -48,7 +48,7 @@ class Route
                     $reference = [];
                     $this->requestHandler->handle($app, $request, $params, $reference);
                     $res = call_user_func_array($function, $params);
-                    return $this->responseHandler->handle($app->get(ResponseRenderer::class), $res, $reference);
+                    return $this->responseHandler->handle($app, $res, $reference);
                 };
                 foreach (array_reverse($this->hooks) as $hookName){
                     $next = function($request)use($app, $hookName, $next){
@@ -58,7 +58,7 @@ class Route
                     };
                 }
                 return $next($request);
-        });
+            });
         return $res;
     }
     /**

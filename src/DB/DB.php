@@ -67,12 +67,14 @@ class DB{
     static public function connect($dsn,
                                   $username,
                                   $password,
-                                  $options = [
-                                      \PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES'utf8';",
-                                      \PDO::MYSQL_ATTR_FOUND_ROWS => true
-                                  ])
+                                  $options = [])
     {
-        $options += [\PDO::ATTR_ERRMODE =>\PDO::ERRMODE_EXCEPTION];
+        $options += [
+            \PDO::ATTR_ERRMODE =>\PDO::ERRMODE_EXCEPTION,
+            \PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES'utf8';",
+            \PDO::MYSQL_ATTR_FOUND_ROWS => true
+        ];
+
         $connection = new \PDO($dsn, $username, $password, $options);
         return new DB($connection);
     }
@@ -90,11 +92,25 @@ class DB{
      * @param string $column0
      * @return \PhpBoot\DB\rules\select\FromRule
      */
-    function select($column0='*', $_=null){
+    function select($column0=null, $_=null){
         $obj = new SelectRule(new Context($this->connection));
-        $args = func_get_args();
-        if(empty($args)){
+        if($column0 == null){
             $args = ['*'];
+        }elseif(is_array($column0)){
+            $args = $column0;
+        }else{
+            $args = func_get_args();
+        }
+        foreach ($args as &$arg){
+            $arg = trim($arg);
+            if($arg == '*'){
+                continue;
+            }
+            $found = [];
+            if(!preg_match('/[\s(]/', $arg, $found, PREG_OFFSET_CAPTURE) ||
+                count($found)==0){
+                $arg = "`$arg`";
+            }
         }
         return $obj->select(implode(',', $args));
     }

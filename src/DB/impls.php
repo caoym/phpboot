@@ -10,28 +10,28 @@ class Response{
     public function __construct($success, $pdo, $st){
         $this->pdo = $pdo;
         $this->st = $st;
-		$this->success = $success;
+        $this->success = $success;
         $this->rows = $this->st->rowCount();
     }
     public function lastInsertId($name=null){
         return $this->pdo->lastInsertId($name);
     }
-	/**
-	 * @var bool 
-	 * true on success or false on failure.
-	 */
-	public $success;
-	/**
-	 * @var int
-	 * the number of rows.
-	 */
+    /**
+     * @var bool
+     * true on success or false on failure.
+     */
+    public $success;
+    /**
+     * @var int
+     * the number of rows.
+     */
     public $rows;
     /**
-     * 
+     *
      * @var \PDO
      */
     public $pdo;
-    
+
     /**
      * @var \PDOStatement
      */
@@ -204,7 +204,7 @@ class UpdateSetImpl
 class OrderByImpl
 {
     public function orderByArgs($context, $orders){
-		if(empty($orders)){
+        if(empty($orders)){
             return $this;
         }
         $params = array();
@@ -212,13 +212,13 @@ class OrderByImpl
             if(is_integer($k)){
                 preg_match('/^[a-zA-Z0-9_.]+$/', $v) or \PhpBoot\abort(
                     new \InvalidArgumentException("invalid params for orderBy(".json_encode($orders).")"));
-                
+
                 $params[] = $v;
             }else{
                 $v = strtoupper($v);
                 preg_match('/^[a-zA-Z0-9_.]+$/', $k) &&
                 ($v =='DESC' || $v =='ASC') or \PhpBoot\abort( new \InvalidArgumentException("invalid params for orderBy(".json_encode($orders).")"));
-    
+
                 $params[] = "$k $v";
             }
         }
@@ -277,7 +277,7 @@ class WhereImpl{
     static public function where($context, $expr, $args){
         self::condition($context, 'WHERE', $expr, $args);
     }
-    
+
     static public function havingArgs($context, $args){
         self::conditionArgs($context, 'HAVING', $args);
     }
@@ -291,7 +291,7 @@ class WhereImpl{
      *          'id'=>['>'=>1],
      *          'name'=>'cym',
      *      ]
-     * ) 
+     * )
      * 支持的操作符有
      * =    'id'=>['=' => 1]
      * >    'id'=>['>' => 1]
@@ -303,24 +303,24 @@ class WhereImpl{
      * LIKE     'id'=>['LIKE' => '1%']
      * IN   'id'=>['IN' => [1,2,3]]
      * NOT IN   'id'=>['NOT IN' => [1,2,3]]
-     * 
+     *
      * @param array $args
      */
     static public function conditionArgs($context, $prefix, $args=[]){
-		if($args ===null){
+        if($args ===null){
             return ;
         }
-		$exprs = array();
+        $exprs = array();
         $params = array();
         foreach ($args as $k => $v){
             if(is_array($v)){
                 $ops = ['=', '>', '<', '<>', '>=', '<=', 'IN', 'NOT IN', 'BETWEEN', 'LIKE'];
                 $op = array_keys($v)[0];
                 $op = strtoupper($op);
-                
+
                 false !== array_search($op, $ops) or \PhpBoot\abort(
                     new \InvalidArgumentException("invalid param $op for whereArgs"));
-                
+
                 $var = array_values($v)[0];
                 if($op == 'IN' || $op == 'NOT IN'){
                     $stubs = [];
@@ -360,7 +360,7 @@ class WhereImpl{
             }else{
                 if(is_a($v, Raw::class)){
                     $exprs[] = "$k = ".strval($v);
-                    
+
                 }else{
                     $exprs[] = "$k = ?";
                     $params[] = $v;
@@ -392,7 +392,7 @@ class WhereImpl{
                         $pos = $cut->mapPos($pos);
                         $pos !== false or \PhpBoot\abort(
                             new \InvalidArgumentException("unmatched params and ? @ $expr"));
-                        
+
                         if(is_array($arg)){
                             $stubs = [];
                             foreach ($arg as $i){
@@ -408,7 +408,7 @@ class WhereImpl{
                             $stubs = strval($arg);
                         }
                         $toReplace[] = [$pos, $stubs];
-                        
+
                     }else{
                         $newArgs[]=$arg;
                     }
@@ -440,7 +440,7 @@ class GroupByImpl{
 class ExecImpl
 {
     /**
-     * 
+     *
      * @param Context $context
      * @param $exceOnError boolean whether throw exceptions
      * @return Response
@@ -451,7 +451,7 @@ class ExecImpl
         return new Response($success, $context->connection, $st);
     }
     /**
-     * 
+     *
      * @param Context $context
      * @param string|false $asDict return  as dict or array
      * @return false|array
@@ -472,7 +472,42 @@ class ExecImpl
         }else{
             return false;
         }
-        
+    }
+
+    /**
+     * @param Context $context
+     * @return int|false
+     */
+    static public function count($context){
+
+        $found = [];
+        if(!preg_match('/\bselect\b/i', $context->sql, $found, PREG_OFFSET_CAPTURE) ||
+            count($found)==0){
+            \PhpBoot\abort(new \PDOException("can not use count(*) without select"));
+        }
+        list($chars, $columnBegin) = $found[0];
+        $columnBegin = $columnBegin + strlen('select')+1;
+
+        $columnEnd = 0;
+        $found = [];
+        if(!preg_match('/\bfrom\b/i', $context->sql, $found, PREG_OFFSET_CAPTURE) ||
+            count($found)==0){
+            $columnEnd = strlen($context->sql);
+        }else{
+            list($chars, $columnEnd) = $found[0];
+        }
+        $sql = substr($context->sql, 0, $columnBegin);
+        $sql .= ' COUNT(*) as `count` ';
+        $sql .= substr($context->sql, $columnEnd);
+
+        $st = $context->connection->prepare($sql);
+        if($st->execute($context->params)){
+            $res = $st->fetchAll(\PDO::FETCH_ASSOC);
+            return $res[0]['count'];
+        }else{
+            return false;
+        }
+
     }
 }
 class OnDuplicateKeyUpdateImpl
