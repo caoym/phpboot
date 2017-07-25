@@ -18,9 +18,7 @@ class ModelWithObject extends ModelWithClass
         $this->object = $entity;
     }
 
-    /**
-     * @return mixed
-     */
+
     public function create()
     {
         $data = [];
@@ -34,10 +32,11 @@ class ModelWithObject extends ModelWithClass
 
             }
         }
-        return $this->db
+        $id = $this->db
             ->insertInto($this->entity->getTable())
             ->values($data)
             ->exec()->lastInsertId();
+        $this->object->{$this->entity->getPK()} = $id;
     }
 
     public function update()
@@ -54,12 +53,11 @@ class ModelWithObject extends ModelWithClass
             }
         }
 
-        return $this->db
+        $this->db
             ->update($this->entity->getTable())
             ->setArgs($data)
             ->where("`{$pk}` = ?", $this->object->$pk)
-            ->exec()
-            ->rows;
+            ->exec();
     }
 
     /**

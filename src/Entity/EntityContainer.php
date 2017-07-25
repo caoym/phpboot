@@ -23,8 +23,12 @@ class EntityContainer implements TypeContainerInterface
                 $var = $data[$p->name];
                 if($p->container instanceof EntityContainer
                     || $p->container instanceof ArrayContainer){
-                    $var = json_decode($var, true);
-                    !json_last_error() or \PhpBoot\abort(new \InvalidArgumentException(__METHOD__.' failed while json_decode with '.json_last_error_msg()));
+                    if(!$var){
+                        $var = [];
+                    }elseif(is_string($var)){
+                        $var = json_decode($var, true);
+                        !json_last_error() or \PhpBoot\abort(new \InvalidArgumentException(__METHOD__.' failed while json_decode with '.json_last_error_msg()));
+                    }
                 }
                 $data[$p->name] = $p->container->make($var, $validate);
             }
