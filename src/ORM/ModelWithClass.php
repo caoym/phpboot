@@ -67,7 +67,7 @@ class ModelWithClass
     {
         $columns = [];
         foreach ($this->entity->getProperties() as $p){
-            $columns = $p->name;
+            $columns[] = $p->name;
         }
         return $columns;
     }

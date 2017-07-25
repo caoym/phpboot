@@ -26,7 +26,12 @@ class ModelWithObject extends ModelWithClass
         $data = [];
         foreach ($this->getColumns() as $column){
             if(isset($this->object->$column)){
-                $data[$column] = $this->object->$column;
+                if(is_array($this->object->$column) || is_object($this->object->$column)){
+                    $data[$column] = json_encode($this->object->$column);
+                }else{
+                    $data[$column] = $this->object->$column;
+                }
+
             }
         }
         return $this->db
@@ -41,7 +46,11 @@ class ModelWithObject extends ModelWithClass
         $pk = $this->entity->getPK();
         foreach ($this->getColumns() as $column){
             if($pk != $column && isset($this->object->$column)){
-                $data[$column] = $this->object->$column;
+                if(is_array($this->object->$column) || is_object($this->object->$column)){
+                    $data[$column] = json_encode($this->object->$column);
+                }else{
+                    $data[$column] = $this->object->$column;
+                }
             }
         }
 

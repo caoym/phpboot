@@ -20,7 +20,13 @@ class EntityContainer implements TypeContainerInterface
         $vld = new Validator();
         foreach ($this->properties as $p){
             if($p->container && isset($data[$p->name])){
-                $data[$p->name] = $p->container->make($data[$p->name], $validate);
+                $var = $data[$p->name];
+                if($p->container instanceof EntityContainer
+                    || $p->container instanceof ArrayContainer){
+                    $var = json_decode($var, true);
+                    !json_last_error() or \PhpBoot\abort(new \InvalidArgumentException(__METHOD__.' failed while json_decode with '.json_last_error_msg()));
+                }
+                $data[$p->name] = $p->container->make($var, $validate);
             }
 
             if($p->validation){

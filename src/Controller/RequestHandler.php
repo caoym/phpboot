@@ -29,7 +29,8 @@ class RequestHandler
     public function handle(Application $app, Request $request, array &$params, array &$reference){
 
         $vld = new Validator();
-        $requestArray = new ArrayAdaptor($request);
+        $req = ['request'=>$request];
+        $requestArray = new ArrayAdaptor($req);
         $inputs = [];
         foreach ($this->paramMetas as $k=>$meta){
             if($meta->isPassedByReference){

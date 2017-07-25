@@ -36,6 +36,8 @@ class ArrayAdaptor implements \ArrayAccess
             return $this->obj->{$method}($offset);
         }elseif(method_exists($this->obj, $method = 'get'.ucfirst($offset))){
             return $this->obj->{$method}() !== null;
+        }elseif(method_exists($this->obj, 'get')){
+            return $this->obj->get($offset) !== null;
         }else{
             return false;
         }
