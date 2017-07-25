@@ -48,7 +48,14 @@ class ModelContainerBuilder extends EntityContainerBuilder
     {
         return parent::buildWithoutCache($className);
     }
-
+    /**
+     * @param string $className
+     * @return ModelContainer
+     */
+    protected function createContainer($className)
+    {
+        return $this->factory->make(ModelContainer::class, ['className'=>$className]);
+    }
     /**
      * @var Container
      */

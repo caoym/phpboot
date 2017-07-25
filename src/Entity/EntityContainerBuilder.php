@@ -71,9 +71,9 @@ class EntityContainerBuilder extends ContainerBuilder
     /**
      * @var FactoryInterface
      */
-    private $factory;
+    protected $factory;
     /**
      * @var DIInvokerInterface
      */
-    private $diInvoker;
+    protected $diInvoker;
 }
