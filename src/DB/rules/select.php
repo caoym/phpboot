@@ -195,34 +195,29 @@ class GroupByRule extends OrderByRule
 class WhereRule extends GroupByRule
 {
     /**
-     *
      * where('a=?', 1) => "WHERE a=1"
      * where('a=?', Sql::raw('now()')) => "WHERE a=now()"
      * where('a IN (?)',  [1, 2]) => "WHERE a IN (1,2)"
-     *
-     * @param string $expr
-     * @param mixed $_
-     * @return \PhpBoot\DB\rules\select\GroupByRule
-     */
-    public function where($expr, $_=null) {
-        WhereImpl::where($this->context, $expr, array_slice(func_get_args(), 1));
-        return new GroupByRule($this->context);
-    }
-    /**
-     * whereArgs([
+     * where([
      *      'a'=>1,
      *      'b'=>['IN'=>[1,2]]
      *      'c'=>['BETWEEN'=>[1,2]]
      *      'd'=>['<>'=>1]
      *      ])
-     *
      *      =>
      *      "WHERE a=1 AND b IN(1,2) AND c BETWEEN 1 AND 2 AND d<>1"
-     * @param array $args
-     * @return\PhpBoot\DB\rules\select\GroupByRule
+     * @param string|array $conditions
+     * //TODO where(callable $query)
+     * @param mixed $_
+     * @return \PhpBoot\DB\rules\select\GroupByRule
      */
-    public function whereArgs($args) {
-        WhereImpl::whereArgs($this->context,$args);
+    public function where($conditions, $_=null) {
+        if(is_array($conditions)){
+            WhereImpl::whereArgs($this->context, $conditions);
+        }else{
+            WhereImpl::where($this->context, $conditions, array_slice(func_get_args(), 1));
+        }
+
         return new GroupByRule($this->context);
     }
 }
@@ -279,6 +274,3 @@ class JoinOnRule extends BasicRule
         return new JoinRule($this->context);
     }
 }
-
-
-

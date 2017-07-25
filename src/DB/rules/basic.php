@@ -1,18 +1,24 @@
 <?php
 namespace PhpBoot\DB\rules\basic;
 
+use PhpBoot\DB\Context;
 use PhpBoot\DB\impls\ExecImpl;
 use PhpBoot\DB\impls\LimitImpl;
 use PhpBoot\DB\impls\OrderByImpl;
-use PhpBoot\DB\impls\Response;
+use PhpBoot\DB\impls\ExecResult;
 use PhpBoot\DB\impls\WhereImpl;
 require_once dirname(__DIR__).'/impls.php';
 
 class BasicRule
 {
-    public function __construct($context){
+    public function __construct(Context $context){
         $this->context = $context;
     }
+
+
+    /**
+     * @var Context
+     */
     public $context;
 }
 
@@ -20,7 +26,7 @@ class ExecRule extends BasicRule
 {
     /**
      * Execute sql
-     * @return Response
+     * @return ExecResult
      */
     public function exec() {
         return ExecImpl::exec($this->context);

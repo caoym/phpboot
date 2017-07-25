@@ -26,7 +26,7 @@ class ValuesRule extends BasicRule
     /**
      * replaceInto('table')->values([1,2]) => "REPLACE INTO table VALUES(1,2)"
      * replaceInto('table')->values(['a'=>1, 'b'=>Sql::raw('now()')]) => "REPLACE INTO table(a,b) VALUES(1,now())"
-     * @param unknown $values
+     * @param array $values
      * @return \PhpBoot\DB\rules\basic\ExecRule
      */
     public function values($values) {

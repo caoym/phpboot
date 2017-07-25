@@ -6,7 +6,7 @@ use PhpBoot\DB\Raw;
 use PhpBoot\DB\rules\basic\BasicRule;
 use PhpBoot\DB\Context;
 
-class Response{
+class ExecResult{
     public function __construct($success, $pdo, $st){
         $this->pdo = $pdo;
         $this->st = $st;
@@ -443,12 +443,12 @@ class ExecImpl
      *
      * @param Context $context
      * @param $exceOnError boolean whether throw exceptions
-     * @return Response
+     * @return ExecResult
      */
     static public function exec($context) {
         $st = $context->connection->prepare($context->sql);
         $success = $st->execute($context->params);
-        return new Response($success, $context->connection, $st);
+        return new ExecResult($success, $context->connection, $st);
     }
     /**
      *
@@ -466,9 +466,9 @@ class ExecImpl
                 foreach ($res as $i){
                     $dict[$i[$dictAs]]=$i;
                 }
-                return $dict;
+                return $context->handleResult($dict);
             }
-            return $res;
+            return $context->handleResult($res);
         }else{
             return false;
         }

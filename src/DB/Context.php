@@ -32,6 +32,19 @@ class Context{
     public function appendParams($params){
         $this->params = array_merge($this->params, $params);
     }
+
+    public function handleResult($result)
+    {
+        if($this->resultHandler){
+            return $this->resultHandler($result);
+        }else{
+            return $result;
+        }
+    }
+    /**
+     * @var callable
+     */
+    public $resultHandler;
     public $sql='';
     public $params=[];
     /**
