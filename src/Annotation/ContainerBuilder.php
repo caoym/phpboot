@@ -66,10 +66,7 @@ abstract class ContainerBuilder
      * @param string $className
      * @return object
      */
-    protected function createContainer($className)
-    {
-        return new $className();
-    }
+    abstract protected function createContainer($className);
 
 
     protected function handleAnnotation($handlerName, $container, $ann){

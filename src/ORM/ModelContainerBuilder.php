@@ -47,4 +47,12 @@ class ModelContainerBuilder extends ContainerBuilder
         return parent::buildWithoutCache($className);
     }
 
+    /**
+     * @param string $className
+     * @return ModelContainer
+     */
+    protected function createContainer($className)
+    {
+        return new ModelContainer($className);
+    }
 }
