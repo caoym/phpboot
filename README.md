@@ -1,6 +1,6 @@
 # phprs 2.0 
 
-**当前版本由于改动较大, 与1.x 版本不兼容。下载1.x 版本请前往[v1.2.3](https://github.com/caoym/phprs-restful/tree/v1.2.3)**
+**当前版本由于改动较大, 与1.x 版本不兼容。下载1.x 版本请前往[v1.2.4](https://github.com/caoym/phprs-restful/tree/v1.2.4)**
 
 ## TODO
 
