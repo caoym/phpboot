@@ -14,7 +14,7 @@ class EntityContainer implements TypeContainerInterface
 
     public function make($data, $validate = true)
     {
-        is_array($data) or \PhpBoot\abort(new \InvalidArgumentException("array is required by param 0"));
+        $data instanceof \ArrayAccess || is_array($data) or \PhpBoot\abort(new \InvalidArgumentException("array is required by param 0"));
         $className = $this->getClassName();
         $obj = new $className();
         $vld = new Validator();
@@ -22,9 +22,7 @@ class EntityContainer implements TypeContainerInterface
             if($p->container && isset($data[$p->name])){
                 $data[$p->name] = $p->container->make($data[$p->name], $validate);
             }
-            if(!$p->isOptional){
-                $vld->rule('required', $p->name);
-            }
+
             if($p->validation){
                 if(is_array($p->validation)){
                     $vld->rule($p->validation[0], $p->name.'.'.$p->validation[1]);
@@ -32,9 +30,13 @@ class EntityContainer implements TypeContainerInterface
                     $vld->rule($p->validation, $p->name);
                 }
             }
+            if(!$p->isOptional && !$vld->hasRule('optional', $p->name)){
+                $vld->rule('required', $p->name);
+            }
         }
         if($validate){
-            $vld->withData($data)->validate() or \PhpBoot\abort(
+            $vld = $vld->withData($data);
+            $vld->validate() or \PhpBoot\abort(
                 new \InvalidArgumentException(
                     json_encode(
                         $vld->errors(),

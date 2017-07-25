@@ -6,6 +6,7 @@ use PhpBoot\Application;
 use PhpBoot\Metas\ParamMeta;
 use PhpBoot\Utils\ArrayAdaptor;
 use PhpBoot\Validator\Validator;
+use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
@@ -37,6 +38,10 @@ class RequestHandler
             }
             $source = \JmesPath\search($meta->source, $requestArray);
             if ($source !== null){
+                $source = ArrayAdaptor::strip($source);
+                if($source instanceof ParameterBag){
+                    $source = $source->all();
+                }
                 if($meta->container){
                     $inputs[$meta->name] = $meta->container->make($source);
                 }else{

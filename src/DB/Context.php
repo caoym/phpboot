@@ -35,8 +35,8 @@ class Context{
 
     public function handleResult($result)
     {
-        if($this->resultHandler){
-            return $this->resultHandler($result);
+        if($resultHandler = $this->resultHandler){
+            return $resultHandler($result);
         }else{
             return $result;
         }

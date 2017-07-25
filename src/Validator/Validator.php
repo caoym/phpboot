@@ -70,6 +70,10 @@ class Validator extends \Valitron\Validator
         parent::rule($rule, $fields);
         return $this;
     }
+    public function hasRule($name, $field)
+    {
+        return parent::hasRule($name, $field);
+    }
 
 //    /**
 //     * Validate that a field matches a specified type

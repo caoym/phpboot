@@ -2,18 +2,19 @@
 
 namespace PhpBoot\ORM;
 
-
-use PhpBoot\Annotation\ContainerBuilder;
+use DI\Container;
 use PhpBoot\Annotation\Names;
+use PhpBoot\DI\DIContainerBuilder;
 use PhpBoot\Entity\Annotations\ClassAnnotationHandler;
 use PhpBoot\Entity\Annotations\PropertyAnnotationHandler;
 use PhpBoot\Entity\Annotations\ValidateAnnotationHandler;
 use PhpBoot\Entity\Annotations\VarAnnotationHandler;
+use PhpBoot\Entity\EntityContainerBuilder;
 use PhpBoot\ORM\Annotations\PKAnnotationHandler;
 use PhpBoot\ORM\Annotations\TableAnnotationHandler;
 
 
-class ModelContainerBuilder extends ContainerBuilder
+class ModelContainerBuilder extends EntityContainerBuilder
 {
     const DEFAULT_ANNOTATIONS=[
         [ClassAnnotationHandler::class, 'class'],
@@ -21,12 +22,13 @@ class ModelContainerBuilder extends ContainerBuilder
         [TableAnnotationHandler::class, "class.children[?name=='".Names::TABLE."']"],
         [PropertyAnnotationHandler::class, 'properties'],
         [VarAnnotationHandler::class, "properties.*.children[?name=='var'][]"],
-        [ValidateAnnotationHandler::class, "properties.*.children[?name=='".Names::VALIDATE."'][]"],
+        //[ValidateAnnotationHandler::class, "properties.*.children[?name=='".Names::VALIDATE."'][]"],
     ];
 
     public function __construct()
     {
-        parent::__construct(self::DEFAULT_ANNOTATIONS);
+        $this->container = DIContainerBuilder::buildDevContainer();
+        parent::__construct($this->container, $this->container, self::DEFAULT_ANNOTATIONS);
     }
     /**
      * load from class with local cache
@@ -48,11 +50,7 @@ class ModelContainerBuilder extends ContainerBuilder
     }
 
     /**
-     * @param string $className
-     * @return ModelContainer
+     * @var Container
      */
-    protected function createContainer($className)
-    {
-        return new ModelContainer($className);
-    }
+    private $container;
 }
