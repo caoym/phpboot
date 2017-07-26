@@ -28,8 +28,7 @@ PhpBoot是专为开发**RESTful API** 设计的PHP框架。它的设计初衷是
       <?php
       require __DIR__.'/vendor/autoload.php';
       
-      $app = \PhpBoot\Application::createByDefault(__DIR__.'/config/config.php'
-      );
+      $app = \PhpBoot\Application::createByDefault(__DIR__.'/config/config.php');
       $app->loadRoutesFromPath(__DIR__.'/App/Controllers');
       $app->dispatch();
        ```
