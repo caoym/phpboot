@@ -36,7 +36,7 @@ PhpBoot是专为开发**RESTful API** 设计的PHP框架。它的设计初衷是
     
 ## 示例
 
-   下面一个最基本的例子, 展示了基于Anntotaion的路由定义、依赖注入、参数绑定、参数校验和ORM, 完整的示例请见[phpboot-example](https://github.com/caoym/phpboot-example)
+   下面一个最基本的例子, 展示了依赖注入、基于Anntotaion的路由定义、参数绑定、参数校验和ORM, 完整的示例请见[phpboot-example](https://github.com/caoym/phpboot-example)
    
    ```PHP
    /**
