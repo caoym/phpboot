@@ -8,8 +8,15 @@ php:
 install:
   - sudo pip install coverage
 
+before_script:
+  - ./.travis.install.sh
+  - if [ $TRAVIS_PHP_VERSION = '5.6' ]; then PHPUNIT_FLAGS="--coverage-clover coverage.clover"; else PHPUNIT_FLAGS=""; fi
+
 script: phpunit ./tests --coverage-clover=coverage.xml
 
+after_script:
+  - if [ $TRAVIS_PHP_VERSION = '5.6' ]; then wget https://scrutinizer-ci.com/ocular.phar; php ocular.phar code-coverage:upload --format=php-clover coverage.clover; fi
+  
 after_success:
   - bash <(curl -s https://codecov.io/bash)
   
