@@ -3,6 +3,7 @@
 namespace PhpBoot\Metas;
 
 use PhpBoot\Entity\ContainerInterface;
+use PhpBoot\Entity\TypeContainerInterface;
 
 class ReturnMeta
 {
@@ -33,7 +34,7 @@ class ReturnMeta
     public $description;
 
     /**
-     * @var ContainerInterface|null
+     * @var TypeContainerInterface|null
      */
     public $container;
 }

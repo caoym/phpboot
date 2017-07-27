@@ -13,7 +13,6 @@ use FastRoute\RouteParser\Std;
 use Invoker\Exception\InvocationException;
 use Invoker\Exception\NotCallableException;
 use Invoker\Exception\NotEnoughParametersException;
-use PhpBoot\Annotation\ContainerBuilder;
 use PhpBoot\Controller\ControllerContainerBuilder;
 use PhpBoot\Cache\CheckableCache;
 use PhpBoot\Cache\ClassModifiedChecker;

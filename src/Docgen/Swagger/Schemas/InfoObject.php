@@ -34,5 +34,5 @@ class InfoObject
      * 	Required Provides the version of the application API (not to be confused with the specification version)
      * @var string
      */
-    public $version;
+    public $version='';
 }

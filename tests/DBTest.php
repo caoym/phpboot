@@ -86,7 +86,7 @@ class DBTest extends TestCase
         (new DB($this->db))->select('col')->from('tab')->where('a = ? AND b = ? AND c = ? AND d IN (?) AND e BETWEEN ? AND now()',
             1, DB::raw('now()'), 'c', [1,'2', DB::raw('now()')],'e1')->get();
         //      whereArgs()
-        (new DB($this->db))->select('col')->from('tab')->whereArgs([
+        (new DB($this->db))->select('col')->from('tab')->where([
             'a'=>['='=>1],
             'b'=>DB::raw('now()'), 
             'c'=>'c', 

@@ -49,6 +49,14 @@ class ArrayContainer implements TypeContainerInterface
     }
 
     /**
+     * @return TypeContainerInterface
+     */
+    public function getContainer()
+    {
+        return $this->container;
+    }
+
+    /**
      * @var TypeContainerInterface
      */
     private $container;

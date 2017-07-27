@@ -68,7 +68,7 @@ PhpBoot是专为开发**RESTful API** 设计的PHP框架。它的设计初衷是
        public function findBooks($name, $offset=0, $limit=100)
        {
            return \PhpBoot\model($this->db, Book::class)
-               ->where(['name'=>['LIKE'=>$name]])
+               ->where(['name'=>['LIKE'=>"%$name%"]])
                ->limit($offset, $limit)
                ->get();
        }

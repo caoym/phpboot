@@ -49,7 +49,7 @@ class BindAnnotationHandler
 
             $paramMeta = $route->getRequestHandler()->getParamMeta($paramName);
             if($paramMeta->isPassedByReference){
-                $handler->eraseMapping($params[0]);
+                $handler->eraseMapping('response.content.'.$paramName);
                 //输出绑定
                 $handler->setMapping(
                     $params[0],

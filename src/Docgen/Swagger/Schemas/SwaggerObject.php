@@ -43,23 +43,23 @@ class SwaggerObject
      * A list of MIME types the APIs can consume. This is global to all APIs but can be overridden on specific API calls. Value MUST be as described under Mime Types.
      * @var string[]
      */
-    public $consumes;
+    public $consumes = ['application/json'];
     /**
      * A list of MIME types the APIs can produce. This is global to all APIs but can be overridden on specific API calls. Value MUST be as described under Mime Types.
      * @var string[]
      */
-    public $produces;
+    public $produces= ['application/json'];
 
     /**
      * @var PathItemObject[]
      */
-    public $paths;
+    public $paths=[];
 
     /**
      * An object to hold data types produced and consumed by operations.
      * @var RefSchemaObject[]|SimpleModelSchemaObject[]|PrimitiveSchemaObject[]|ArraySchemaObject[]
      */
-    public $definitions;
+    public $definitions=[];
     /**
      * An object to hold parameters that can be used across operations. This property does not define global
      * parameters for all operations.

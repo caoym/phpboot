@@ -60,12 +60,11 @@ class ResponseHandler
             'params'=>$params
         ];
 
-        $mappings = $this->getMappings();
         if($return instanceof Response){ //直接返回Response时, 对return不再做映射
             return $return;
         }
+        $mappings = $this->getMappings();
 
-        $response = new Response();
         $output = [];
         foreach($mappings as $key=>$map){
             $val = \JmesPath\search($map->source, $input);
