@@ -16,7 +16,7 @@ use PhpBoot\ORM\Annotations\TableAnnotationHandler;
 
 class ModelContainerBuilder extends EntityContainerBuilder
 {
-    const DEFAULT_ANNOTATIONS=[
+    static $DEFAULT_ANNOTATIONS=[
         [ClassAnnotationHandler::class, 'class'],
         [PKAnnotationHandler::class, "class.children[?name=='".Names::PK."']"],
         [TableAnnotationHandler::class, "class.children[?name=='".Names::TABLE."']"],
@@ -28,7 +28,7 @@ class ModelContainerBuilder extends EntityContainerBuilder
     public function __construct()
     {
         $this->container = DIContainerBuilder::buildDevContainer();
-        parent::__construct($this->container, $this->container, self::DEFAULT_ANNOTATIONS);
+        parent::__construct($this->container, $this->container, self::$DEFAULT_ANNOTATIONS);
     }
     /**
      * load from class with local cache

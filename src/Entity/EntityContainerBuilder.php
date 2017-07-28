@@ -13,7 +13,7 @@ use PhpBoot\Annotation\Names;
 
 class EntityContainerBuilder extends ContainerBuilder
 {
-    const DEFAULT_ANNOTATIONS=[
+    static $DEFAULT_ANNOTATIONS=[
         [ClassAnnotationHandler::class, 'class'],
         [PropertyAnnotationHandler::class, 'properties'],
         [VarAnnotationHandler::class, "properties.*.children[?name=='var'][]"],
@@ -27,9 +27,13 @@ class EntityContainerBuilder extends ContainerBuilder
      *
      * @param array $annotations
      */
-    public function __construct(FactoryInterface $factory, DIInvokerInterface $diInvoker, array $annotations = self::DEFAULT_ANNOTATIONS)
+    public function __construct(FactoryInterface $factory, DIInvokerInterface $diInvoker, array $annotations = null)
     {
-        parent::__construct($annotations);
+        if($annotations){
+            parent::__construct($annotations);
+        }else{
+            parent::__construct(self::$DEFAULT_ANNOTATIONS);
+        }
         $this->factory = $factory;
         $this->diInvoker = $diInvoker;
     }

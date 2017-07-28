@@ -7,7 +7,7 @@ use \DI\InvokerInterface as DIInvokerInterface;
 use PhpBoot\Controller\Annotations\BindAnnotationHandler;
 use PhpBoot\Controller\Annotations\ClassAnnotationHandler;
 use PhpBoot\Controller\Annotations\HookAnnotationHandler;
-use PhpBoot\controller\Annotations\ParamAnnotationHandler;
+use PhpBoot\Controller\Annotations\ParamAnnotationHandler;
 use PhpBoot\Controller\Annotations\PathAnnotationHandler;
 use PhpBoot\Controller\Annotations\ReturnAnnotationHandler;
 use PhpBoot\Controller\Annotations\RouteAnnotationHandler;
@@ -18,7 +18,7 @@ use PhpBoot\Annotation\Names;
 
 class ControllerContainerBuilder extends ContainerBuilder
 {
-    const DEFAULT_ANNOTATIONS=[
+    static $DEFAULT_ANNOTATIONS=[
         [ClassAnnotationHandler::class, 'class'],
         [PathAnnotationHandler::class, "class.children[?name=='".Names::PATH."']"],
         [RouteAnnotationHandler::class, "methods.*.children[?name=='".Names::ROUTE."'][]"],
@@ -37,9 +37,14 @@ class ControllerContainerBuilder extends ContainerBuilder
      *
      * @param array $annotations
      */
-    public function __construct(FactoryInterface $factory, DIInvokerInterface $diInvoker, array $annotations = self::DEFAULT_ANNOTATIONS)
+    public function __construct(FactoryInterface $factory, DIInvokerInterface $diInvoker, array $annotations = null)
     {
-        parent::__construct($annotations);
+        if($annotations){
+            parent::__construct($annotations);
+        }else{
+            parent::__construct(self::$DEFAULT_ANNOTATIONS);
+        }
+
         $this->factory = $factory;
         $this->diInvoker = $diInvoker;
     }

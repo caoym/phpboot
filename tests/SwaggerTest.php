@@ -100,7 +100,7 @@ class SwaggerTest extends TestCase
 
         $json = $swagger->getJson();
         //TODO TEST
-        echo $json;
+        
 
     }
 }
