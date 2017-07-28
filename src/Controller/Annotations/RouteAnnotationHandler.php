@@ -47,25 +47,37 @@ class RouteAnnotationHandler
         $method = $rfl->getMethod($target);
         $methodParams = $method->getParameters();
 
+        $uri = $params->getParam(1);
+        $uri = rtrim($container->getPathPrefix(), '/').'/'.ltrim($uri, '/');
+        $requestHandler = new RequestHandler();
+        $responseHandler = new ResponseHandler();
+        $exceptionHandler = new ExceptionHandler();
+
+        $route = new Route(
+            $httpMethod,
+            $uri,
+            $requestHandler,
+            $responseHandler,
+            $exceptionHandler,
+            [],
+            $ann->parent->summary,
+            $ann->parent->description
+        );
+
         //从路由中获取变量, 用于判断参数是来自路由还是请求
         $routeParser = new Std();
         $info = $routeParser->parse($params->getParam(1)); //0.4和1.0返回值不同, 不兼容
-        $routeParams = [];
-        foreach ($info[0] as $i){
-            if(is_array($i)){
-                $routeParams[$i[0]] = true;
-            }
-        }
 
-        $responseHandler = new ResponseHandler();
-        $exceptionHandler = new ExceptionHandler();
+        foreach ($info[0] as $i){
+            $route->addPathParam($i[0]);
+        }
 
         //设置参数列表
         $paramsMeta = [];
         foreach ($methodParams as $param){
             $paramName = $param->getName();
             $source = "request.$paramName";
-            if(array_key_exists($paramName, $routeParams)){ //参数来自路由
+            if($route->hasPathParam($paramName)){ //参数来自路由
                 $source = "request.$paramName";
             }elseif($httpMethod == 'GET'){
                 $source = "request.$paramName"; //GET请求显示指定来自query string
@@ -94,22 +106,10 @@ class RouteAnnotationHandler
                 ));
             }
         }
-        $requestHandler = new RequestHandler($paramsMeta);
 
+        $requestHandler->setParamMetas($paramsMeta);
         $responseHandler->setMapping('response.content', new ReturnMeta('return','mixed','', new MixedTypeContainer()));
 
-        $uri = $params->getParam(1);
-        $uri = rtrim($container->getPathPrefix(), '/').'/'.ltrim($uri, '/');
-        $route = new Route(
-            $httpMethod,
-            $uri,
-            $requestHandler,
-            $responseHandler,
-            $exceptionHandler,
-            [],
-            $ann->parent->summary,
-            $ann->parent->description
-        );
         $container->addRoute($target, $route);
     }
 }

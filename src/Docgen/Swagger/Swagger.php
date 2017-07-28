@@ -33,10 +33,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class Swagger extends SwaggerObject
 {
-    public function __construct()
-    {
-        $this->info = new InfoObject();
-    }
+
 
     /**
      * @param Application $app
@@ -198,6 +195,7 @@ class Swagger extends SwaggerObject
                     $sub = new PrimitiveSchemaObject();
                     $sub->type = self::mapType($v->type);
                     self::mapValidation($v->validation, $sub);
+                    unset($sub->required);
                 }
                 $sub->description = $v->description;
                 $sub->default = $v->default;
@@ -239,11 +237,15 @@ class Swagger extends SwaggerObject
         $params = $route->getRequestHandler()->getParamMetas();
         $parameters = [];
         $body = [];
+        $in = 'query';
         foreach ($params as $name=>$param){
             if($param->isPassedByReference){
                 continue;
             }
-            if(strpos($param->source, 'request.request.') === 0
+            if($param->source == 'request.request'){
+                $in = 'body';
+                $name = '';
+            }elseif(strpos($param->source, 'request.request.') === 0
                 || $param->source == 'request.request'){
                 $in = 'body';
                 $name = substr($param->source, strlen('request.request.'));
@@ -261,7 +263,9 @@ class Swagger extends SwaggerObject
                 $name = substr($param->source, strlen('request.files.'));
             }elseif(strpos($param->source, 'request.') === 0){
                 $name = substr($param->source, strlen('request.'));
-                if($route->getMethod() == 'POST'
+                if($route->hasPathParam($param->name)){
+                    $in = 'path';
+                }elseif($route->getMethod() == 'POST'
                     || $route->getMethod() == 'PUT'
                     || $route->getMethod() == 'PATCH'){
                     $in = 'body';
@@ -288,14 +292,24 @@ class Swagger extends SwaggerObject
                 $paramSchema->required = !$param->isOptional;
                 $parameters[] = $paramSchema;
             }else{
-                ArrayHelper::set($body, $name, $param);
+                if(!$name){
+                    $body = $param;
+                }else{
+                    ArrayHelper::set($body, $name, $param);
+                }
+
             }
         }
         if($body){
             $paramSchema = new BodyParameterObject();
             $paramSchema->name = 'body';
             $paramSchema->in = 'body';
-            $paramSchema->schema = $this->makeTempSchema($app, $controller, $action, $route, $body);
+            if(is_array($body)){
+                $paramSchema->schema = $this->makeTempSchema($app, $controller, $action, $route, $body);
+            }else{
+                $paramSchema->schema = $this->getAnySchema($app, $controller, $action, $route, $body->container);
+            }
+
             $parameters[] = $paramSchema;
         }
 
@@ -360,6 +374,7 @@ class Swagger extends SwaggerObject
                 $propertySchema->type = self::mapType($property->type);
                 $propertySchema->description = implode("\n", [$property->summary, $property->description]);
                 self::mapValidation($property->validation, $propertySchema);
+                unset($propertySchema->required);
             }
             $schema->properties[$property->name] = $propertySchema;
         }

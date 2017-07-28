@@ -7,6 +7,10 @@ namespace PhpBoot\Docgen\Swagger\Schemas;
  */
 class SwaggerObject
 {
+    public function __construct()
+    {
+        $this->info = new InfoObject();
+    }
     /**
      * Required.
      * Specifies the Swagger Specification version being used.

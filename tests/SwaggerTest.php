@@ -74,10 +74,22 @@ class SwaggerTestController
      * @route POST /test2
      * @param string $param1 the param 1
      * @param SwaggerTestEntity2 $param2 the param 2
-     *
      * @throws NotFoundHttpException not found
      */
     public function getTest2($param1, $param2)
+    {
+
+    }
+
+    /**
+     * post test 3
+     *
+     * the post test 3
+     *
+     * @route POST /test3
+     * @param SwaggerTestEntity2 $param1 {@bind request.request}
+     */
+    public function getTest3($param1)
     {
 
     }
@@ -100,7 +112,7 @@ class SwaggerTest extends TestCase
 
         $json = $swagger->getJson();
         //TODO TEST
-        
+        return $json;
 
     }
 }

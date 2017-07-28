@@ -15,7 +15,7 @@ class RequestHandler
     /**
      * @param ParamMeta[] $paramMates
      */
-    public function __construct(array $paramMates){
+    public function __construct(array $paramMates=[]){
         $this->paramMetas = $paramMates;
     }
 
@@ -103,6 +103,13 @@ class RequestHandler
         return null;
     }
 
+    /**
+     * @param \PhpBoot\Metas\ParamMeta[] $paramMetas
+     */
+    public function setParamMetas($paramMetas)
+    {
+        $this->paramMetas = $paramMetas;
+    }
     /**
      * @var ParamMeta[]
      */

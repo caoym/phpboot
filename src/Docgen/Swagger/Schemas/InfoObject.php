@@ -9,7 +9,7 @@ class InfoObject
      * Required. The title of the application.
      * @var string
      */
-    public $title;
+    public $title='';
     /**
      * A short description of the application. GFM syntax can be used for rich text representation
      * @var string

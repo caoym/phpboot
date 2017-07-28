@@ -173,6 +173,7 @@ class Route
         $this->exceptionHandler = $exceptionHandler;
     }
 
+
     /**
      * @return string[]
      */
@@ -193,6 +194,40 @@ class Route
     {
         $this->hooks[] = $className;
     }
+
+    /**
+     * @return string[]
+     */
+    public function getPathParams()
+    {
+        return $this->pathParams;
+    }
+
+    /**
+     * @param string[] $pathParams
+     */
+    public function setPathParams($pathParams)
+    {
+        $this->pathParams = $pathParams;
+    }
+    /**
+     * @param string $pathParam
+     */
+    public function addPathParam($pathParam)
+    {
+        $this->pathParams[] = $pathParam;
+        array_unique($this->pathParams);
+    }
+
+    /**
+     * @param string $name
+     * @return bool
+     */
+    public function hasPathParam($name)
+    {
+        return in_array($name, $this->pathParams);
+    }
+
     /**
      * @var RequestHandler
      */
@@ -234,5 +269,10 @@ class Route
      * @var string[]
      */
     private $hooks=[];
+
+    /**
+     * @var string[]
+     */
+    private $pathParams =[];
 
 }
