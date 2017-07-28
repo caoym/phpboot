@@ -17,6 +17,7 @@ use PhpBoot\Controller\ControllerContainerBuilder;
 use PhpBoot\Cache\CheckableCache;
 use PhpBoot\Cache\ClassModifiedChecker;
 use PhpBoot\Controller\ControllerContainer;
+use PhpBoot\Controller\ExceptionRenderer;
 use PhpBoot\Controller\Route;
 use PhpBoot\DB\DB;
 use PhpBoot\DI\DIContainerBuilder;
@@ -49,27 +50,28 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
      * or just the array
      * @return self
      */
-    static public function createByDefault($conf=[]){
+    static public function createByDefault($conf = [])
+    {
         $builder = new DIContainerBuilder();
 
         $default = [
-            'AppName'=>'App',
+            'AppName' => 'App',
 
-            'DB.connection'=> 'mysql:dbname=default;host=localhost',
-            'DB.username'=> 'root',
-            'DB.password'=> 'root',
+            'DB.connection' => 'mysql:dbname=default;host=localhost',
+            'DB.username' => 'root',
+            'DB.password' => 'root',
             'DB.options' => [],
 
-            DB::class   =>  \DI\factory([DB::class, 'connect'])
+            DB::class => \DI\factory([DB::class, 'connect'])
                 ->parameter('dsn', \DI\get('DB.connection'))
-                ->parameter('username',\DI\get('DB.username'))
+                ->parameter('username', \DI\get('DB.username'))
                 ->parameter('password', \DI\get('DB.password'))
                 ->parameter('options', \DI\get('DB.options')),
 
-            LoggerInterface::class  =>  \DI\object(\Monolog\Logger::class)
+            LoggerInterface::class => \DI\object(\Monolog\Logger::class)
                 ->constructor(\DI\get('AppName')),
 
-            Request::class          =>  \DI\factory([Request::class, 'createFromGlobals']),
+            Request::class => \DI\factory([Request::class, 'createFromGlobals']),
         ];
 
         $builder->addDefinitions($default);
@@ -82,6 +84,7 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
         $app = $container->make(self::class);
         return $app;
     }
+
     public function __construct()
     {
         $this->cache = new ApcCache();
@@ -94,6 +97,7 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
     {
         return $this->cache;
     }
+
     /**
      * @param CacheProvider $localCache
      */
@@ -101,114 +105,119 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
     {
         $this->cache = $localCache;
     }
-    public function make($name, array $parameters = []){
-        return $this->container->make($name, $parameters);
-    }
 
     /**
+     * load routes from class
+     * 
      * @param string $className
      * @return void
      */
     public function loadRoutesFromClass($className)
     {
-        $this->routeLoaders[$className] = function()use($className){
-            $container = $this->controllerContainerBuilder->build($className);
-            return [$container];
-        };
+        $cache = new CheckableCache($this->cache);
+
+        $key = __FUNCTION__ . ':' . md5(__CLASS__ . ':' . $className);
+        $routes = $cache->get($key, $this);
+
+        $controller = null;
+        if ($routes == $this) { //not cached
+            $routes = [];
+            $controller = $this->controllerContainerBuilder->build($className);
+            foreach ($controller->getRoutes() as $actionName => $route) {
+                $routes[] = [$route->getMethod(), $route->getUri(), $actionName];
+            }
+            $cache->set($key, $routes, 0, new ClassModifiedChecker($className));
+        }
+        foreach ($routes as $route) {
+            list($method, $uri, $actionName) = $route;
+            $this->routes[] = [
+                $method,
+                $uri,
+                function (Application $app, Request $request) use ($cache, $className, $actionName, $controller) {
+
+                    $key = __FUNCTION__ . ':route:' . md5(__CLASS__ . ':' . $className . ':' . $actionName);
+
+                    $routeInstance = $cache->get($key, $this);
+                    if ($routeInstance == $this) {
+                        if (!$controller) {
+                            $controller = $app->controllerContainerBuilder->build($className);
+                        }
+                        $routeInstance = $controller->getRoute($actionName) or
+                        abort(new NotFoundHttpException("action $actionName not found"));
+                        $cache->set($key, $routeInstance, 0, new ClassModifiedChecker($className));
+                    }
+                    return ControllerContainer::dispatch($this, $className, $actionName, $routeInstance, $request);
+                }];
+        }
+        $this->controllers[] = $className;
     }
+
     /**
-     * load from path
+     * load routes from path
      *
      * 被加载的文件必须以: 类名.php的形式命名
      * @param string $fromPath
      * @param string $namespace
      * @return void
      */
-    public function loadRoutesFromPath($fromPath, $namespace='')
+    public function loadRoutesFromPath($fromPath, $namespace = '')
     {
         $dir = @dir($fromPath);
 
-        $getEach = function ()use($dir){
+        $getEach = function () use ($dir) {
             $name = $dir->read();
-            if(!$name){
+            if (!$name) {
                 return $name;
             }
             return $name;
         };
 
-        while( !!($entry = $getEach()) ){
-            if($entry == '.' || $entry=='..'){
+        while (!!($entry = $getEach())) {
+            if ($entry == '.' || $entry == '..') {
                 continue;
             }
-            $path = $fromPath.'/'. str_replace('\\', '/', $entry);
-            if(is_file($path) && substr_compare ($entry, '.php', strlen($entry)-4, 4,true) ==0){
-                $class_name = $namespace.'\\'.substr($entry, 0, strlen($entry)-4);
+            $path = $fromPath . '/' . str_replace('\\', '/', $entry);
+            if (is_file($path) && substr_compare($entry, '.php', strlen($entry) - 4, 4, true) == 0) {
+                $class_name = $namespace . '\\' . substr($entry, 0, strlen($entry) - 4);
                 $this->loadRoutesFromClass($class_name);
-
-            }else{
+            } else {
                 //\Log::debug($path.' ignored');
             }
         }
     }
+
+    /**
+     * Add route
+     * @param string $method
+     * @param string $uri
+     * @param callable $handler
+     */
+    public function addRoute($method, $uri, callable $handler)
+    {
+        $this->routes[] = [$method, $uri, $handler];
+    }
+
     /**
      * @return ControllerContainer[]
      */
     public function getControllers()
     {
-        $key = 'controllers:'.md5(serialize(array_keys($this->routeLoaders)));
-        return LocalAutoLock::lock($key, 60, function (){
-            $res = [];
-            foreach ($this->routeLoaders as $loader){
-                $res = array_merge($res, $loader());
-            }
-            return $res;
-        });
+        $controllers = [];
+        foreach ($this->controllers as $name) {
+            $controllers[] = $this->controllerContainerBuilder->build($name);
+        }
+        return $controllers;
     }
 
     /**
-     * @return bool|GroupCountBasedDispatcher
+     * @param Request|null $request
+     * @param bool $send
+     * @return Response
      */
-    private function getDispatcher()
-    {
-        if($this->dispatcher){
-            return $this->dispatcher;
-        }
-        $key = 'controllers:'.md5(serialize(array_keys($this->routeLoaders)));
-        $expiredData = null;
-        $cache = new CheckableCache($this->cache);
-        $data =  $cache->get($key, $this, $expiredData, false);
-        if($data == $this){
-            $data = LocalAutoLock::lock(
-                $key,
-                60,
-                function ()use($cache, $key){
-                    $routeCollector = new RouteCollector(new Std(), new GroupCountBasedDataGenerator());
-                    foreach ($this->routeLoaders as $loader){
-                        $containers = $loader();
-                        /**@var ControllerContainer[] $containers*/
-                        foreach ($containers as $container){
-                            foreach ($container->getRoutes() as $actionName=>$route){
-                                $routeCollector->addRoute($route->getMethod(), $route->getUri(), [$container->getClassName(), $actionName]);
-                                $cache->set('route:'.md5($container->getClassName().'::'.$actionName),$route, 0, new ClassModifiedChecker($container->getClassName()));
-                            }
-                        }
-                    }
-                    $cache->set($key, $routeCollector->getData());
-                    return $routeCollector->getData();
-                },
-                function()use($expiredData){
-                    return $expiredData;
-                });
-        }
-        if(!$data){
-            return false;
-        }
-        $this->dispatcher = new GroupCountBasedDispatcher($data);
-        return $this->dispatcher;
-    }
     public function dispatch(Request $request = null, $send = true)
     {
-        if ($request == null){
+        //  TODO 把 Route里的异常处理 ExceptionRenderer 移到这里更妥?
+        if ($request == null) {
             $request = $this->make(Request::class);
         }
         $uri = $request->getRequestUri();
@@ -217,35 +226,44 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
         }
         $uri = rawurldecode($uri);
 
+
         $dispatcher = $this->getDispatcher();
-        if(!$dispatcher){
-            \PhpBoot\abort(new NotFoundHttpException('none'), [$request->getMethod(), $uri]);
-        }
 
         $res = $dispatcher->dispatch($request->getMethod(), $uri);
-        if($res[0] == Dispatcher::FOUND){
+        if ($res[0] == Dispatcher::FOUND) {
 
-            list($className, $actionName) = $res[1];
-            $route = $this->getRoute($className, $actionName);
-            if(!$route){
-                \PhpBoot\abort(new NotFoundHttpException('dirty data'), [$request->getMethod(), $uri]);
+            if (count($res[2])) {
+                $request->attributes->add($res[2]);
             }
-            $request->attributes->add($res[2]);
+            $handler = $res[1];
 
-            $response = ControllerContainer::dispatch($this, $className, $actionName, $route, $request);
+            $response = $handler($this, $request);
 
             /** @var Response $response */
-            if($send){
+            if ($send) {
                 $response->send();
             }
             return $response;
-        }elseif ($res[0] == Dispatcher::NOT_FOUND){
+        } elseif ($res[0] == Dispatcher::NOT_FOUND) {
             \PhpBoot\abort(new NotFoundHttpException(), [$request->getMethod(), $uri]);
-        }elseif ($res[0] == Dispatcher::METHOD_NOT_ALLOWED){
+        } elseif ($res[0] == Dispatcher::METHOD_NOT_ALLOWED) {
             \PhpBoot\abort(new MethodNotAllowedHttpException($res[1]), [$request->getMethod(), $uri]);
-        }else{
+        } else {
             \PhpBoot\abort("unknown dispatch return {$res[0]}");
         }
+    }
+
+    /**
+     * @return GroupCountBasedDispatcher
+     */
+    private function getDispatcher()
+    {
+        $routeCollector = new RouteCollector(new Std(), new GroupCountBasedDataGenerator());
+        foreach ($this->routes as $route) {
+            list($method, $uri, $handler) = $route;
+            $routeCollector->addRoute($method, $uri, $handler);
+        }
+        return new GroupCountBasedDispatcher($routeCollector->getData());
     }
 
     /**
@@ -255,20 +273,20 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
      */
     private function getRoute($className, $actionName)
     {
-        $key = md5($className.'::'.$actionName);
+        $key = md5($className . '::' . $actionName);
         $expiredData = null;
         $cache = new CheckableCache($this->cache);
-        $route = $cache->get('route:'.$key, $this, $expiredData, false);
-        if(!$route){
+        $route = $cache->get('route:' . $key, $this, $expiredData, false);
+        if (!$route) {
             return false;
         }
-        if($route == $this){
-            return LocalAutoLock::lock($key, 60, function()use($cache, $className, $actionName, $key){
+        if ($route == $this) {
+            return LocalAutoLock::lock($key, 60, function () use ($cache, $className, $actionName, $key) {
                 $container = $this->controllerContainerBuilder->build($className);
                 $route = $container->getRoute($actionName);
-                $cache->set('route:'.$key, $route, 0, new ClassModifiedChecker($className));
+                $cache->set('route:' . $key, $route, 0, new ClassModifiedChecker($className));
                 return $route;
-            }, function()use($expiredData){
+            }, function () use ($expiredData) {
                 return $expiredData;
             });
         }
@@ -307,30 +325,6 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
     }
 
     /**
-     * @inject
-     * @var Container
-     */
-    public $container;
-
-    /**
-     * @inject
-     * @var ControllerContainerBuilder
-     */
-    public $controllerContainerBuilder;
-
-    /**
-     * @var CacheProvider
-     */
-    private $cache;
-
-    /**
-     * @var callable[]
-     */
-    private $routeLoaders = [];
-
-    private $dispatcher;
-
-    /**
      * Call the given function using the given parameters.
      *
      * @param callable $callable Function to call.
@@ -346,4 +340,40 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
     {
         return $this->container->call($callable, $parameters);
     }
+
+    public function make($name, array $parameters = [])
+    {
+        return $this->container->make($name, $parameters);
+    }
+
+    /**
+     * @inject
+     * @var Container
+     */
+    protected $container;
+
+    /**
+     * @inject
+     * @var ControllerContainerBuilder
+     */
+    protected $controllerContainerBuilder;
+
+    /**
+     * @var CacheProvider
+     */
+    protected $cache;
+
+    /**
+     * [
+     *      [method, uri, loader]
+     * ]
+     * @var array
+     */
+    protected $routes = [];
+
+    /**
+     * @var string[]
+     */
+    protected $controllers = [];
+
 }

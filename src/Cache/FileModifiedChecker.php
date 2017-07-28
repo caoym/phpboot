@@ -44,14 +44,12 @@ class FileModifiedChecker
      * @return boolean
      */
     public function __invoke($data, $createdTime){
-        $res = false;
         foreach ($this->fileName as $name => $time){
-            if(@filemtime($name) !== $time){
+            if(@filemtime($name) != $time){
                 return false;
             }
-            $res = true;
         }
-        return $res;
+        return true;
     }
     private $fileName=[]; //文件全路径
 }

@@ -3,6 +3,10 @@ namespace PhpBoot\DI;
 
 use DI\Container;
 
+/**
+ * Class DIContainerBuilder
+ * @see http://php-di.org/doc/container.html
+ */
 class DIContainerBuilder extends \DI\ContainerBuilder
 {
     public function __construct($containerClass = 'DI\Container')

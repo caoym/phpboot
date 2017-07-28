@@ -43,9 +43,8 @@ abstract class ContainerBuilder
         $rfl = new \ReflectionClass($className) or \PhpBoot\abort("load class $className failed");
         $fileName = $rfl->getFileName();
         $key = str_replace('\\','.',get_class($this)).md5(serialize($this->annotations).$fileName.$className);
-        $oldData = null;
-        $res = $this->cache->get($key, null, $oldData, false);
-        if($res === null){
+        $res = $this->cache->get($key, $this);
+        if($res === $this){
             try{
                 $meta = $this->buildWithoutCache($className);
                 $this->cache->set($key, $meta, 0, $fileName?new ClassModifiedChecker($className):null);
