@@ -117,6 +117,37 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
         };
     }
     /**
+     * @param string $fromPath
+     * @param string $namespace
+     * @return void
+     */
+    public function loadRoutesFromPath($fromPath, $namespace='')
+    {
+        $dir = @dir($fromPath);
+
+        $getEach = function ()use($dir){
+            $name = $dir->read();
+            if(!$name){
+                return $name;
+            }
+            return $name;
+        };
+
+        while( !!($entry = $getEach()) ){
+            if($entry == '.' || $entry=='..'){
+                continue;
+            }
+            $path = $fromPath.'/'. str_replace('\\', '/', $entry);
+            if(is_file($path) && substr_compare ($entry, '.php', strlen($entry)-4, 4,true) ==0){
+                $class_name = $namespace.'\\'.substr($entry, 0, strlen($entry)-4);
+                $this->loadRoutesFromClass($class_name);
+
+            }else{
+                //\Log::debug($path.' ignored');
+            }
+        }
+    }
+    /**
      * @return ControllerContainer[]
      */
     public function getControllers()
