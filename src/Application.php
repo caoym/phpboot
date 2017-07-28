@@ -117,6 +117,9 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
         };
     }
     /**
+     * load from path
+     *
+     * 被加载的文件必须以: 类名.php的形式命名
      * @param string $fromPath
      * @param string $namespace
      * @return void

@@ -106,11 +106,9 @@ class SwaggerTest extends TestCase
         $swagger->info->title = 'test title';
         $swagger->info->description = 'the test description';
 
-        foreach ($app->getControllers() as $container){
-            $swagger->appendControllerDoc($app, $container);
-        }
+        $swagger->appendControllers($app, $app->getControllers());
 
-        $json = $swagger->getJson();
+        $json = $swagger->toJson();
         //TODO TEST
         return $json;
 
