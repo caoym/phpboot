@@ -46,14 +46,6 @@ PhpBoot是专为开发**RESTful API** 设计的PHP框架。它的设计初衷是
    class Books
    {
        /**
-        * @param LoggerInterface $logger 演示依赖注入, $logger通过依赖注入传入
-        */
-       public function __construct(LoggerInterface $logger)
-       {
-           $this->logger;
-       }
-   
-       /**
         * 查找图书
         *
         * @route GET /
@@ -72,18 +64,18 @@ PhpBoot是专为开发**RESTful API** 设计的PHP框架。它的设计初衷是
                ->limit($offset, $limit)
                ->get();
        }
-   ```
+   }
+   ```
    
    对应请求和响应
    
    ```
-   >curl http://localhost/books/?name=PHP&offset=0&limit=10
-   
+  $ curl http://localhost/books/?name=PHP&offset=0&limit=10
    [
        {
            "id": 1,
            "name": "PHP",
-           "brief": "最好的语言",
+           "brief": "PHP 从入门到嫌弃",
            "pictures": []
        }
    ]
