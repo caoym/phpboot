@@ -4,7 +4,6 @@ namespace PhpBoot\DI\Annotations;
 use DI\Definition\EntryReference;
 use DI\Definition\ObjectDefinition\PropertyInjection;
 use PhpBoot\Annotation\AnnotationBlock;
-use PhpBoot\Annotation\AnnotationHandler;
 use PhpBoot\Annotation\AnnotationTag;
 use PhpBoot\DI\ObjectDefinitionContext;
 use PhpBoot\Utils\AnnotationParams;

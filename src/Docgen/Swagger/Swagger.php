@@ -456,6 +456,9 @@ class Swagger extends SwaggerObject
      */
     static public function mapValidation($v, PrimitiveSchemaObject $schemaObject)
     {
+        if(!$v){
+            return $schemaObject;
+        }
         $rules = explode('|', $v);
         foreach ($rules as $r) {
             $params = explode(':', trim($r));
@@ -466,18 +469,18 @@ class Swagger extends SwaggerObject
                 $schemaObject->required = true;
             } elseif ($rule == 'in') {
                 $schemaObject->enum = $params;
-            } elseif ($rule == 'lengthBetween') {
+            } elseif ($rule == 'lengthBetween' && isset($params[0]) && isset($params[1])) {
                 $schemaObject->minLength = $params[0];
                 $schemaObject->maxLength = $params[1];
-            } elseif ($rule == 'lengthMin') {
+            } elseif ($rule == 'lengthMin'&& isset($params[0])) {
                 $schemaObject->minLength = $params[0];
-            } elseif ($rule == 'lengthMax') {
+            } elseif ($rule == 'lengthMax'&& isset($params[0])) {
                 $schemaObject->maxLength = $params[0];
-            } elseif ($rule == 'min') {
+            } elseif ($rule == 'min'&& isset($params[0])) {
                 $schemaObject->minimum = $params[0];
-            } elseif ($rule == 'max') {
+            } elseif ($rule == 'max'&& isset($params[0])) {
                 $schemaObject->maximum = $params[0];
-            } elseif ($rule == 'regex') {
+            } elseif ($rule == 'regex'&& isset($params[0])) {
                 $schemaObject->pattern = $params[0];
             } elseif ($rule == 'optional') {
                 $schemaObject->required = false;

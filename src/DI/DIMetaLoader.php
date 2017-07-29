@@ -12,8 +12,7 @@ class DIMetaLoader extends ContainerBuilder
 {
     static $DEFAULT_ANNOTATIONS=[
         [VarAnnotationHandler::class, "properties.*.children[?name=='var'][]"],
-
-        [InjectAnnotationHandler::class, "properties.*.children[?name=='".Names::INJECT."'][]"]
+        [InjectAnnotationHandler::class, "properties.*.children[?name=='".(Names::INJECT)."'][]"]
     ];
 
     /**
