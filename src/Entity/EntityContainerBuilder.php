@@ -9,7 +9,6 @@ use PhpBoot\Entity\Annotations\PropertyAnnotationHandler;
 use PhpBoot\Entity\Annotations\ValidateAnnotationHandler;
 use PhpBoot\Entity\Annotations\VarAnnotationHandler;
 use PhpBoot\Annotation\ContainerBuilder;
-use PhpBoot\Annotation\Names;
 
 class EntityContainerBuilder extends ContainerBuilder
 {
@@ -17,7 +16,7 @@ class EntityContainerBuilder extends ContainerBuilder
         [ClassAnnotationHandler::class, 'class'],
         [PropertyAnnotationHandler::class, 'properties'],
         [VarAnnotationHandler::class, "properties.*.children[?name=='var'][]"],
-        [ValidateAnnotationHandler::class, "properties.*.children[?name=='".Names::VALIDATE."'][]"],
+        [ValidateAnnotationHandler::class, "properties.*.children[?name=='".PHPBOOT_ANNOTATION_VALIDATE."'][]"],
     ];
 
     /**

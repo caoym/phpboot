@@ -3,11 +3,9 @@
 namespace PhpBoot\ORM;
 
 use DI\Container;
-use PhpBoot\Annotation\Names;
 use PhpBoot\DI\DIContainerBuilder;
 use PhpBoot\Entity\Annotations\ClassAnnotationHandler;
 use PhpBoot\Entity\Annotations\PropertyAnnotationHandler;
-use PhpBoot\Entity\Annotations\ValidateAnnotationHandler;
 use PhpBoot\Entity\Annotations\VarAnnotationHandler;
 use PhpBoot\Entity\EntityContainerBuilder;
 use PhpBoot\ORM\Annotations\PKAnnotationHandler;
@@ -18,8 +16,8 @@ class ModelContainerBuilder extends EntityContainerBuilder
 {
     static $DEFAULT_ANNOTATIONS=[
         [ClassAnnotationHandler::class, 'class'],
-        [PKAnnotationHandler::class, "class.children[?name=='".Names::PK."']"],
-        [TableAnnotationHandler::class, "class.children[?name=='".Names::TABLE."']"],
+        [PKAnnotationHandler::class, "class.children[?name=='".PHPBOOT_ANNOTATION_PK."']"],
+        [TableAnnotationHandler::class, "class.children[?name=='".PHPBOOT_ANNOTATION_TABLE."']"],
         [PropertyAnnotationHandler::class, 'properties'],
         [VarAnnotationHandler::class, "properties.*.children[?name=='var'][]"],
         //[ValidateAnnotationHandler::class, "properties.*.children[?name=='".Names::VALIDATE."'][]"],

@@ -34,7 +34,8 @@
             "PhpBoot\\Tests\\": "tests/"
         },
         "files": [
-            "src/functions.php"
+            "src/functions.php",
+            "src/Annotation/Names.php"
         ]
     },
     "autoload-dev": {

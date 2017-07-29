@@ -14,20 +14,19 @@ use PhpBoot\Controller\Annotations\RouteAnnotationHandler;
 use PhpBoot\Controller\Annotations\ThrowsAnnotationHandler;
 use PhpBoot\Controller\Annotations\ValidateAnnotationHandler;
 use PhpBoot\Annotation\ContainerBuilder;
-use PhpBoot\Annotation\Names;
 
 class ControllerContainerBuilder extends ContainerBuilder
 {
     static $DEFAULT_ANNOTATIONS=[
         [ClassAnnotationHandler::class, 'class'],
-        [PathAnnotationHandler::class, "class.children[?name=='".Names::PATH."']"],
-        [RouteAnnotationHandler::class, "methods.*.children[?name=='".Names::ROUTE."'][]"],
+        [PathAnnotationHandler::class, "class.children[?name=='".PHPBOOT_ANNOTATION_PATH."']"],
+        [RouteAnnotationHandler::class, "methods.*.children[?name=='".PHPBOOT_ANNOTATION_ROUTE."'][]"],
         [ParamAnnotationHandler::class, "methods.*.children[?name=='param'][]"],
         [ReturnAnnotationHandler::class, "methods.*.children[?name=='return'][]"],
-        [BindAnnotationHandler::class, "methods.*.children[].children[?name=='".Names::BIND."'][]"],
+        [BindAnnotationHandler::class, "methods.*.children[].children[?name=='".PHPBOOT_ANNOTATION_BIND."'][]"],
         [ThrowsAnnotationHandler::class, "methods.*.children[?name=='throws'][]"],
-        [ValidateAnnotationHandler::class, "methods.*.children[].children[?name=='".Names::VALIDATE."'][]"],
-        [HookAnnotationHandler::class, "methods.*.children[?name=='".Names::HOOK."'][]"],
+        [ValidateAnnotationHandler::class, "methods.*.children[].children[?name=='".PHPBOOT_ANNOTATION_VALIDATE."'][]"],
+        [HookAnnotationHandler::class, "methods.*.children[?name=='".PHPBOOT_ANNOTATION_HOOK."'][]"],
     ];
 
     /**
