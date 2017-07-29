@@ -16,7 +16,7 @@ class EntityContainerBuilder extends ContainerBuilder
         [ClassAnnotationHandler::class, 'class'],
         [PropertyAnnotationHandler::class, 'properties'],
         [VarAnnotationHandler::class, "properties.*.children[?name=='var'][]"],
-        [ValidateAnnotationHandler::class, "properties.*.children[?name=='".PHPBOOT_ANNOTATION_VALIDATE."'][]"],
+        [ValidateAnnotationHandler::class, "properties.*.children[?name=='v'][]"],
     ];
 
     /**

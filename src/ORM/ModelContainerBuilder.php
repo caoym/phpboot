@@ -16,8 +16,8 @@ class ModelContainerBuilder extends EntityContainerBuilder
 {
     static $DEFAULT_ANNOTATIONS=[
         [ClassAnnotationHandler::class, 'class'],
-        [PKAnnotationHandler::class, "class.children[?name=='".PHPBOOT_ANNOTATION_PK."']"],
-        [TableAnnotationHandler::class, "class.children[?name=='".PHPBOOT_ANNOTATION_TABLE."']"],
+        [PKAnnotationHandler::class, "class.children[?name=='pk']"],
+        [TableAnnotationHandler::class, "class.children[?name=='table']"],
         [PropertyAnnotationHandler::class, 'properties'],
         [VarAnnotationHandler::class, "properties.*.children[?name=='var'][]"],
         //[ValidateAnnotationHandler::class, "properties.*.children[?name=='".Names::VALIDATE."'][]"],

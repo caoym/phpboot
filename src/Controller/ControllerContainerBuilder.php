@@ -19,14 +19,14 @@ class ControllerContainerBuilder extends ContainerBuilder
 {
     static $DEFAULT_ANNOTATIONS=[
         [ClassAnnotationHandler::class, 'class'],
-        [PathAnnotationHandler::class, "class.children[?name=='".PHPBOOT_ANNOTATION_PATH."']"],
-        [RouteAnnotationHandler::class, "methods.*.children[?name=='".PHPBOOT_ANNOTATION_ROUTE."'][]"],
+        [PathAnnotationHandler::class, "class.children[?name=='path']"],
+        [RouteAnnotationHandler::class, "methods.*.children[?name=='route'][]"],
         [ParamAnnotationHandler::class, "methods.*.children[?name=='param'][]"],
         [ReturnAnnotationHandler::class, "methods.*.children[?name=='return'][]"],
-        [BindAnnotationHandler::class, "methods.*.children[].children[?name=='".PHPBOOT_ANNOTATION_BIND."'][]"],
+        [BindAnnotationHandler::class, "methods.*.children[].children[?name=='bind'][]"],
         [ThrowsAnnotationHandler::class, "methods.*.children[?name=='throws'][]"],
-        [ValidateAnnotationHandler::class, "methods.*.children[].children[?name=='".PHPBOOT_ANNOTATION_VALIDATE."'][]"],
-        [HookAnnotationHandler::class, "methods.*.children[?name=='".PHPBOOT_ANNOTATION_HOOK."'][]"],
+        [ValidateAnnotationHandler::class, "methods.*.children[].children[?name=='v'][]"],
+        [HookAnnotationHandler::class, "methods.*.children[?name=='hook'][]"],
     ];
 
     /**
