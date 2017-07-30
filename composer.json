@@ -9,7 +9,6 @@
     "license": "MIT",
     "require": {
         "php":">=5.5.9",
-        "ext-apc": "*",
         "monolog/monolog": "~1.0",
         "symfony/http-foundation": "^3.3",
         "vlucas/valitron": "^1.4",
