@@ -1,4 +1,10 @@
 language: php
+
+cache:
+    directories:
+        - vendor
+        - $HOME/.composer/cache
+
 php:
   - '5.5.9'
   - '5.6'
@@ -6,26 +12,28 @@ php:
   - hhvm
 
 before_install:
-    #- if [[ $TRAVIS_PHP_VERSION != 'hhvm' ]] ; then pecl channel-update pecl.php.net; fi;
-    #- if [[ $TRAVIS_PHP_VERSION != 'hhvm' && $TRAVIS_PHP_VERSION != '7.0' ]]; then pecl install riak-beta; fi;
-    #- if [[ $TRAVIS_PHP_VERSION =~ 5.[56] ]] ; then echo yes | pecl install apcu-4.0.10; fi;
+    - if [[ $TRAVIS_PHP_VERSION != 'hhvm' ]] ; then pecl channel-update pecl.php.net; fi;
+    - if [[ $TRAVIS_PHP_VERSION != 'hhvm' && $TRAVIS_PHP_VERSION != '7.0' ]]; then pecl install riak-beta; fi;
+    - if [[ $TRAVIS_PHP_VERSION =~ 5.[56] ]] ; then echo yes | pecl install apcu-4.0.10; fi;
     - if [[ $TRAVIS_PHP_VERSION = 7.* ]] ; then pecl config-set preferred_state beta; echo yes | pecl install apcu; fi;
     - if [[ $TRAVIS_PHP_VERSION != 'hhvm' ]]; then phpenv config-add ./tests/travis/php.ini; fi;
 
 install:
-  - sudo pip install coverage
+    - travis_retry composer install
 
-before_script:
-  - ./.travis.install.sh
-  - if [ $TRAVIS_PHP_VERSION = '5.6' ]; then PHPUNIT_FLAGS="--coverage-clover coverage.clover"; else PHPUNIT_FLAGS=""; fi
 
-script: phpunit ./tests --coverage-clover=coverage.xml
+script:
+    - ./vendor/bin/phpunit -c ./phpunit.xml -v
 
 after_script:
   - if [ $TRAVIS_PHP_VERSION = '5.6' ]; then wget https://scrutinizer-ci.com/ocular.phar; php ocular.phar code-coverage:upload --format=php-clover coverage.clover; fi
 
-after_success:
-  - bash <(curl -s https://codecov.io/bash)
-  
-dist: trusty 
+after_script:
+    - php vendor/bin/coveralls -v
+
+matrix:
+    fast_finish: true
+    allow_failures:
+        - php: hhvm
+        - php: 7.0
   
