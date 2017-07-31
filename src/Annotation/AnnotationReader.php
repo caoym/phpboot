@@ -2,6 +2,7 @@
 
 namespace PhpBoot\Annotation;
 use Doctrine\Common\Cache\ApcCache;
+use Doctrine\Common\Cache\Cache;
 use PhpBoot\Cache\CheckableCache;
 use PhpBoot\Cache\ClassModifiedChecker;
 use phpDocumentor\Reflection\DocBlock\DescriptionFactory;
@@ -45,15 +46,16 @@ class AnnotationReader implements \ArrayAccess
      * load from class with local cache
      * TODO 增加 filter 能力
      * @param string $className
+     * @param Cache $localCache
      * @return object
      */
-    static public function read($className)
+    static public function read($className, Cache $localCache = null)
     {
         $rfl = new \ReflectionClass($className) or \PhpBoot\abort("load class $className failed");
         $fileName = $rfl->getFileName();
         $key = str_replace('\\','.',self::class).md5($fileName.$className);
         $oldData = null;
-        $cache = new CheckableCache(new ApcCache());
+        $cache = new CheckableCache($localCache?:new ApcCache());
         $res = $cache->get('ann:'.$key, null, $oldData, false);
         if($res === null){
             try{

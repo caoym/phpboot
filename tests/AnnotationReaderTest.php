@@ -40,7 +40,7 @@ class AnnotationReaderTest extends TestCase
 {
     public function testAll()
     {
-        $actual = AnnotationReader::read(TestClass::class);
+        $actual = AnnotationReader::read(TestClass::class, $this->app->getCache());
 
         $expected = new AnnotationReader();
         $expected->class = new AnnotationBlock(

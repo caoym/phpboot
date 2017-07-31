@@ -24,12 +24,12 @@ abstract class ContainerBuilder
     public function __construct(array $annotations, Cache $cache)
     {
         $this->annotations = $annotations;
-        $this->cache = new CheckableCache($cache);
+        $this->cache = $cache;
     }
 
     public function setCache(Cache $cache)
     {
-        $this->cache = new CheckableCache($cache);
+        $this->cache = $cache;
     }
     /**
      * load from class with local cache
@@ -42,15 +42,16 @@ abstract class ContainerBuilder
         $rfl = new \ReflectionClass($className) or \PhpBoot\abort("load class $className failed");
         $fileName = $rfl->getFileName();
         $key = str_replace('\\','.',get_class($this)).md5(serialize($this->annotations).$fileName.$className);
-        $res = $this->cache->get($key, $this);
+        $cache = new CheckableCache($this->cache);
+        $res = $cache->get($key, $this);
         if($res === $this){
             try{
                 $meta = $this->buildWithoutCache($className);
-                $this->cache->set($key, $meta, 0, $fileName?new ClassModifiedChecker($className):null);
+                $cache->set($key, $meta, 0, $fileName?new ClassModifiedChecker($className):null);
                 return $meta;
             }catch (\Exception $e){
                 Logger::warning(__METHOD__.' failed with '.$e->getMessage());
-                $this->cache->set($key, $e->getMessage(), 0, $fileName?new ClassModifiedChecker($className):null);
+                $cache->set($key, $e->getMessage(), 0, $fileName?new ClassModifiedChecker($className):null);
                 throw $e;
             }
         }elseif(is_string($res)){
@@ -78,7 +79,7 @@ abstract class ContainerBuilder
     public function buildWithoutCache($className)
     {
         $container = $this->createContainer($className);
-        $anns = AnnotationReader::read($className);
+        $anns = AnnotationReader::read($className, $this->cache);
         foreach ($this->annotations as $i){
             list($class, $target) = $i;
 
@@ -99,7 +100,7 @@ abstract class ContainerBuilder
      */
     private $annotations=[];
     /**
-     * @var CheckableCache
+     * @var Cache
      */
     private $cache;
 }
