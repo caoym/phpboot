@@ -73,24 +73,8 @@ class ResponseHandler
             }
             ArrayHelper::set($output, $key, $val);
         }
-        $response = new Response();
-        foreach ($output as $key=>$value){
-            //TODO 支持自定义格式输出
-            //TODO 支持更多的输出目标
-            if($key == 'content'){
-                $renderer = $app->get(ResponseRenderer::class);
-                $content = $renderer->render($value);
-                $response->setContent($content);
-            }elseif($key == 'headers'){
-                foreach ($value as $k=>$v){
-                    $response->headers->set($k, $v);
-                }
-            }else{
-                \PhpBoot\abort(new \UnexpectedValueException("Unexpected output target $key"));
-            }
-
-        }
-        return $response;
+        $renderer = $app->get(ResponseRenderer::class);
+        return $renderer->render($output);
     }
     /**
      * @return ReturnMeta[]

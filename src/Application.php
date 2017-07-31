@@ -5,8 +5,6 @@ use DI\Container;
 use DI\FactoryInterface;
 use Doctrine\Common\Cache\ApcCache;
 use Doctrine\Common\Cache\Cache;
-use Doctrine\Common\Cache\CacheProvider;
-use Doctrine\Common\Cache\FileCache;
 use Doctrine\Common\Cache\FilesystemCache;
 use FastRoute\DataGenerator\GroupCountBased as GroupCountBasedDataGenerator;
 use FastRoute\Dispatcher\GroupCountBased as GroupCountBasedDispatcher;
@@ -99,13 +97,8 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
         return $app;
     }
 
-    public function __construct()
-    {
-        $this->cache = new ApcCache();
-    }
-
     /**
-     * @return CacheProvider
+     * @return Cache
      */
     public function getCache()
     {
@@ -113,9 +106,9 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
     }
 
     /**
-     * @param CacheProvider $localCache
+     * @param Cache $localCache
      */
-    public function setCache(CacheProvider $localCache)
+    public function setCache(Cache $localCache)
     {
         $this->cache = $localCache;
     }
@@ -379,7 +372,8 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
     protected $controllerContainerBuilder;
 
     /**
-     * @var CacheProvider
+     * @inject
+     * @var Cache
      */
     protected $cache;
 
