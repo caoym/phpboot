@@ -19,6 +19,7 @@ use PhpBoot\Cache\CheckableCache;
 use PhpBoot\Cache\ClassModifiedChecker;
 use PhpBoot\Controller\ControllerContainer;
 use PhpBoot\Controller\ExceptionRenderer;
+use PhpBoot\Controller\HookInterface;
 use PhpBoot\Controller\Route;
 use PhpBoot\DB\DB;
 use PhpBoot\DI\DIContainerBuilder;
@@ -117,13 +118,14 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
      * load routes from class
      * 
      * @param string $className
+     * @param string[] $hooks hook class names
      * @return void
      */
-    public function loadRoutesFromClass($className)
+    public function loadRoutesFromClass($className, $hooks=[])
     {
         $cache = new CheckableCache($this->cache);
 
-        $key = __FUNCTION__ . ':' . md5(__CLASS__ . ':' . $className);
+        $key = 'loadRoutesFromClass:' . md5(__CLASS__ . ':' . $className);
         $routes = $cache->get($key, $this);
 
         $controller = null;
@@ -142,7 +144,7 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
                 $uri,
                 function (Application $app, Request $request) use ($cache, $className, $actionName, $controller) {
 
-                    $key = __FUNCTION__ . ':route:' . md5(__CLASS__ . ':' . $className . ':' . $actionName);
+                    $key = 'loadRoutesFromClass:route:' . md5(__CLASS__ . ':' . $className . ':' . $actionName);
 
                     $routeInstance = $cache->get($key, $this);
                     if ($routeInstance == $this) {
@@ -154,7 +156,9 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
                         $cache->set($key, $routeInstance, 0, new ClassModifiedChecker($className));
                     }
                     return ControllerContainer::dispatch($this, $className, $actionName, $routeInstance, $request);
-                }];
+                },
+                $hooks
+            ];
         }
         $this->controllers[] = $className;
     }
@@ -165,9 +169,10 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
      * 被加载的文件必须以: 类名.php的形式命名
      * @param string $fromPath
      * @param string $namespace
+     * @param string[] $hooks
      * @return void
      */
-    public function loadRoutesFromPath($fromPath, $namespace = '')
+    public function loadRoutesFromPath($fromPath, $namespace = '', $hooks=[])
     {
         $dir = @dir($fromPath);
 
@@ -186,7 +191,7 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
             $path = $fromPath . '/' . str_replace('\\', '/', $entry);
             if (is_file($path) && substr_compare($entry, '.php', strlen($entry) - 4, 4, true) == 0) {
                 $class_name = $namespace . '\\' . substr($entry, 0, strlen($entry) - 4);
-                $this->loadRoutesFromClass($class_name);
+                $this->loadRoutesFromClass($class_name, $hooks);
             } else {
                 //\Log::debug($path.' ignored');
             }
@@ -197,11 +202,12 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
      * Add route
      * @param string $method
      * @param string $uri
-     * @param callable $handler
+     * @param callable $handler function(Application $app, Request $request):Response
+     * @param string[] $hooks
      */
-    public function addRoute($method, $uri, callable $handler)
+    public function addRoute($method, $uri, callable $handler, $hooks=[])
     {
-        $this->routes[] = [$method, $uri, $handler];
+        $this->routes[] = [$method, $uri, $handler, $hooks];
     }
 
     /**
@@ -244,9 +250,20 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
                 if (count($res[2])) {
                     $request->attributes->add($res[2]);
                 }
-                $handler = $res[1];
+                list($handler, $hooks) = $res[1];
 
-                $response = $handler($this, $request);
+                $next = function (Request $request)use($handler){
+                    return $handler($this, $request);
+                };
+
+                foreach (array_reverse($hooks) as $hookName){
+                    $next = function($request)use($hookName, $next){
+                        $hook = $this->get($hookName);
+                        /**@var $hook HookInterface*/
+                        return $hook->handle($request, $next);
+                    };
+                }
+                $response = $next($request);
 
                 /** @var Response $response */
                 if ($send) {
@@ -273,37 +290,10 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
     {
         $routeCollector = new RouteCollector(new Std(), new GroupCountBasedDataGenerator());
         foreach ($this->routes as $route) {
-            list($method, $uri, $handler) = $route;
-            $routeCollector->addRoute($method, $uri, $handler);
+            list($method, $uri, $handler, $hooks) = $route;
+            $routeCollector->addRoute($method, $uri, [$handler, $hooks]);
         }
         return new GroupCountBasedDispatcher($routeCollector->getData());
-    }
-
-    /**
-     * @param $className
-     * @param $actionName
-     * @return Route|false
-     */
-    private function getRoute($className, $actionName)
-    {
-        $key = md5($className . '::' . $actionName);
-        $expiredData = null;
-        $cache = new CheckableCache($this->cache);
-        $route = $cache->get('route:' . $key, $this, $expiredData, false);
-        if (!$route) {
-            return false;
-        }
-        if ($route == $this) {
-            return LocalAutoLock::lock($key, 60, function () use ($cache, $className, $actionName, $key) {
-                $container = $this->controllerContainerBuilder->build($className);
-                $route = $container->getRoute($actionName);
-                $cache->set('route:' . $key, $route, 0, new ClassModifiedChecker($className));
-                return $route;
-            }, function () use ($expiredData) {
-                return $expiredData;
-            });
-        }
-        return $route;
     }
 
     /**
@@ -379,7 +369,7 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
 
     /**
      * [
-     *      [method, uri, loader]
+     *      [method, uri, handler, hooks]
      * ]
      * @var array
      */

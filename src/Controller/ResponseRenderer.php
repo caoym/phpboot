@@ -19,8 +19,10 @@ class ResponseRenderer
             //TODO 支持自定义格式输出
             //TODO 支持更多的输出目标
             if($key == 'content'){
-                $content = json_encode($value, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);;
-                $response->setContent($content);
+                if(is_array($value) || is_object($value)){
+                    $value = json_encode($value, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+                }
+                $response->setContent($value);
             }elseif($key == 'headers'){
                 foreach ($value as $k=>$v){
                     $response->headers->set($k, $v);
