@@ -49,7 +49,6 @@ class DBTest extends TestCase
     {
         parent::setUp();
         $this->db = new DBMock($this);
-        $this->app = Application::createByDefault();
     }
     
     /**
@@ -312,9 +311,6 @@ class DBTest extends TestCase
      */
     private $db;
 
-    /**
-     * @var Application
-     */
-    private $app;
+
 }
 

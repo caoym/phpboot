@@ -231,40 +231,46 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
     public function dispatch(Request $request = null, $send = true)
     {
         //  TODO 把 Route里的异常处理 ExceptionRenderer 移到这里更妥?
-        if ($request == null) {
-            $request = $this->make(Request::class);
-        }
-        $uri = $request->getRequestUri();
-        if (false !== $pos = strpos($uri, '?')) {
-            $uri = substr($uri, 0, $pos);
-        }
-        $uri = rawurldecode($uri);
-
-
-        $dispatcher = $this->getDispatcher();
-
-        $res = $dispatcher->dispatch($request->getMethod(), $uri);
-        if ($res[0] == Dispatcher::FOUND) {
-
-            if (count($res[2])) {
-                $request->attributes->add($res[2]);
+        $renderer = $this->get(ExceptionRenderer::class);
+        try{
+            if ($request == null) {
+                $request = $this->make(Request::class);
             }
-            $handler = $res[1];
-
-            $response = $handler($this, $request);
-
-            /** @var Response $response */
-            if ($send) {
-                $response->send();
+            $uri = $request->getRequestUri();
+            if (false !== $pos = strpos($uri, '?')) {
+                $uri = substr($uri, 0, $pos);
             }
-            return $response;
-        } elseif ($res[0] == Dispatcher::NOT_FOUND) {
-            \PhpBoot\abort(new NotFoundHttpException(), [$request->getMethod(), $uri]);
-        } elseif ($res[0] == Dispatcher::METHOD_NOT_ALLOWED) {
-            \PhpBoot\abort(new MethodNotAllowedHttpException($res[1]), [$request->getMethod(), $uri]);
-        } else {
-            \PhpBoot\abort("unknown dispatch return {$res[0]}");
+            $uri = rawurldecode($uri);
+
+
+            $dispatcher = $this->getDispatcher();
+
+            $res = $dispatcher->dispatch($request->getMethod(), $uri);
+            if ($res[0] == Dispatcher::FOUND) {
+
+                if (count($res[2])) {
+                    $request->attributes->add($res[2]);
+                }
+                $handler = $res[1];
+
+                $response = $handler($this, $request);
+
+                /** @var Response $response */
+                if ($send) {
+                    $response->send();
+                }
+                return $response;
+            } elseif ($res[0] == Dispatcher::NOT_FOUND) {
+                \PhpBoot\abort(new NotFoundHttpException(), [$request->getMethod(), $uri]);
+            } elseif ($res[0] == Dispatcher::METHOD_NOT_ALLOWED) {
+                \PhpBoot\abort(new MethodNotAllowedHttpException($res[1]), [$request->getMethod(), $uri]);
+            } else {
+                \PhpBoot\abort("unknown dispatch return {$res[0]}");
+            }
+        }catch (\Exception $e){
+            $renderer->render($e);
         }
+
     }
 
     /**

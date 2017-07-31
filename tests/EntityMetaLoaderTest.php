@@ -66,8 +66,8 @@ class EntityMetaLoaderTest extends TestCase
 
     public function testLoad()
     {
-        $app = Application::createByDefault();
-        $builder = $app->make(EntityContainerBuilder::class);
+        
+        $builder = $this->app->make(EntityContainerBuilder::class);
         $actual = $builder->build(LoadTest::class);
 
         $expected = new EntityContainer(LoadTest::class);
@@ -81,7 +81,7 @@ class EntityMetaLoaderTest extends TestCase
 
     public function testMakeScalarType()
     {
-        $builder = Application::createByDefault()->make(EntityContainerBuilder::class);
+        $builder = $this->app->make(EntityContainerBuilder::class);
         $container = $builder->build(ScalarTypeTest::class);
         $actual = $container->make(['property1'=>100]);
         $expected = new ScalarTypeTest();
@@ -99,7 +99,7 @@ class EntityMetaLoaderTest extends TestCase
 
     public function testMakeScalarTypeArray()
     {
-        $builder = Application::createByDefault()->make(EntityContainerBuilder::class);
+        $builder = $this->app->make(EntityContainerBuilder::class);
         $container = $builder->build(ScalarTypeArrayTest::class);
         $actual = $container->make(['property1'=>[100]]);
         $expected = new ScalarTypeArrayTest();
@@ -117,7 +117,7 @@ class EntityMetaLoaderTest extends TestCase
 
     public function testMakeEntity()
     {
-        $builder = Application::createByDefault()->make(EntityContainerBuilder::class);
+        $builder = $this->app->make(EntityContainerBuilder::class);
         $container = $builder->build(EntityTest::class);
         $actual = $container->make([
             'property1'=>[
@@ -145,7 +145,7 @@ class EntityMetaLoaderTest extends TestCase
 
     public function testMakeEntityArray()
     {
-        $builder = Application::createByDefault()->make(EntityContainerBuilder::class);
+        $builder = $this->app->make(EntityContainerBuilder::class);
         $container = $builder->build(EntityArrayTest::class);
         $actual = $container->make([
             'property1'=>[

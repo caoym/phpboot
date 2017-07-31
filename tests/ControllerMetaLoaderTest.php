@@ -63,8 +63,7 @@ class ControllerMetaLoaderTest extends TestCase
 {
     public function testLoad()
     {
-        $app = Application::createByDefault();
-        $builder = $app->make(ControllerContainerBuilder::class);
+        $builder = $this->app->make(ControllerContainerBuilder::class);
         $actual = $builder->build(ControllerTest::class);
         $expected = new ControllerContainer(ControllerTest::class);
         //TODO $this->assertEquals($expected, $actual);
