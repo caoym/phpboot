@@ -251,7 +251,7 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
                     $request->attributes->add($res[2]);
                 }
                 list($handler, $hooks) = $res[1];
-
+                $hooks = array_merge($hooks, $this->getGlobalHooks());
                 $next = function (Request $request)use($handler){
                     return $handler($this, $request);
                 };
@@ -350,6 +350,21 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
     }
 
     /**
+     * @param \string[] $globalHooks
+     */
+    public function setGlobalHooks($globalHooks)
+    {
+        $this->globalHooks = $globalHooks;
+    }
+
+    /**
+     * @return \string[]
+     */
+    public function getGlobalHooks()
+    {
+        return $this->globalHooks;
+    }
+    /**
      * @inject
      * @var Container
      */
@@ -379,5 +394,10 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
      * @var string[]
      */
     protected $controllers = [];
+
+    /**
+     * @var string[]
+     */
+    protected $globalHooks = [];
 
 }
