@@ -16,6 +16,16 @@ class TypeCast
 
         if(is_bool($val)){
             $val = intval($val);
+        }else if($val === null){
+            $map = [
+                'string'=>'',
+                'bool'=>false,
+                'int'=>'0',
+                'float'=>0,
+            ];
+            if(isset($map[$type])){
+                $val = $map[$type];
+            }
         }
         if(is_object($val)){
             try{

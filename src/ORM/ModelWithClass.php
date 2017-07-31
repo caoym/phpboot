@@ -1,6 +1,7 @@
 <?php
 namespace PhpBoot\ORM;
 
+use Doctrine\Common\Cache\Cache;
 use PhpBoot\DB\DB;
 
 class ModelWithClass
@@ -9,11 +10,12 @@ class ModelWithClass
      * Model constructor.
      * @param DB $db
      * @param string $entityName
+     * @param Cache $cache
      */
-    public function __construct(DB $db, $entityName)
+    public function __construct(DB $db, $entityName, Cache $cache)
     {
         $this->db = $db;
-        $builder = new ModelContainerBuilder();
+        $builder = new ModelContainerBuilder($cache);
         $this->entity = $builder->build($entityName);
     }
 

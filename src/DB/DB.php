@@ -1,6 +1,7 @@
 <?php
 namespace PhpBoot\DB;
 
+use PhpBoot\Application;
 use PhpBoot\DB\rules\select\SelectRule;
 use PhpBoot\DB\rules\insert\InsertRule;
 use PhpBoot\DB\rules\update\UpdateRule;
@@ -58,13 +59,15 @@ class DB{
 
     /**
      * DB constructor.
+     * @param Application $app
      * @param string $dsn @see \PDO
      * @param string $username @see \PDO
      * @param string $password @see \PDO
      * @param array $options @see \PDO
      */
 
-    static public function connect($dsn,
+    static public function connect(Application $app,
+                                   $dsn,
                                   $username,
                                   $password,
                                   $options = [])
@@ -76,11 +79,12 @@ class DB{
         ];
 
         $connection = new \PDO($dsn, $username, $password, $options);
-        return new DB($connection);
+        return new DB($app, $connection);
     }
 
-    public function __construct($connection)
+    public function __construct(Application $app, $connection)
     {
+        $this->app = $app;
         $this->connection = $connection;
     }
 
@@ -171,7 +175,14 @@ class DB{
     static public function raw($str){
         return new Raw($str);
     }
-    
+
+    /**
+     * @return Application
+     */
+    public function getApp()
+    {
+        return $this->app;
+    }
     const ORDER_BY_ASC ='ASC';
     const ORDER_BY_DESC ='DESC';
 
@@ -179,4 +190,9 @@ class DB{
      * @var \PDO
      */
     private $connection;
+
+    /**
+     * @var Application
+     */
+    private $app;
 }

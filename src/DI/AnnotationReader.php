@@ -10,7 +10,6 @@ use PhpBoot\Exceptions\AnnotationSyntaxException;
 
 class AnnotationReader implements DefinitionSource
 {
-
     /**
      * {@inheritdoc}
      * @throws AnnotationSyntaxException
@@ -24,8 +23,7 @@ class AnnotationReader implements DefinitionSource
 
         $class = new \ReflectionClass($name);
         if(isset($name::$__enableDIAnnotations__) && $name::$__enableDIAnnotations__){
-            $loader = new DIMetaLoader();
-            $context = $loader->build($name);
+            $context = $this->loader->build($name);
             /**@var $context ObjectDefinitionContext */
             $definition = $context->definition;
         }else{
@@ -64,4 +62,16 @@ class AnnotationReader implements DefinitionSource
 
         return $parameters;
     }
+
+    /**
+     * @param DIMetaLoader $loader
+     */
+    public function setLoader(DIMetaLoader $loader)
+    {
+        $this->loader = $loader;
+    }
+    /**
+     * @var DIMetaLoader
+     */
+    private $loader;
 }

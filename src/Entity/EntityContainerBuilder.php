@@ -4,6 +4,7 @@ namespace PhpBoot\Entity;
 
 use DI\FactoryInterface;
 use DI\InvokerInterface as DIInvokerInterface;
+use Doctrine\Common\Cache\Cache;
 use PhpBoot\Entity\Annotations\ClassAnnotationHandler;
 use PhpBoot\Entity\Annotations\PropertyAnnotationHandler;
 use PhpBoot\Entity\Annotations\ValidateAnnotationHandler;
@@ -23,15 +24,20 @@ class EntityContainerBuilder extends ContainerBuilder
      * ControllerContainerBuilder constructor.
      * @param FactoryInterface $factory
      * @param DIInvokerInterface $diInvoker
+     * @param Cache $cache
      *
      * @param array $annotations
      */
-    public function __construct(FactoryInterface $factory, DIInvokerInterface $diInvoker, array $annotations = null)
+    public function __construct(FactoryInterface $factory,
+                                DIInvokerInterface $diInvoker,
+                                Cache $cache,
+                                array $annotations = null
+                                )
     {
         if($annotations){
-            parent::__construct($annotations);
+            parent::__construct($annotations, $cache);
         }else{
-            parent::__construct(self::$DEFAULT_ANNOTATIONS);
+            parent::__construct(self::$DEFAULT_ANNOTATIONS, $cache);
         }
         $this->factory = $factory;
         $this->diInvoker = $diInvoker;

@@ -4,7 +4,10 @@ namespace PhpBoot;
 use DI\Container;
 use DI\FactoryInterface;
 use Doctrine\Common\Cache\ApcCache;
+use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\CacheProvider;
+use Doctrine\Common\Cache\FileCache;
+use Doctrine\Common\Cache\FilesystemCache;
 use FastRoute\DataGenerator\GroupCountBased as GroupCountBasedDataGenerator;
 use FastRoute\Dispatcher\GroupCountBased as GroupCountBasedDispatcher;
 use FastRoute\Dispatcher;
@@ -73,6 +76,17 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
 
             Request::class => \DI\factory([Request::class, 'createFromGlobals']),
         ];
+        if(function_exists('apc_fetch')){
+            $default += [
+                Cache::class => \DI\object(ApcCache::class)
+            ];
+        }else{
+            $default += [
+                Cache::class => \DI\object(FilesystemCache::class)
+                    ->constructorParameter('directory', sys_get_temp_dir())
+            ];
+        }
+
 
         $builder->addDefinitions($default);
         $builder->addDefinitions($conf);

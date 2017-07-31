@@ -3,6 +3,7 @@
 namespace PhpBoot\DI;
 
 use DI\Definition\ObjectDefinition;
+use Doctrine\Common\Cache\Cache;
 use PhpBoot\Annotation\ContainerBuilder;
 use PhpBoot\DI\Annotations\InjectAnnotationHandler;
 use PhpBoot\DI\Annotations\VarAnnotationHandler;
@@ -14,17 +15,10 @@ class DIMetaLoader extends ContainerBuilder
         [InjectAnnotationHandler::class, "properties.*.children[?name=='inject'][]"]
     ];
 
-    /**
 
-     * @param array $annotations
-     */
-    public function __construct(array $annotations = null)
+    public function __construct(Cache $cache)
     {
-        if($annotations){
-            parent::__construct($annotations);
-        }else{
-            parent::__construct(self::$DEFAULT_ANNOTATIONS);
-        }
+        parent::__construct(self::$DEFAULT_ANNOTATIONS, $cache);
     }
 
     /**

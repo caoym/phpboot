@@ -52,9 +52,9 @@ if (!function_exists('PhpBoot\model')) {
     function model(DB $db, $entity)
     {
         if(is_object($entity)){
-            return new ModelWithObject($db, $entity);
+            return $db->getApp()->make(ModelWithObject::class, [$db, $entity]);
         }else{
-            return new ModelWithClass($db, $entity);
+            return $db->getApp()->make(ModelWithClass::class, [$db, $entity]);
         }
     }
 }

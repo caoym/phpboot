@@ -3,6 +3,7 @@
 namespace PhpBoot\ORM;
 
 use DI\Container;
+use Doctrine\Common\Cache\Cache;
 use PhpBoot\DI\DIContainerBuilder;
 use PhpBoot\Entity\Annotations\ClassAnnotationHandler;
 use PhpBoot\Entity\Annotations\PropertyAnnotationHandler;
@@ -23,10 +24,10 @@ class ModelContainerBuilder extends EntityContainerBuilder
         //[ValidateAnnotationHandler::class, "properties.*.children[?name=='".Names::VALIDATE."'][]"],
     ];
 
-    public function __construct()
+    public function __construct(Cache $cache)
     {
         $this->container = DIContainerBuilder::buildDevContainer();
-        parent::__construct($this->container, $this->container, self::$DEFAULT_ANNOTATIONS);
+        parent::__construct($this->container, $this->container, $cache, self::$DEFAULT_ANNOTATIONS);
     }
     /**
      * load from class with local cache

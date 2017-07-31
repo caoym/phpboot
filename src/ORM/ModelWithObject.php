@@ -2,6 +2,7 @@
 
 namespace PhpBoot\ORM;
 
+use Doctrine\Common\Cache\Cache;
 use PhpBoot\DB\DB;
 
 class ModelWithObject extends ModelWithClass
@@ -10,11 +11,12 @@ class ModelWithObject extends ModelWithClass
      * ModelWithObject constructor.
      * @param DB $db
      * @param object $entity
+     * @param Cache $cache
      */
-    public function __construct(DB $db, $entity)
+    public function __construct(DB $db, $entity, Cache $cache)
     {
         is_object($entity) or \PhpBoot\abort(new \InvalidArgumentException('object required'));
-        parent::__construct($db, get_class($entity));
+        parent::__construct($db, get_class($entity), $cache);
         $this->object = $entity;
     }
 

@@ -2,8 +2,7 @@
 
 namespace PhpBoot\Annotation;
 
-use Doctrine\Common\Cache\ApcCache;
-use Doctrine\Common\Cache\CacheProvider;
+use Doctrine\Common\Cache\Cache;
 use PhpBoot\Cache\CheckableCache;
 use PhpBoot\Cache\ClassModifiedChecker;
 use PhpBoot\Utils\Logger;
@@ -13,7 +12,7 @@ abstract class ContainerBuilder
     /**
      * ContainerBuilder constructor.
      * @param array $annotations 需加载的注释和顺序
-     *
+     * @param Cache $cache
      * 语法 http://jmespath.org/tutorial.html
      *
      *  [
@@ -22,13 +21,13 @@ abstract class ContainerBuilder
      *  ];
      *
      */
-    public function __construct(array $annotations)
+    public function __construct(array $annotations, Cache $cache)
     {
         $this->annotations = $annotations;
-        $this->cache = new CheckableCache(new ApcCache());
+        $this->cache = new CheckableCache($cache);
     }
 
-    public function setCache(CacheProvider $cache)
+    public function setCache(Cache $cache)
     {
         $this->cache = new CheckableCache($cache);
     }

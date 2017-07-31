@@ -4,6 +4,8 @@ namespace PhpBoot\Controller;
 
 use DI\FactoryInterface;
 use \DI\InvokerInterface as DIInvokerInterface;
+use Doctrine\Common\Cache\Cache;
+use PhpBoot\Cache\LocalCacheInterface;
 use PhpBoot\Controller\Annotations\BindAnnotationHandler;
 use PhpBoot\Controller\Annotations\ClassAnnotationHandler;
 use PhpBoot\Controller\Annotations\HookAnnotationHandler;
@@ -33,15 +35,18 @@ class ControllerContainerBuilder extends ContainerBuilder
      * ControllerContainerBuilder constructor.
      * @param FactoryInterface $factory
      * @param DIInvokerInterface $diInvoker
-     *
+     * @param Cache $cache
      * @param array $annotations
      */
-    public function __construct(FactoryInterface $factory, DIInvokerInterface $diInvoker, array $annotations = null)
+    public function __construct(FactoryInterface $factory,
+                                DIInvokerInterface $diInvoker,
+                                Cache $cache,
+                                array $annotations = null)
     {
         if($annotations){
-            parent::__construct($annotations);
+            parent::__construct($annotations, $cache);
         }else{
-            parent::__construct(self::$DEFAULT_ANNOTATIONS);
+            parent::__construct(self::$DEFAULT_ANNOTATIONS, $cache);
         }
 
         $this->factory = $factory;
