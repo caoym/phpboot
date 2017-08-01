@@ -59,13 +59,13 @@ class CheckableCache
                         if($deleteExpiredData){
                             $this->impl->delete($name);
                         }
-                        return null;
+                        return $default;
                     }
                     
                 }
             }else if ($ttl != 0 && ($createdTime + $ttl < time())) {
                 $this->impl->delete($name);
-                return null;
+                return $default;
             }
             return $data;
         }
