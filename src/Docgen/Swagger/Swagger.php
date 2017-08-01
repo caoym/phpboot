@@ -381,7 +381,7 @@ class Swagger extends SwaggerObject
         } elseif ($container instanceof ScalarTypeContainer) {
             $schema = new PrimitiveSchemaObject();
             $schema->type = self::mapType($container->getType());
-        } if($container == null){
+        } elseif($container == null){
             $schema = new PrimitiveSchemaObject();
             $schema->type = null;
         }else {
