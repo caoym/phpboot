@@ -95,15 +95,16 @@
    
 ## 主要特性
    
-   * 基于Annotation的路由定义
-   * 接口参数双向绑定
-   * Validation
-   * 依赖注入
-   * ORM
-   * 自动文档和接口工具
+   * [基于Annotation的路由定义](https://caoym.gitbooks.io/phpboot/content/ji-ben-te-xing/lu-you.html)
+   * [接口参数双向绑定](https://caoym.gitbooks.io/phpboot/content/ji-ben-te-xing/can-shu-bang-ding.html)
+   * [Validation](https://caoym.gitbooks.io/phpboot/content/ji-ben-te-xing/can-shu-xiao-yan.html)
+   * [依赖注入](https://caoym.gitbooks.io/phpboot/content/ji-ben-te-xing/yi-lai-zhu-ru.html)
+   * [DB](https://caoym.gitbooks.io/phpboot/content/ji-ben-te-xing/shu-ju-ku.html)
+   * [ORM](https://caoym.gitbooks.io/phpboot/content/ji-ben-te-xing/orm.html)
+   * [自动文档和接口工具](https://caoym.gitbooks.io/phpboot/content/ji-ben-te-xing/wen-dang-shu-chu.html)
+   * [钩子(Hook)](https://caoym.gitbooks.io/phpboot/content/ji-ben-te-xing/hook.html)
+   * [工作流引擎(开发中...)](https://caoym.gitbooks.io/phpboot/content/ji-ben-te-xing/gong-zuo-liu.html)
    * 分布式支持(RPC)
-   * 钩子(Hooks)
-   * 工作流引擎(开发中...)
    
 ## 帮助和文档
 
