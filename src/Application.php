@@ -30,6 +30,7 @@ use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
@@ -80,7 +81,7 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
             LoggerInterface::class => \DI\object(\Monolog\Logger::class)
                 ->constructor(\DI\get('AppName')),
 
-            Request::class => \DI\factory([Request::class, 'createFromGlobals']),
+            Request::class => \DI\factory([Application::class, 'createRequestFromGlobals']),
         ];
         if(function_exists('apc_fetch')){
             $default += [
@@ -376,6 +377,19 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
     public function getGlobalHooks()
     {
         return $this->globalHooks;
+    }
+
+    public static function createRequestFromGlobals()
+    {
+        $request = Request::createFromGlobals();
+        if (0 === strpos($request->headers->get('CONTENT_TYPE'), 'application/json')
+            && in_array(strtoupper($request->server->get('REQUEST_METHOD', 'GET')), array('POST', 'PUT', 'DELETE', 'PATCH'))
+        ) {
+            $data = json_decode($request->getContent(), true);
+            $request->request = new ParameterBag($data);
+        }
+
+        return $request;
     }
     /**
      * @inject

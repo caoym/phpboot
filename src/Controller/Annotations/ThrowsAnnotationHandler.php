@@ -20,13 +20,13 @@ class ThrowsAnnotationHandler
     public function __invoke(ControllerContainer $container, $ann)
     {
         if(!$ann->parent){
-            Logger::debug("The annotation \"@{$ann->name} {$ann->description}\" of {$container->getClassName()} should be used with parent route");
+            //Logger::debug("The annotation \"@{$ann->name} {$ann->description}\" of {$container->getClassName()} should be used with parent route");
             return;
         }
         $target = $ann->parent->name;
         $route = $container->getRoute($target);
         if(!$route){
-            Logger::debug("The annotation \"@{$ann->name} {$ann->description}\" of {$container->getClassName()}::$target should be used with parent route");
+            //Logger::debug("The annotation \"@{$ann->name} {$ann->description}\" of {$container->getClassName()}::$target should be used with parent route");
             return ;
         }
         $params = new AnnotationParams($ann->description, 2);

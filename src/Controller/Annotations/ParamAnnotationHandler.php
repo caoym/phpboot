@@ -45,13 +45,13 @@ class ParamAnnotationHandler
     public function __invoke(ControllerContainer $container, $ann, EntityContainerBuilder $entityBuilder)
     {
         if(!$ann->parent){
-            Logger::debug("The annotation \"@{$ann->name} {$ann->description}\" of {$container->getClassName()} should be used with parent route");
+            //Logger::debug("The annotation \"@{$ann->name} {$ann->description}\" of {$container->getClassName()} should be used with parent route");
             return;
         }
         $target = $ann->parent->name;
         $route = $container->getRoute($target);
         if(!$route){
-            Logger::debug("The annotation \"@{$ann->name} {$ann->description}\" of {$container->getClassName()}::$target should be used with parent route");
+            //Logger::debug("The annotation \"@{$ann->name} {$ann->description}\" of {$container->getClassName()}::$target should be used with parent route");
             return ;
         }
         $className = $container->getClassName();
