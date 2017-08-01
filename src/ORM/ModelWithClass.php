@@ -36,6 +36,14 @@ class ModelWithClass
         }
     }
 
+    public function delete($id)
+    {
+        return $this->db->deleteFrom($this->entity->getTable())
+            ->where("`{$this->entity->getPK()}` = ?", $id)
+            ->limit(1)
+            ->exec()->rows;
+    }
+
     /**
      * @return false|int
      */

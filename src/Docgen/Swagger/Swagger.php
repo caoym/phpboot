@@ -407,7 +407,7 @@ class Swagger extends SwaggerObject
             //$schema->type = null;
         }else {
             $schema = new PrimitiveSchemaObject();
-            $schema->type = 'mixed';
+            //$schema->type = 'mixed';
         }
         return $schema;
     }
@@ -524,8 +524,9 @@ class Swagger extends SwaggerObject
         $map = [
             'int' => 'integer',
             'bool' => 'boolean',
+            'mixed' => null,
         ];
-        if (isset($map[$type])) {
+        if (array_key_exists($type, $map)) {
             return $map[$type];
         }
         return $type;
