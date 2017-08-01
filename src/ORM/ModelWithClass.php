@@ -15,7 +15,7 @@ class ModelWithClass
     public function __construct(DB $db, $entityName, Cache $cache)
     {
         $this->db = $db;
-        $builder = new ModelContainerBuilder($cache);
+        $builder = $db->getApp()->get(ModelContainerBuilder::class);
         $this->entity = $builder->build($entityName);
     }
 
