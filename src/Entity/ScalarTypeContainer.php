@@ -17,6 +17,11 @@ class ScalarTypeContainer implements TypeContainerInterface
         return TypeCast::cast($data, $this->type, $validate);
     }
 
+    public function makeExample()
+    {
+        return TypeCast::cast(null, $this->type, false);
+    }
+
     /**
      * @return mixed
      */

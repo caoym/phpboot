@@ -65,6 +65,23 @@ class EntityContainer implements TypeContainerInterface
 
     }
 
+    public function makeExample()
+    {
+        $className = $this->getClassName();
+        $obj = new $className();
+        foreach ($this->properties as $p){
+            if($p->isOptional){
+                $obj->{$p->name} = $p->default;
+            }elseif($p->container){
+                $var = $p->container->makeExample();
+                $obj->{$p->name} = $var;
+            }else{
+                $obj->{$p->name} = null;
+            }
+
+        }
+        return $obj;
+    }
     public function getProperty($target){
         if(array_key_exists($target, $this->properties)){
             return $this->properties[$target];

@@ -2,7 +2,6 @@
 
 namespace PhpBoot\Tests;
 
-
 use PhpBoot\Application;
 use PhpBoot\Docgen\Swagger\Swagger;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;

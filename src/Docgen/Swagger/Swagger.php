@@ -189,12 +189,32 @@ class Swagger extends SwaggerObject
             } elseif (is_array($content)) {
                 $tmpSchema = $this->makeTempSchema($app, $controller, $action, $route, $content);
                 $schema->schema = $tmpSchema;
+
             }
+            $schema->examples = ['application/json'=>$this->makeExample($content)];
             return $schema;
         }
         return null;
     }
 
+    /**
+     * @param $content
+     */
+    public function makeExample($content)
+    {
+        if ($content instanceof ReturnMeta || $content instanceof ParamMeta) {
+            return $this->makeExample($content->container);
+        }elseif ($content instanceof TypeContainerInterface){
+            return $content->makeExample();
+        }elseif(is_array($content)) {
+            $res = [];
+            foreach ($content as $k => $v) {
+                $res[$k] = $this->makeExample($v);
+            }
+            return $res;
+        }
+        return null;
+    }
     /**
      * @param Application $app
      * @param ControllerContainer $controller
@@ -382,8 +402,8 @@ class Swagger extends SwaggerObject
             $schema = new PrimitiveSchemaObject();
             $schema->type = self::mapType($container->getType());
         } elseif($container == null){
-            $schema = new PrimitiveSchemaObject();
-            $schema->type = null;
+            $schema = null ;//new PrimitiveSchemaObject();
+            //$schema->type = null;
         }else {
             $schema = new PrimitiveSchemaObject();
             $schema->type = 'mixed';
@@ -473,16 +493,16 @@ class Swagger extends SwaggerObject
             } elseif ($rule == 'in') {
                 $schemaObject->enum = $params;
             } elseif ($rule == 'lengthBetween' && isset($params[0]) && isset($params[1])) {
-                $schemaObject->minLength = $params[0];
-                $schemaObject->maxLength = $params[1];
+                $schemaObject->minLength = intval($params[0]);
+                $schemaObject->maxLength = intval($params[1]);
             } elseif ($rule == 'lengthMin'&& isset($params[0])) {
-                $schemaObject->minLength = $params[0];
+                $schemaObject->minLength = intval($params[0]);
             } elseif ($rule == 'lengthMax'&& isset($params[0])) {
-                $schemaObject->maxLength = $params[0];
+                $schemaObject->maxLength = intval($params[0]);
             } elseif ($rule == 'min'&& isset($params[0])) {
-                $schemaObject->minimum = $params[0];
+                $schemaObject->minimum = floatval($params[0]);
             } elseif ($rule == 'max'&& isset($params[0])) {
-                $schemaObject->maximum = $params[0];
+                $schemaObject->maximum = floatval($params[0]);
             } elseif ($rule == 'regex'&& isset($params[0])) {
                 $schemaObject->pattern = $params[0];
             } elseif ($rule == 'optional') {

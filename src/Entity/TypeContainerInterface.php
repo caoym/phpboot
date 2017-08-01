@@ -10,4 +10,6 @@ interface TypeContainerInterface
      * @return mixed
      */
     public function make($data, $validate = true);
+
+    public function makeExample();
 }

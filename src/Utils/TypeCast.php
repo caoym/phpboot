@@ -20,7 +20,7 @@ class TypeCast
             $map = [
                 'string'=>'',
                 'bool'=>false,
-                'int'=>'0',
+                'int'=>0,
                 'float'=>0,
             ];
             if(isset($map[$type])){

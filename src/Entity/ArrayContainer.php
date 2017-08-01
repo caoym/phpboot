@@ -47,7 +47,10 @@ class ArrayContainer implements TypeContainerInterface
         }
         return $res;
     }
-
+    public function makeExample()
+    {
+        return [$this->container->makeExample()];
+    }
     /**
      * @return TypeContainerInterface
      */

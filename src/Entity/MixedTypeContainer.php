@@ -13,4 +13,8 @@ class MixedTypeContainer implements TypeContainerInterface
     {
         return $data;
     }
+    public function makeExample()
+    {
+        return 'Any';
+    }
 }
