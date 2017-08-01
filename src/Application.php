@@ -45,8 +45,15 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
      * ```
      * return
      * [
-     *      'DB'=>['user'=>'', 'password'=>''],
-     *      'LocalCache'=> \DI\object(ApcCache::class),
+     *      'DB.connection' => 'mysql:dbname=default;host=localhost',
+     *      'DB.username' => 'root',
+     *      'DB.password' => 'root',
+     *      'DB.options' => [],
+     *      LoggerInterface::class => \DI\object(\Monolog\Logger::class)
+     *          ->constructor(\DI\get('AppName')),
+     *      // 注意, 系统缓存, 只使用 apc、文件缓存等本地缓存, 不要使用 redis 等分布式缓存
+     *      Cache::class => \DI\object(FilesystemCache::class)
+     *          ->constructorParameter('directory', sys_get_temp_dir())
      * ];
      * ```
      * or just the array
@@ -116,7 +123,7 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
 
     /**
      * load routes from class
-     * 
+     *
      * @param string $className
      * @param string[] $hooks hook class names
      * @return void
@@ -255,28 +262,34 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
                 $next = function (Request $request)use($handler){
                     return $handler($this, $request);
                 };
-
-                foreach (array_reverse($hooks) as $hookName){
-                    $next = function($request)use($hookName, $next){
-                        $hook = $this->get($hookName);
-                        /**@var $hook HookInterface*/
-                        return $hook->handle($request, $next);
-                    };
-                }
-                $response = $next($request);
-
-                /** @var Response $response */
-                if ($send) {
-                    $response->send();
-                }
-                return $response;
-            } elseif ($res[0] == Dispatcher::NOT_FOUND) {
-                \PhpBoot\abort(new NotFoundHttpException(), [$request->getMethod(), $uri]);
-            } elseif ($res[0] == Dispatcher::METHOD_NOT_ALLOWED) {
-                \PhpBoot\abort(new MethodNotAllowedHttpException($res[1]), [$request->getMethod(), $uri]);
-            } else {
-                \PhpBoot\abort("unknown dispatch return {$res[0]}");
+            }else{
+                $hooks = $this->getGlobalHooks();
+                $next = function (Request $request)use($res, $uri){
+                    if ($res[0] == Dispatcher::NOT_FOUND) {
+                        \PhpBoot\abort(new NotFoundHttpException(), [$request->getMethod(), $uri]);
+                    } elseif ($res[0] == Dispatcher::METHOD_NOT_ALLOWED) {
+                        \PhpBoot\abort(new MethodNotAllowedHttpException($res[1]), [$request->getMethod(), $uri]);
+                    } else {
+                        \PhpBoot\abort("unknown dispatch return {$res[0]}");
+                    }
+                };
             }
+
+            foreach (array_reverse($hooks) as $hookName){
+                $next = function($request)use($hookName, $next){
+                    $hook = $this->get($hookName);
+                    /**@var $hook HookInterface*/
+                    return $hook->handle($request, $next);
+                };
+            }
+            $response = $next($request);
+
+            /** @var Response $response */
+            if ($send) {
+                $response->send();
+            }
+            return $response;
+
         }catch (\Exception $e){
             $renderer->render($e);
         }

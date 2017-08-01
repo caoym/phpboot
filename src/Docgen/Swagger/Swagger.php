@@ -21,6 +21,7 @@ use PhpBoot\Entity\TypeContainerInterface;
 use PhpBoot\Metas\ParamMeta;
 use PhpBoot\Metas\ReturnMeta;
 use PhpBoot\Utils\ArrayHelper;
+use PhpBoot\Validator\Validator;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class Swagger extends SwaggerObject
@@ -452,6 +453,7 @@ class Swagger extends SwaggerObject
         $schema->description = implode("\n", [$container->getSummary(), $container->getDescription()]);
         $schema->required = [];
         foreach ($container->getProperties() as $property) {
+
             if (!$property->isOptional) {
                 $schema->required[] = $property->name;
             }

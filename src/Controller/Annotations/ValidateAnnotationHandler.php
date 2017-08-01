@@ -8,6 +8,7 @@ use PhpBoot\Controller\ControllerContainer;
 use PhpBoot\Exceptions\AnnotationSyntaxException;
 use PhpBoot\Utils\AnnotationParams;
 use PhpBoot\Utils\Logger;
+use PhpBoot\Validator\Validator;
 
 class ValidateAnnotationHandler
 {
@@ -40,7 +41,11 @@ class ValidateAnnotationHandler
             }else{
                 $paramMeta->validation = $params[0];
             }
-
+            $v = new Validator();
+            $v->rule($paramMeta->validation, $paramMeta->name);
+            if($v->hasRule('optional', $paramMeta->name)){
+                $paramMeta->isOptional = true;
+            }
             return;
         }
         Logger::debug("The annotation \"@{$ann->name} {$ann->description}\" of {$container->getClassName()}::$target should be used with parent parent");
