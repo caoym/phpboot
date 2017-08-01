@@ -372,7 +372,7 @@ class Swagger extends SwaggerObject
      * @param TypeContainerInterface $container
      * @return ArraySchemaObject|PrimitiveSchemaObject|RefSchemaObject
      */
-    public function getAnySchema(Application $app, ControllerContainer $controller, $action, Route $route, TypeContainerInterface $container)
+    public function getAnySchema(Application $app, ControllerContainer $controller, $action, Route $route, $container)
     {
         if ($container instanceof EntityContainer) {
             $schema = $this->getRefSchema($app, $controller, $action, $route, $container);
@@ -381,7 +381,10 @@ class Swagger extends SwaggerObject
         } elseif ($container instanceof ScalarTypeContainer) {
             $schema = new PrimitiveSchemaObject();
             $schema->type = self::mapType($container->getType());
-        } else {
+        } if($container == null){
+            $schema = new PrimitiveSchemaObject();
+            $schema->type = null;
+        }else {
             $schema = new PrimitiveSchemaObject();
             $schema->type = 'mixed';
         }

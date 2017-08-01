@@ -46,7 +46,7 @@ class ReturnAnnotationHandler
         if($meta){
             $meta->description = $doc;
             $meta->type = $type;
-            $meta->container = ContainerFactory::create($entityBuilder, $type);
+            $meta->container = $type == 'void'?null:ContainerFactory::create($entityBuilder, $type);
         }
     }
 }
