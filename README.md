@@ -18,7 +18,20 @@
 * **更易于构建可扩展的应用**
 
     如它引导面向接口的开发, 提倡强类型的编程方式, 提供依赖注入能力, 低侵入性的集成方式, 提供钩子机制等。
-
+    
+## 主要特性
+   
+   * [基于Annotation的路由定义](https://caoym.gitbooks.io/phpboot/content/ji-ben-te-xing/lu-you.html)
+   * [接口参数双向绑定](https://caoym.gitbooks.io/phpboot/content/ji-ben-te-xing/can-shu-bang-ding.html)
+   * [Validation](https://caoym.gitbooks.io/phpboot/content/ji-ben-te-xing/can-shu-xiao-yan.html)
+   * [依赖注入](https://caoym.gitbooks.io/phpboot/content/ji-ben-te-xing/yi-lai-zhu-ru.html)
+   * [DB](https://caoym.gitbooks.io/phpboot/content/ji-ben-te-xing/shu-ju-ku.html)
+   * [ORM](https://caoym.gitbooks.io/phpboot/content/ji-ben-te-xing/orm.html)
+   * [自动文档和接口工具](https://caoym.gitbooks.io/phpboot/content/ji-ben-te-xing/wen-dang-shu-chu.html)
+   * [钩子(Hook)](https://caoym.gitbooks.io/phpboot/content/ji-ben-te-xing/hook.html)
+   * [工作流引擎(开发中...)](https://caoym.gitbooks.io/phpboot/content/ji-ben-te-xing/gong-zuo-liu.html)
+   * 分布式支持(RPC)
+   
 ## 安装和配置
 
    1. 安装composer(已安装可忽略)
@@ -50,7 +63,7 @@
    
    
 ```PHP
-/**
+   /**
     * 图书管理接口示例
     *
     * @path /books
@@ -82,7 +95,7 @@
 对应请求和响应
 
 ```
-  $ curl http://localhost/books/?name=PHP&offset=0&limit=10
+$ curl http://localhost/books/?name=PHP&offset=0&limit=10
 [
    {
        "id": 1,
@@ -92,19 +105,6 @@
    }
 ]
 ```
-   
-## 主要特性
-   
-   * [基于Annotation的路由定义](https://caoym.gitbooks.io/phpboot/content/ji-ben-te-xing/lu-you.html)
-   * [接口参数双向绑定](https://caoym.gitbooks.io/phpboot/content/ji-ben-te-xing/can-shu-bang-ding.html)
-   * [Validation](https://caoym.gitbooks.io/phpboot/content/ji-ben-te-xing/can-shu-xiao-yan.html)
-   * [依赖注入](https://caoym.gitbooks.io/phpboot/content/ji-ben-te-xing/yi-lai-zhu-ru.html)
-   * [DB](https://caoym.gitbooks.io/phpboot/content/ji-ben-te-xing/shu-ju-ku.html)
-   * [ORM](https://caoym.gitbooks.io/phpboot/content/ji-ben-te-xing/orm.html)
-   * [自动文档和接口工具](https://caoym.gitbooks.io/phpboot/content/ji-ben-te-xing/wen-dang-shu-chu.html)
-   * [钩子(Hook)](https://caoym.gitbooks.io/phpboot/content/ji-ben-te-xing/hook.html)
-   * [工作流引擎(开发中...)](https://caoym.gitbooks.io/phpboot/content/ji-ben-te-xing/gong-zuo-liu.html)
-   * 分布式支持(RPC)
    
 ## 帮助和文档
 
