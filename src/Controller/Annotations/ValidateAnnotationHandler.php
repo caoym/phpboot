@@ -40,12 +40,15 @@ class ValidateAnnotationHandler
                 $paramMeta->validation = [$params[0], $params[1]];
             }else{
                 $paramMeta->validation = $params[0];
+                if($paramMeta->validation) {
+                    $v = new Validator();
+                    $v->rule($paramMeta->validation, $paramMeta->name);
+                    if ($v->hasRule('optional', $paramMeta->name)) {
+                        $paramMeta->isOptional = true;
+                    }
+                }
             }
-            $v = new Validator();
-            $v->rule($paramMeta->validation, $paramMeta->name);
-            if($v->hasRule('optional', $paramMeta->name)){
-                $paramMeta->isOptional = true;
-            }
+
             return;
         }
         Logger::debug("The annotation \"@{$ann->name} {$ann->description}\" of {$container->getClassName()}::$target should be used with parent parent");

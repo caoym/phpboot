@@ -148,7 +148,10 @@ class Swagger extends SwaggerObject
             $shortName = self::getShortClassName($name);
             $desc = "$shortName: $desc";
             $res->description = implode("\n", [$res->description, $desc]);
-            $res->examples = [$shortName => $app->get(ExceptionRenderer::class)->render($ins)->getContent()];
+            $error = $app->get(ExceptionRenderer::class)->render($ins)->getContent();
+            if($error){
+                $res->examples = [$shortName => $error];
+            }
             //$res->schema = new RefSchemaObject("#/definitions/$name");
             $schemas[$status] = $res;
 
@@ -192,7 +195,7 @@ class Swagger extends SwaggerObject
                 $schema->schema = $tmpSchema;
 
             }
-            $schema->examples = ['application/json'=>$this->makeExample($content)];
+            //$schema->examples = ['application/json'=>$this->makeExample($content)];
             return $schema;
         }
         return null;
@@ -451,7 +454,7 @@ class Swagger extends SwaggerObject
     {
         $schema = new SimpleModelSchemaObject();
         $schema->description = implode("\n", [$container->getSummary(), $container->getDescription()]);
-        $schema->required = [];
+
         foreach ($container->getProperties() as $property) {
 
             if (!$property->isOptional) {

@@ -7,6 +7,7 @@ use PhpBoot\Annotation\AnnotationTag;
 use PhpBoot\Entity\EntityContainer;
 use PhpBoot\Exceptions\AnnotationSyntaxException;
 use PhpBoot\Utils\AnnotationParams;
+use PhpBoot\Validator\Validator;
 
 class ValidateAnnotationHandler
 {
@@ -24,11 +25,18 @@ class ValidateAnnotationHandler
             $property = $container->getProperty($target);
             $property or \PhpBoot\abort($container->getClassName()." property $target not exist ");
             if($params->count()>1){
-                $expr = [$params->getParam(0), $params->getParam(1)];
+                $property->validation = [$params->getParam(0), $params->getParam(1)];
             }else{
-                $expr = $params->getParam(0);
+                $property->validation = $params->getParam(0);
+                if($property->validation){
+                    $v = new Validator();
+                    $v->rule($property->validation, $property->name);
+                    if($v->hasRule('optional', $property->name)){
+                        $property->isOptional = true;
+                    }
+                }
             }
-            $property->validation = $expr;
+
         }else{
             \PhpBoot\abort(new AnnotationSyntaxException(
                 "The annotation \"@{$ann->name} {$ann->description}\" of {$container->getClassName()}::{$ann->parent->name} require 1 param, 0 given"

@@ -249,34 +249,37 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
             }
             $uri = rawurldecode($uri);
 
+            $next = function (Request $request)use($uri){
+                $dispatcher = $this->getDispatcher();
+                $res = $dispatcher->dispatch($request->getMethod(), $uri);
+                if ($res[0] == Dispatcher::FOUND) {
 
-            $dispatcher = $this->getDispatcher();
-
-            $res = $dispatcher->dispatch($request->getMethod(), $uri);
-            if ($res[0] == Dispatcher::FOUND) {
-
-                if (count($res[2])) {
-                    $request->attributes->add($res[2]);
-                }
-                list($handler, $hooks) = $res[1];
-                $hooks = array_merge($hooks, $this->getGlobalHooks());
-                $next = function (Request $request)use($handler){
-                    return $handler($this, $request);
-                };
-            }else{
-                $hooks = $this->getGlobalHooks();
-                $next = function (Request $request)use($res, $uri){
-                    if ($res[0] == Dispatcher::NOT_FOUND) {
-                        \PhpBoot\abort(new NotFoundHttpException(), [$request->getMethod(), $uri]);
-                    } elseif ($res[0] == Dispatcher::METHOD_NOT_ALLOWED) {
-                        \PhpBoot\abort(new MethodNotAllowedHttpException($res[1]), [$request->getMethod(), $uri]);
-                    } else {
-                        \PhpBoot\abort("unknown dispatch return {$res[0]}");
+                    if (count($res[2])) {
+                        $request->attributes->add($res[2]);
                     }
-                };
-            }
+                    list($handler, $hooks) = $res[1];
+                    $next = function (Request $request)use($handler){
+                        return $handler($this, $request);
+                    };
+                    foreach (array_reverse($hooks) as $hookName){
+                        $next = function($request)use($hookName, $next){
+                            $hook = $this->get($hookName);
+                            /**@var $hook HookInterface*/
+                            return $hook->handle($request, $next);
+                        };
+                    }
+                    return $next($request);
 
-            foreach (array_reverse($hooks) as $hookName){
+                }elseif ($res[0] == Dispatcher::NOT_FOUND) {
+                    \PhpBoot\abort(new NotFoundHttpException(), [$request->getMethod(), $uri]);
+                } elseif ($res[0] == Dispatcher::METHOD_NOT_ALLOWED) {
+                    \PhpBoot\abort(new MethodNotAllowedHttpException($res[1]), [$request->getMethod(), $uri]);
+                } else {
+                    \PhpBoot\abort("unknown dispatch return {$res[0]}");
+                }
+            };
+
+            foreach (array_reverse($this->getGlobalHooks()) as $hookName){
                 $next = function($request)use($hookName, $next){
                     $hook = $this->get($hookName);
                     /**@var $hook HookInterface*/
