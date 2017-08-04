@@ -28,9 +28,11 @@
    * [DB](https://caoym.gitbooks.io/phpboot/content/ji-ben-te-xing/shu-ju-ku.html)
    * [ORM](https://caoym.gitbooks.io/phpboot/content/ji-ben-te-xing/orm.html)
    * [自动文档和接口工具](https://caoym.gitbooks.io/phpboot/content/ji-ben-te-xing/wen-dang-shu-chu.html)
+   * [分布式支持(RPC)](https://caoym.gitbooks.io/phpboot/content/ji-ben-te-xing/fen-bu-shi.html)
+   
    * [钩子(Hook)](https://caoym.gitbooks.io/phpboot/content/ji-ben-te-xing/hook.html)
    * [工作流引擎(开发中...)](https://caoym.gitbooks.io/phpboot/content/ji-ben-te-xing/gong-zuo-liu.html)
-   * 分布式支持(RPC)
+ 
    
 ## 安装和配置
 

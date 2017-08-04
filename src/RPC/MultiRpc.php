@@ -10,6 +10,17 @@ class MultiRpc
 {
     public static function run(array $threads)
     {
+        /**
+         * 返回以下形式接口
+         *
+         * [
+         *      [成功值1, null],
+         *      [成功值2, null],
+         *      [null,  失败异常1],
+         *      ...
+         * ]
+         *
+         */
         return MultiRequest::run($threads, function($promises){
             $res = [];
             foreach (Promise\settle($promises)->wait() as $i){
