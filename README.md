@@ -1,7 +1,10 @@
 # PhpBoot
 
-[![Build Status](https://travis-ci.org/caoym/phpboot.svg?branch=master)](https://travis-ci.org/caoym/phpboot)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/caoym/phpboot/master/LICENSE)
+[![Package version](http://img.shields.io/packagist/v/caoym/phpboot.svg)](https://packagist.org/packages/caoym/phpboot)
+[![Build Status](https://travis-ci.org/caoym/phpboot.svg?branch=master)](https://travis-ci.org/caoym/phpboot)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/caoym/phpboot/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/caoym/phpboot/?branch=master)
+[![Code Coverage](https://scrutinizer-ci.com/g/caoym/phpboot/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/caoym/phpboot/?branch=master)
 
 > phprs-restful 2.x 版本改名为PhpBoot。当前版本由于改动较大, 与1.x 版本不兼容。下载1.x版本请前往 [phprs-restful v1.x](https://github.com/caoym/phprs-restful/tree/v1.2.4)
 
