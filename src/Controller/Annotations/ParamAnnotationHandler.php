@@ -67,5 +67,18 @@ class ParamAnnotationHandler
             $paramMeta->container = $container;
         }
         $paramMeta->description = $paramDoc;
+
+        $responseHandler = $route->getResponseHandler();
+        if($paramMeta->isPassedByReference && $responseHandler){
+            $mappings = $responseHandler->getMappings();
+            foreach ($mappings as $k => $v){
+                if($v->source == 'params.'.$paramMeta->name){
+                    $v->description = $paramMeta->description;
+                    $v->type = $paramMeta->type;
+                    $v->container = $paramMeta->container;
+                }
+            }
+        }
+
     }
 }

@@ -14,7 +14,10 @@ class EntityContainer implements TypeContainerInterface
 
     public function make($data, $validate = true)
     {
-        $data instanceof \ArrayAccess || is_array($data) or \PhpBoot\abort(new \InvalidArgumentException("array is required by param 0"));
+        if($data === null){
+            return null;
+        }
+        $data instanceof \ArrayAccess || is_array($data) or \PhpBoot\abort(new \InvalidArgumentException("array is required by make {$this->className}, $data given"));
         $className = $this->getClassName();
         $obj = new $className();
         $vld = new Validator();

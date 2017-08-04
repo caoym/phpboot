@@ -66,11 +66,16 @@ class RouteAnnotationHandler
 
         //从路由中获取变量, 用于判断参数是来自路由还是请求
         $routeParser = new Std();
-        $info = $routeParser->parse($params->getParam(1)); //0.4和1.0返回值不同, 不兼容
-
-        foreach ($info[0] as $i){
-            $route->addPathParam($i[0]);
+        $uri = $params->getParam(1);
+        $info = $routeParser->parse($uri); //0.4和1.0返回值不同, 不兼容
+        if(isset($info[0])){
+            foreach ($info[0] as $i){
+                if(is_array($i)) {
+                    $route->addPathParam($i[0]);
+                }
+            }
         }
+
 
         //设置参数列表
         $paramsMeta = [];

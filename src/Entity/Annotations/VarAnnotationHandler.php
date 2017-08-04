@@ -34,7 +34,7 @@ class VarAnnotationHandler
             } else{
                 // TODO 判断$type是否匹配
                 $property->type = TypeHint::normalize($type, $container->getClassName());
-
+                // TODO 防止递归死循环
                 $property->container = ContainerFactory::create($builder, $property->type);
             }
         }else{

@@ -4,6 +4,7 @@ namespace PhpBoot\Utils;
 class ArrayHelper
 {
     /**
+     * TODO 支持""转意
      * @param array|\ArrayAccess $arr
      * @param string $key like key1.key2.key3
      * @param mixed $val
@@ -30,4 +31,5 @@ class ArrayHelper
             $cur = &$cur[$p];
         }
     }
+
 }
