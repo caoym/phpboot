@@ -56,7 +56,8 @@ class RequestHandler
                 $inputs[$meta->name] = $meta->default;
             }
         }
-        $vld->withData($inputs)->validate() or \PhpBoot\abort(
+        $vld = $vld->withData($inputs);
+        $vld->validate() or \PhpBoot\abort(
             new \InvalidArgumentException(
                 json_encode(
                     $vld->errors(),
