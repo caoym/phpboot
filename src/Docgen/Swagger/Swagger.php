@@ -8,6 +8,7 @@ use PhpBoot\Controller\Route;
 use PhpBoot\Docgen\Swagger\Schemas\ArraySchemaObject;
 use PhpBoot\Docgen\Swagger\Schemas\BodyParameterObject;
 use PhpBoot\Docgen\Swagger\Schemas\OperationObject;
+use PhpBoot\Docgen\Swagger\Schemas\OtherParameterObject;
 use PhpBoot\Docgen\Swagger\Schemas\PrimitiveSchemaObject;
 use PhpBoot\Docgen\Swagger\Schemas\RefSchemaObject;
 use PhpBoot\Docgen\Swagger\Schemas\ResponseObject;
@@ -55,7 +56,11 @@ class Swagger extends SwaggerObject
             $op->tags = [$controller->getSummary()];
             $op->summary = $route->getSummary();
             $op->description = $route->getDescription();
+
             $op->parameters = $this->getParamsSchema($app, $controller, $action, $route);
+            if($this->hasFileParam($route)){
+                $op->consumes = ['multipart/form-data'];
+            }
 
             if ($returnSchema = $this->getReturnSchema($app, $controller, $action, $route)) {
                 $op->responses['200'] = $returnSchema;
@@ -191,7 +196,7 @@ class Swagger extends SwaggerObject
                 $schema->description = $content->description;
                 $schema->schema = $this->getAnySchema($app, $controller, $action, $route, $content->container);
             } elseif (is_array($content)) {
-                $tmpSchema = $this->makeTempSchema($app, $controller, $action, $route, $content);
+                $tmpSchema = $this->makeTempSchema($app, $controller, $action, $route, $content, 'Res');
                 $schema->schema = $tmpSchema;
 
             }
@@ -225,22 +230,23 @@ class Swagger extends SwaggerObject
      * @param $action
      * @param Route $route
      * @param array $arr
+     * @param string $suffix
      * @return RefSchemaObject
      */
     public function makeTempSchema(Application $app,
                                    ControllerContainer $controller,
                                    $action,
                                    Route $route,
-                                   array $arr)
+                                   array $arr, $suffix)
     {
         $className = self::getShortClassName($controller->getClassName());
-        $name = $className . ucfirst($action) . 'Res';
+        $name = $className . ucfirst($action) . $suffix;
 
         $schema = new SimpleModelSchemaObject();
 
         foreach ($arr as $k => $v) {
             if (is_array($v)) {
-                $schema->properties[$k] = $this->makeTempSchema($app, $controller, $action, $route, $v);
+                $schema->properties[$k] = $this->makeTempSchema($app, $controller, $action, $route, $v, $suffix);
             } elseif ($v instanceof ReturnMeta) {
                 $sub = $this->getAnySchema($app, $controller, $action, $route, $v->container);
                 $sub->description = $v->description;
@@ -308,17 +314,24 @@ class Swagger extends SwaggerObject
         $parameters = [];
         $body = [];
         $in = 'query';
+
+        $bodyType = 'body'; // 当有文件上传时, 必须是formData方式
+        if($this->hasFileParam($route)){
+            $bodyType = 'formData';
+        }
+
         foreach ($params as $name => $param) {
+            $isFile = false;
             if ($param->isPassedByReference) {
                 continue;
             }
             if ($param->source == 'request.request') {
-                $in = 'body';
+                $in = $bodyType;
                 $name = '';
             } elseif (strpos($param->source, 'request.request.') === 0
                 || $param->source == 'request.request'
             ) {
-                $in = 'body';
+                $in = $bodyType;
                 $name = substr($param->source, strlen('request.request.'));
             } elseif (strpos($param->source, 'request.query.') === 0) {
                 $in = 'query';
@@ -330,7 +343,8 @@ class Swagger extends SwaggerObject
                 $in = 'header';
                 $name = substr($param->source, strlen('request.headers.'));
             } elseif (strpos($param->source, 'request.files.') === 0) {
-                $in = 'file';
+                $isFile = true;
+                $in = $bodyType;
                 $name = substr($param->source, strlen('request.files.'));
             } elseif (strpos($param->source, 'request.') === 0) {
                 $name = substr($param->source, strlen('request.'));
@@ -340,7 +354,7 @@ class Swagger extends SwaggerObject
                     || $route->getMethod() == 'PUT'
                     || $route->getMethod() == 'PATCH'
                 ) {
-                    $in = 'body';
+                    $in = $bodyType;
                 } else {
                     $in = 'query';
                 }
@@ -354,8 +368,13 @@ class Swagger extends SwaggerObject
                     //TODO array for validation
                 } else {
                     $paramSchema = new PrimitiveSchemaObject();
-                    $paramSchema->type = self::mapType($param->type);
-                    self::mapValidation($param->validation, $paramSchema);
+                    if($isFile){
+                        $paramSchema->type = 'file';
+                    }else{
+                        $paramSchema->type = self::mapType($param->type);
+                        self::mapValidation($param->validation, $paramSchema);
+                    }
+
                 }
                 $paramSchema->in = $in;
                 $paramSchema->name = $name;
@@ -372,12 +391,13 @@ class Swagger extends SwaggerObject
 
             }
         }
-        if ($body) {
+        if ($body && $bodyType == 'body') {
+
             $paramSchema = new BodyParameterObject();
             $paramSchema->name = 'body';
             $paramSchema->in = 'body';
             if (is_array($body)) {
-                $paramSchema->schema = $this->makeTempSchema($app, $controller, $action, $route, $body);
+                $paramSchema->schema = $this->makeTempSchema($app, $controller, $action, $route, $body, 'Req');
             } else {
                 $paramSchema->schema = $this->getAnySchema($app, $controller, $action, $route, $body->container);
             }
@@ -477,6 +497,16 @@ class Swagger extends SwaggerObject
         return $schema;
     }
 
+    public function hasFileParam(Route $route)
+    {
+        $params = $route->getRequestHandler()->getParamMetas();
+        foreach ($params as $name => $param) {
+            if(strpos($param->source, 'request.files.')===0){
+                return true;
+            }
+        }
+        return false;
+    }
     /**
      * @param string $v
      * @param PrimitiveSchemaObject $schemaObject

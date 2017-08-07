@@ -92,6 +92,19 @@ class SwaggerTestController
     {
 
     }
+
+
+    /**
+     * @route POST /uploadFile
+     *
+     * @param string $param1 {@bind request.files.file1}
+     * @param string $param2
+     */
+    public function uploadFile($param1, $param2)
+    {
+
+    }
+
 }
 
 class SwaggerTest extends TestCase
