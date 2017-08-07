@@ -9,7 +9,7 @@ class SimpleModelSchemaObject extends SchemaObject
     /**
      * @var string[]
      */
-    public $required = [];
+    public $required;
 
     /**
      * @var PrimitiveSchemaObject[]|RefSchemaObject[]|ArraySchemaObject[]|SimpleModelSchemaObject[]

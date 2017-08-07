@@ -13,6 +13,19 @@ use phpDocumentor\Reflection\DocBlockFactory;
 use phpDocumentor\Reflection\FqsenResolver;
 use phpDocumentor\Reflection\TypeResolver;
 
+/**
+ * AnnotationEnabledTest
+ */
+class AnnotationEnabledTest
+{
+    /**
+     * testMethod
+     */
+    public function testMethod()
+    {
+
+    }
+}
 
 class AnnotationTagsOutput implements Formatter
 {
@@ -42,6 +55,11 @@ class AnnotationReader implements \ArrayAccess
         return $docBlockFactory;
     }
 
+    static public function assertAnnotationEnabled()
+    {
+        $rfl = new \ReflectionClass(AnnotationEnabledTest::class);
+        !empty($rfl->getDocComment()) or \PhpBoot\abort('Annotation dose not work! If opcache is enable, please set opcache.save_comments=1 and opcache.load_comments=1');
+    }
     /**
      * load from class with local cache
      * TODO 增加 filter 能力
@@ -51,6 +69,7 @@ class AnnotationReader implements \ArrayAccess
      */
     static public function read($className, Cache $localCache = null)
     {
+        self::assertAnnotationEnabled();
         $rfl = new \ReflectionClass($className) or \PhpBoot\abort("load class $className failed");
         $fileName = $rfl->getFileName();
         $key = str_replace('\\','.',self::class).md5($fileName.$className);
