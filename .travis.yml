@@ -1,9 +1,9 @@
 language: php
 
-cache:
-    directories:
-        - vendor
-        - $HOME/.composer/cache
+#cache:
+#    directories:
+#        - vendor
+#        - $HOME/.composer/cache
 
 php:
   - '5.5.9'
@@ -31,9 +31,4 @@ after_script:
 after_script:
     - php vendor/bin/coveralls -v
 
-matrix:
-    fast_finish: true
-    allow_failures:
-        - php: hhvm
-        - php: 7.0
   
