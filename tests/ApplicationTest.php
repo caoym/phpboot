@@ -72,6 +72,6 @@ class ApplicationTest extends TestCase
         $this->app->loadRoutesFromClass(HookControllerTest::class);
         $req = new Request([], [], [], [], [], ['REQUEST_METHOD'=>'GET', 'REQUEST_URI'=>'/testAnnotationHooks'], []);
         $res = $this->app->dispatch($req, false);
-        self::assertEquals($res->getContent(), "routeTestHook2TestHook1");
+        self::assertEquals($res->getContent(), "\"route\"TestHook2TestHook1");
     }
 }
