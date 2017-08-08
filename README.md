@@ -8,7 +8,7 @@
 
 > phprs-restful 2.x 版本改名为PhpBoot。当前版本由于改动较大, 与1.x 版本不兼容。下载1.x版本请前往 [phprs-restful v1.x](https://github.com/caoym/phprs-restful/tree/v1.2.4)
 
-**PhpBoot**是专为开发RESTful API 设计的PHP框架。它设计的初衷是尽可能**简化API开发**，包括:
+**[PhpBoot](https://github.com/caoym/phpboot)**是专为开发RESTful API 设计的PHP框架。它设计的初衷是尽可能**简化API开发**，包括:
 * **更少的重复代码**
     
     如避免为开发API而在文档、接口定义、实现、数据库设计之间不停的重复和同步代码等。
