@@ -120,6 +120,8 @@ class OrderByRule extends LimitRule
      * orderBy('column', Sql::ORDER_BY_ASC) => "ORDER BY column ASC"
      * orderBy('column0')->orderBy('column1') => "ORDER BY column0, column1"
      *
+     * orderBy(['column0', 'column1'=>Sql::ORDER_BY_ASC]) => "ORDER BY column0,column1 ASC"
+     *
      * @param string $column
      * @param string $order Sql::ORDER_BY_ASC or Sql::ORDER_BY_DESC
      * @return \PhpBoot\DB\rules\select\OrderByRule
@@ -128,15 +130,15 @@ class OrderByRule extends LimitRule
         $this->order->orderBy($this->context, $column, $order);
         return $this;
     }
-    /**
-     * orderByArgs(['column0', 'column1'=>Sql::ORDER_BY_ASC]) => "ORDER BY column0,column1 ASC"
-     * @param array $args
-     * @return \PhpBoot\DB\rules\select\OrderByRule
-     */
-    public function orderByArgs($args) {
-        $this->order->orderByArgs($this->context, $args);
-        return $this;
-    }
+//    /**
+//     * orderByArgs(['column0', 'column1'=>Sql::ORDER_BY_ASC]) => "ORDER BY column0,column1 ASC"
+//     * @param array $args
+//     * @return \PhpBoot\DB\rules\select\OrderByRule
+//     */
+//    public function orderByArgs($args) {
+//        $this->order->orderByArgs($this->context, $args);
+//        return $this;
+//    }
     /**
      * @var OrderByImpl
      */
@@ -151,17 +153,7 @@ class HavingRule extends OrderByRule
      * having('a>?', Sql::raw('now()')) => "HAVING a>now()"
      * having('a IN (?)',  [1, 2]) => "HAVING a IN (1,2)"
      *
-     * @param string $expr
-     * @param string $_
-     * @return \PhpBoot\DB\rules\select\OrderByRule
-     */
-    public function having($expr, $_=null) {
-        WhereImpl::having($this->context, $expr, array_slice(func_get_args(), 1));
-        return new OrderByRule($this->context);
-    }
-    /**
-     *
-     * havingArgs([
+     * having([
      *      'a'=>1,
      *      'b'=>['IN'=>[1,2]]
      *      'c'=>['BETWEEN'=>[1,2]]
@@ -171,14 +163,25 @@ class HavingRule extends OrderByRule
      *      =>
      *      "HAVING a=1 AND b IN(1,2) AND c BETWEEN 1 AND 2 AND d<>1"
      *
-     *
-     * @param array $args
+     * @param string|array $expr
+     * @param string $_
      * @return \PhpBoot\DB\rules\select\OrderByRule
      */
-    public function havingArgs($args) {
-        WhereImpl::havingArgs($this->context, $args);
+    public function having($expr, $_=null) {
+        WhereImpl::having($this->context, $expr, array_slice(func_get_args(), 1));
         return new OrderByRule($this->context);
     }
+//    /**
+//     *
+//     *
+//     *
+//     * @param array $args
+//     * @return \PhpBoot\DB\rules\select\OrderByRule
+//     */
+//    public function havingArgs($args) {
+//        WhereImpl::havingArgs($this->context, $args);
+//        return new OrderByRule($this->context);
+//    }
 }
 class GroupByRule extends OrderByRule
 {
@@ -211,13 +214,8 @@ class WhereRule extends GroupByRule
      * @param mixed $_
      * @return \PhpBoot\DB\rules\select\GroupByRule
      */
-    public function where($conditions, $_=null) {
-        if(is_array($conditions)){
-            WhereImpl::whereArgs($this->context, $conditions);
-        }else{
-            WhereImpl::where($this->context, $conditions, array_slice(func_get_args(), 1));
-        }
-
+    public function where($conditions=null, $_=null) {
+        WhereImpl::where($this->context, $conditions, array_slice(func_get_args(), 1));
         return new GroupByRule($this->context);
     }
 }

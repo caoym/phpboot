@@ -106,15 +106,11 @@ class DB{
             $args = func_get_args();
         }
         foreach ($args as &$arg){
-            $arg = trim($arg);
+            $arg = DB::wrap($arg);
             if($arg == '*'){
                 continue;
             }
-            $found = [];
-            if(preg_match('/^[A-Za-z0-9]+$/', $arg, $found, PREG_OFFSET_CAPTURE)&&
-                count($found)){
-                $arg = "`$arg`";
-            }
+
         }
         return $obj->select(implode(',', $args));
     }
@@ -174,6 +170,16 @@ class DB{
      */
     static public function raw($str){
         return new Raw($str);
+    }
+    static public function wrap($value)
+    {
+        if ($value === '*') {
+            return $value;
+        }
+        if($value instanceof Raw){
+            return $value->get();
+        }
+        return '`'.str_replace('`', '``', $value).'`';
     }
 
     /**

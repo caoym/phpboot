@@ -1,6 +1,7 @@
 <?php
 namespace PhpBoot\DB\rules\insert;
 
+use PhpBoot\DB\DB;
 use PhpBoot\DB\impls\OnDuplicateKeyUpdateImpl;
 use PhpBoot\DB\rules\basic\BasicRule;
 use PhpBoot\DB\rules\basic\ExecRule;
@@ -46,51 +47,56 @@ class OnDuplicateKeyUpdateRule extends ExecRule
         $this->impl = new OnDuplicateKeyUpdateImpl();
     }
 
-    /**
-     *
-     * insertInto('table')
-     *      ->values(['a'=>1, 'b'=>Sql::raw('now()')])
-     *      ->onDuplicateKeyUpdate('a', Sql::raw('a+1'))
-     *  => "INSERT INTO table(a,b) VALUES(1,now()) ON DUPLICATE KEY UPDATE a=a+1"
-     *
-     * @param string $column
-     * @param mixed $value
-     * @return \PhpBoot\DB\rules\basic\ExecRule
-     */
-    public function onDuplicateKeyUpdate($column, $value) {
-        $this->impl->set($this->context, $column, $value);
-        return new ExecRule($this->context);
-    }
+//    /**
+//     *
+//     * insertInto('table')
+//     *      ->values(['a'=>1, 'b'=>Sql::raw('now()')])
+//     *      ->onDuplicateKeyUpdate('a', Sql::raw('a+1'))
+//     *  => "INSERT INTO table(a,b) VALUES(1,now()) ON DUPLICATE KEY UPDATE a=a+1"
+//     *
+//     * @param string $column
+//     * @param mixed $value
+//     * @return \PhpBoot\DB\rules\basic\ExecRule
+//     */
+//    public function onDuplicateKeyUpdate($column, $value) {
+//        $this->impl->set($this->context, $column, $value);
+//        return new ExecRule($this->context);
+//    }
+
+//    /**
+//     *
+//     * insertInto('table')
+//     *      ->values(['a'=>1, 'b'=>Sql::raw('now()')])
+//     *      ->onDuplicateKeyUpdateArgs(['a'=>Sql::raw('a+1')])
+//     *  => "INSERT INTO table(a,b) VALUES(1,now()) ON DUPLICATE KEY UPDATE a=a+1"
+//     *
+//     * @param string $column
+//     * @param mixed $value
+//     * @return \PhpBoot\DB\rules\basic\ExecRule
+//     */
+//    public function onDuplicateKeyUpdateArgs($values) {
+//        $this->impl->setArgs($this->context, $values);
+//        return new ExecRule($this->context);
+//    }
 
     /**
      *
+     *  insertInto('table')
+     *      ->values(['a'=>1, 'b'=>Sql::raw('now()')])
+     *      ->onDuplicateKeyUpdate(['a'=>Sql::raw('a+1')])
+     *  => "INSERT INTO table(a,b) VALUES(1,now()) ON DUPLICATE KEY UPDATE a=a+1"
+     *
      * insertInto('table')
      *      ->values(['a'=>1, 'b'=>Sql::raw('now()')])
-     *      ->onDuplicateKeyUpdateArgs(['a'=>Sql::raw('a+1')])
+     *      ->onDuplicateKeyUpdate('a=a+1')
      *  => "INSERT INTO table(a,b) VALUES(1,now()) ON DUPLICATE KEY UPDATE a=a+1"
      *
      * @param string $column
      * @param mixed $value
      * @return \PhpBoot\DB\rules\basic\ExecRule
      */
-    public function onDuplicateKeyUpdateArgs($values) {
-        $this->impl->setArgs($this->context, $values);
-        return new ExecRule($this->context);
-    }
-
-    /**
-     *
-     * insertInto('table')
-     *      ->values(['a'=>1, 'b'=>Sql::raw('now()')])
-     *      ->onDuplicateKeyUpdateExpr('a=a+1')
-     *  => "INSERT INTO table(a,b) VALUES(1,now()) ON DUPLICATE KEY UPDATE a=a+1"
-     *
-     * @param string $column
-     * @param mixed $value
-     * @return \PhpBoot\DB\rules\basic\ExecRule
-     */
-    public function onDuplicateKeyUpdateExpr($expr, $_=null) {
-        $this->impl->setExpr($this->context, $expr, array_slice(func_get_args(), 1));
+    public function onDuplicateKeyUpdate($expr, $_=null) {
+        $this->impl->set($this->context, $expr, array_slice(func_get_args(), 1));
         return new ExecRule($this->context);
     }
     private $impl;

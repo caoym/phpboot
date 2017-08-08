@@ -1,6 +1,7 @@
 <?php
 
 namespace PhpBoot\DB\impls;
+use PhpBoot\DB\DB;
 use PhpBoot\DB\NestedStringCut;
 use PhpBoot\DB\Raw;
 use PhpBoot\DB\rules\basic\BasicRule;
@@ -52,10 +53,10 @@ class FromImpl
             $context->appendSql("FROM (".$tables->context->sql.')');
             $context->params = array_merge($context->params,$tables->context->params);
         }else {
-            $context->appendSql("FROM `$tables`");
+            $context->appendSql("FROM ".DB::wrap($tables));
         }
         if($as){
-            $context->appendSql("as `$as`");
+            $context->appendSql("as ".DB::wrap($as));
         }
     }
 }
@@ -64,13 +65,14 @@ class DeleteImpl
 {
     static public function deleteFrom($context, $from)
     {
-        $context->appendSql("DELETE FROM `$from`");
+        $context->appendSql("DELETE FROM ".DB::wrap($from));
     }
 }
 
 class JoinImpl
 {
     static public function join($context, $type, $table) {
+        $table = DB::wrap($table);
         if($type){
             $context->appendSql("$type JOIN $table");
         }else{
@@ -96,6 +98,7 @@ class ForUpdateImpl
 class ForUpdateOfImpl
 {
     static public function of($context, $column){
+        $column = DB::wrap($column);
         $context->appendSql("OF $column");
     }
 }
@@ -103,13 +106,15 @@ class ForUpdateOfImpl
 class InsertImpl
 {
     static public function insertInto($context, $table) {
-        $context->appendSql("INSERT INTO `$table`");
+        $table = DB::wrap($table);
+        $context->appendSql("INSERT INTO $table");
     }
 }
 class ReplaceImpl
 {
     static public function replaceInto($context, $table) {
-        $context->appendSql("REPLACE INTO `$table`");
+        $table = DB::wrap($table);
+        $context->appendSql("REPLACE INTO $table");
     }
 }
 class ValuesImpl
@@ -133,7 +138,7 @@ class ValuesImpl
 
         }else{
             //(col0, col1, col2) VALUES(val0, val1, val2)
-            $columns = implode(',', array_keys($values));
+            $columns = implode(',', array_map(function($k){return DB::wrap($k);}, array_keys($values)));
             $context->appendSql("($columns) VALUES($stubs)",false);
         }
         $context->appendParams($params);
@@ -144,30 +149,22 @@ class ValuesImpl
 class UpdateImpl
 {
     static public function update($context, $table){
-        $context->appendSql("UPDATE `$table`");
+        $table = DB::wrap($table);
+        $context->appendSql("UPDATE $table");
     }
 }
 
 class UpdateSetImpl
 {
-    public function set($context, $column, $value){
-        $prefix = '';
-        if($this->first){
-            $this->first = false;
-            $prefix = 'SET ';
+    public function set(Context $context, $expr, $args){
+        if(is_string($expr)){
+            return $this->setExpr($context, $expr, $args);
         }else{
-            $prefix = ',';
-        }
-        if(is_a($value, Raw::class)){
-            $context->appendSql("$prefix$column=$value",$prefix == 'SET ');
-        }else{
-            $context->appendSql("$prefix$column=?",$prefix == 'SET ');
-            $context->appendParams([$value]);
+            return $this->setArgs($context, $expr);
         }
     }
 
-    public function setExpr($context, $expr, $args){
-        $prefix = '';
+    public function setExpr(Context $context, $expr, $args){
         if($this->first){
             $this->first = false;
             $prefix = 'SET ';
@@ -179,10 +176,11 @@ class UpdateSetImpl
         $context->appendParams($args);
 
     }
-    public function setArgs($context, $values){
+    public function setArgs(Context $context, $values){
         $set = [];
         $params = [];
         foreach ($values as $k=>$v){
+            $k = DB::wrap($k);
             if(is_a($v, Raw::class)){//直接拼接sql，不需要转义
                 $set[]= "$k=".$v->get();
             }else{
@@ -203,20 +201,18 @@ class UpdateSetImpl
 }
 class OrderByImpl
 {
-    public function orderByArgs($context, $orders){
+    public function orderByArgs(Context $context, $orders){
         if(empty($orders)){
             return $this;
         }
         $params = array();
         foreach ($orders as $k=>$v){
             if(is_integer($k)){
-                preg_match('/^[a-zA-Z0-9_.]+$/', $v) or \PhpBoot\abort(
-                    new \InvalidArgumentException("invalid params for orderBy(".json_encode($orders).")"));
-
-                $params[] = $v;
+                $params[] = DB::wrap($v);
             }else{
+                $k = DB::wrap($k);
+
                 $v = strtoupper($v);
-                preg_match('/^[a-zA-Z0-9_.]+$/', $k) &&
                 ($v =='DESC' || $v =='ASC') or \PhpBoot\abort( new \InvalidArgumentException("invalid params for orderBy(".json_encode($orders).")"));
 
                 $params[] = "$k $v";
@@ -230,30 +226,30 @@ class OrderByImpl
         }
         return $this;
     }
-    public function orderBy($context, $column, $order=null){
-        if($this->first){
-            $this->first = false;
-            $context->appendSql("ORDER BY $column");
-        }else{
-            $context->appendSql(",$column", false);
+    public function orderBy(Context $context, $column, $order=null){
+        if(is_string($column)){
+            if($order === null){
+                $column = [$column];
+            }else{
+                $column = [$column=>$order];
+            }
         }
-        if($order){
-            $context->appendSql($order);
-        }
-        return $this;
+        return $this->orderByArgs($context, $column);
+
+
     }
     private $first=true;
 }
 
 class LimitImpl
 {
-    static public function limit($context, $size){
+    static public function limit(Context $context, $size){
         $intSize = intval($size);
         strval($intSize) == $size or \PhpBoot\abort(
             new \InvalidArgumentException("invalid params for limit($size)"));
         $context->appendSql("LIMIT $size");
     }
-    static public function limitWithOffset($context,$start, $size){
+    static public function limitWithOffset(Context $context, $start, $size){
         $intStart = intval($start);
         $intSize = intval($size);
         strval($intStart) == $start && strval($intSize) == $size or \PhpBoot\abort(
@@ -271,19 +267,27 @@ class WhereImpl{
         }
         return self::findQ($str, $found+1, $no-1);
     }
-    static public function having($context, $expr, $args){
-        self::condition($context, 'HAVING', $expr, $args);
+    static public function having(Context $context, $expr, $args){
+        if(is_string($expr)){
+            self::condition($context, 'HAVING', $expr, $args);
+        }else{
+            self::conditionArgs($context, 'HAVING', $expr);
+        }
+        //TODO 支持 OR 、 闭包
+
     }
-    static public function where($context, $expr, $args){
-        self::condition($context, 'WHERE', $expr, $args);
+    static public function where(Context $context, $expr, $args){
+        if(empty($expr)){
+            return;
+        }
+        if (is_string($expr)){
+            self::condition($context, 'WHERE', $expr, $args);
+        }else{
+            self::conditionArgs($context, 'WHERE', $expr);
+        }
+        //TODO 支持 OR 、 闭包
     }
 
-    static public function havingArgs($context, $args){
-        self::conditionArgs($context, 'HAVING', $args);
-    }
-    static public function whereArgs($context, $args){
-        self::conditionArgs($context, 'WHERE', $args);
-    }
     /**
      * find like Mongodb query glossary
      * whereArray(
@@ -303,16 +307,16 @@ class WhereImpl{
      * LIKE     'id'=>['LIKE' => '1%']
      * IN   'id'=>['IN' => [1,2,3]]
      * NOT IN   'id'=>['NOT IN' => [1,2,3]]
-     *
-     * @param array $args
+     * @return void
      */
-    static public function conditionArgs($context, $prefix, $args=[]){
+    static public function conditionArgs(Context $context, $prefix, $args=[]){
         if($args ===null){
             return ;
         }
         $exprs = array();
         $params = array();
         foreach ($args as $k => $v){
+            $k = DB::wrap($k);
             if(is_array($v)){
                 $ops = ['=', '>', '<', '<>', '>=', '<=', 'IN', 'NOT IN', 'BETWEEN', 'LIKE'];
                 $op = array_keys($v)[0];
@@ -368,9 +372,9 @@ class WhereImpl{
             }
         }
 
-        return self::condition($context, $prefix, implode(' AND ', $exprs), $params);
+        self::condition($context, $prefix, implode(' AND ', $exprs), $params);
     }
-    static public function condition($context, $prefix, $expr, $args){
+    static public function condition(Context $context, $prefix, $expr, $args){
         if(!empty($expr)){
             if($args){
                 //因为PDO不支持绑定数组变量, 这里需要手动展开数组
@@ -432,7 +436,8 @@ class WhereImpl{
 }
 
 class GroupByImpl{
-    static public function groupBy($context, $column){
+    static public function groupBy(Context $context, $column){
+        $column = DB::wrap($column);
         $context->appendSql("GROUP BY $column");
     }
 }
@@ -513,18 +518,10 @@ class ExecImpl
 class OnDuplicateKeyUpdateImpl
 {
     public function set($context, $column, $value){
-        $prefix = '';
-        if($this->first){
-            $this->first = false;
-            $prefix = 'ON DUPLICATE KEY UPDATE ';
+        if(is_string($column)){
+            $this->setExpr($context, $column, $value);
         }else{
-            $prefix = ',';
-        }
-        if(is_a($value, Raw::class)){
-            $context->appendSql("$prefix$column=$value",$prefix == 'ON DUPLICATE KEY UPDATE ');
-        }else{
-            $context->appendSql("$prefix$column=?",$prefix == 'ON DUPLICATE KEY UPDATE ');
-            $context->appendParams([$value]);
+            $this->setArgs($context, $column);
         }
     }
 
@@ -545,6 +542,7 @@ class OnDuplicateKeyUpdateImpl
         $set = [];
         $params = [];
         foreach ($values as $k=>$v){
+            $k = DB::wrap($k);
             if(is_a($v, Raw::class)){//直接拼接sql，不需要转义
                 $set[]= "$k=".$v->get();
             }else{

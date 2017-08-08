@@ -46,10 +46,20 @@ if (!function_exists('PhpBoot\model')) {
 
     /**
      * @param DB $db
-     * @param @param object|string $entity
-     * @return ModelWithClass|ModelWithObject
+     * @param @param object
+     * @return ModelWithObject
      */
     function model(DB $db, $entity)
+    {
+        return $db->getApp()->make(ModelWithObject::class, ['db'=>$db, 'entity'=>$entity]);
+    }
+
+    /**
+     * @param DB $db
+     * @param @param string $entity
+     * @return ModelWithClass
+     */
+    function models(DB $db, $entity)
     {
         if(is_object($entity)){
             return $db->getApp()->make(ModelWithObject::class, ['db'=>$db, 'entity'=>$entity]);

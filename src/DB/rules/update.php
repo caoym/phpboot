@@ -29,37 +29,18 @@ class UpdateSetRule extends WhereRule
         $this->impl = new UpdateSetImpl();
     }
     /**
-     * update('table')->set('a', 1) => "UPDATE table SET a=1"
-     * update('table')->set('a', 1)->set('b',Sql::raw('now()')) => "UPDATE table SET a=1,b=now()"
-     * @param string $column
-     * @param mixed $value
-     * @return \PhpBoot\DB\rules\update\UpdateSetRule
-     */
-    public function set($column, $value) {
-        $this->impl->set($this->context, $column, $value);
-        return $this;
-    }
-    /**
-     * update('table')->set(['a'=>1, 'b'=>Sql::raw('now()')]) => "UPDATE table SET a=1,b=now()"
-     * @param array $values
-     * @return \PhpBoot\DB\rules\update\UpdateSetRule
-     */
-    public function setArgs($values) {
-        $this->impl->setArgs($this->context, $values);
-        return $this;
-    }
-
-    /**
-     * update('table')->setExpr('a=a+?',1)
-     * @param string $expr
+     * update('table')->set(['a'=>1]) => "UPDATE table SET a=1"
+     * update('table')->set(['a'=>1])->set(['b', DB::raw('now()')]) => "UPDATE table SET a=1,b=now()"
+     *
+     * update('table')->set('a=?',1) => "UPDATE table SET a=1"
+     * @param array|string $expr
      * @param mixed $_
      * @return \PhpBoot\DB\rules\update\UpdateSetRule
      */
-    public function setExpr($expr, $_=null) {
-        $this->impl->setExpr($this->context, $expr, array_slice(func_get_args(), 1));
+    public function set($expr, $_=null) {
+        $this->impl->set($this->context, $expr, array_slice(func_get_args(), 1));
         return $this;
     }
-
     private $impl;
 }
 
