@@ -72,7 +72,7 @@
 
     [Swagger](https://swagger.io)是目前最流行的接口文档框架。虽然很多框架都可以通过扩展支持Swagger, 但一般不是需要编写很多额外的注释, 就是只能导出基本的路由信息, 而不能导出详细的输入输出参数。目前只有 PhpBoot 可以在不增加额外编码负担的情况下, 更多内容请见[文档](https://caoym.gitbooks.io/phpboot/content/ji-ben-te-xing/wen-dang-shu-chu.html)和[在线 Demo](http://118.190.86.50:8007/index.html?url=http://118.190.86.50:8009/docs/swagger.json)。
     
-    <div align=center>
+    <div>
     <img src="https://github.com/caoym/phpboot-book/raw/master/assets/WX20170809-184015.png" width="60%">
     </div>
     
@@ -109,7 +109,7 @@
 
     IDE 的代码提示功能可以让开发者轻松不少, 但很多框架在这方面做的并不好, 你必须看文档或者代码, 才能知道某个功能的用法。PhpBoot 在一开始就非常注重让代码保持IDE友好, 经可能让所有代码都能有正确的代码提示。比如下图是 DB 库在 PhpStorm IDE 下的使用:
     
-    <div align=center>
+    <div>
     <img src="https://github.com/caoym/phpboot-book/raw/master/assets/db.gif">
     </div>
 
