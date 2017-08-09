@@ -39,8 +39,9 @@ class BindAnnotationHandler
         $handler = $route->getResponseHandler();
 
         if ($ann->parent->name == 'return'){
-            $return = $handler->eraseMapping('response.content');
+            list($target, $return) = $handler->getMappingBySource('return');
             if($return){
+                $handler->eraseMapping($target);
                 $handler->setMapping($params[0], $return);
             }
 
@@ -49,7 +50,10 @@ class BindAnnotationHandler
 
             $paramMeta = $route->getRequestHandler()->getParamMeta($paramName);
             if($paramMeta->isPassedByReference){
-                $handler->eraseMapping('response.content.'.$paramName);
+                list($target, $ori) = $handler->getMappingBySource('params.'.$paramName);
+                if($ori){
+                    $handler->eraseMapping($target);
+                }
                 //输出绑定
                 $handler->setMapping(
                     $params[0],

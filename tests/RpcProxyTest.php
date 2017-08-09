@@ -299,10 +299,10 @@ class RpcProxyTest extends TestCase
             &$arrStrArg,
             &$mixedArg
         ];
+        /**@var RpcProxy $rpc*/
         $return = $rpc->mapResponse(__FUNCTION__, $controller->getRoute(__FUNCTION__), $response, $args);
 
         $expected = new RpcTestEntity2();
-        $expected->arrArg = [new RpcTestEntity1()];
         self::assertEquals($expected, $return);
 
         self::assertSame($intArg, null);

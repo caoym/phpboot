@@ -39,10 +39,9 @@ class ReturnAnnotationHandler
         }
         $doc = $params->getRawParam(1, '');
 
-        //TODO 支持 @bind
-        $meta = $route
+        list($_, $meta) = $route
             ->getResponseHandler()
-            ->getMapping('response.content');
+            ->getMappingBySource('return');
         if($meta){
             $meta->description = $doc;
             $meta->type = $type;

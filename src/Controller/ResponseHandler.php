@@ -36,7 +36,7 @@ class ResponseHandler
     }
 
     /**
-     * @param $target
+     * @param string $target
      * @return ReturnMeta
      */
     public function getMapping($target)
@@ -46,6 +46,21 @@ class ResponseHandler
         }
         return $this->mappings[$target];
     }
+
+    /**
+     * @param string $source
+     * @return array [string,ReturnMeta]
+     */
+    public function getMappingBySource($source)
+    {
+        foreach ($this->mappings as $k=>$v){
+            if($v->source == $source){
+                return [$k, $v];
+            }
+        }
+        return [null,null];
+    }
+
 
     /**
      * @param Application $app
