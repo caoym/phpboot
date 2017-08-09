@@ -14,7 +14,7 @@
 
 和其他框架相比较, PhpBoot 有以下这些亮点:
 
-* **以面向对象的方式编写接口**
+### 以面向对象的方式编写接口
 
     你肯定看到过这样的代码:
     
@@ -67,16 +67,16 @@
     }
     ```
     上面两份代码执行的效果是一样的。可以看到 PhpBoot 编写的代码更符合面向对象编程的原则, 以上代码完整版本请见[phpboot-example](https://github.com/caoym/phpboot-example)。
-    
-* **轻松支持 Swagger**
+    
+### 轻松支持 Swagger
 
     [Swagger](https://swagger.io)是目前最流行的接口文档框架。虽然很多框架都可以通过扩展支持Swagger, 但一般不是需要编写很多额外的注释, 就是只能导出基本的路由信息, 而不能导出详细的输入输出参数。目前只有 PhpBoot 可以在不增加额外编码负担的情况下, 更多内容请见[文档](https://caoym.gitbooks.io/phpboot/content/ji-ben-te-xing/wen-dang-shu-chu.html)和[在线 Demo](http://118.190.86.50:8007/index.html?url=http://118.190.86.50:8009/docs/swagger.json)。
     
     <div>
     <img src="https://github.com/caoym/phpboot-book/raw/master/assets/WX20170809-184015.png" width="60%">
     </div>
-    
-* **简单易用的分布式支持**
+    
+### 简单易用的分布式支持
     
     使用 PhpBoot 可以很简单的构建分布式应用。通过如下代码, 即可轻松远程访问上面示例中的 Books 接口:
     
