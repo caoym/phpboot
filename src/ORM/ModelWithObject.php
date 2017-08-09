@@ -22,8 +22,9 @@ class ModelWithObject
         $this->entity = $builder->build($entityName);
         $this->object = $entity;
     }
-
-
+    /**
+     * @return void
+     */
     public function create()
     {
         $data = [];
@@ -52,10 +53,8 @@ class ModelWithObject
         $data = [];
         $pk = $this->entity->getPK();
         foreach ($this->getColumns() as $column){
-            if(count($columns)){
-                if(!in_array($column, $columns)){
-                    continue;
-                }
+            if(count($columns) && !in_array($column, $columns)){
+                continue;
             }
             if($pk != $column && isset($this->object->$column)){
                 if(is_array($this->object->$column) || is_object($this->object->$column)){
@@ -66,7 +65,7 @@ class ModelWithObject
             }
         }
 
-        $this->db->update($this->entity->getTable())
+        return $this->db->update($this->entity->getTable())
             ->set($data)
             ->where("`{$pk}` = ?", $this->object->$pk)
             ->exec()->rows;
