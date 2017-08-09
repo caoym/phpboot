@@ -10,9 +10,9 @@
 
 **[PhpBoot](https://github.com/caoym/phpboot)** 是为快速开发 RESTful API 设计的PHP框架。它可以帮助开发者更聚焦在业务本身, 而将原来开发中不得不做, 但又重复枯燥的事情丢给框架, 比如编写接口文档、参数校验和远程调用代码等。
 
-## 亮点
+## 特色
 
-和其他框架相比较, PhpBoot 有以下这些亮点:
+PhpBoot 框架提供主流的特性, 如ORM、依赖注入等。 这些特性都经过精心设计或选择(有些是第三方开源代码,如 PHP-DI), 即保证极简单的使用, 又需和框架整体的风格保持一致。但和其他框架相比较, PhpBoot 最显著的特色是:
 
 ### 1. 以面向对象的方式编写接口
 
@@ -115,7 +115,6 @@ IDE 的代码提示功能可以让开发者轻松不少, 但很多框架在这�
 </div>
 
 ## 主要特性
-   PhpBoot 框架也提供主流的特性, 如ORM、依赖注入等。 这些特性都经过精心设计或选择(有些是第三方开源代码,如 PHP-DI), 即保证极简单的使用, 又需和框架整体的风格保持一致。
    
    * [基于Annotation的路由定义](https://caoym.gitbooks.io/phpboot/content/ji-ben-te-xing/lu-you.html)
    * [接口参数双向绑定](https://caoym.gitbooks.io/phpboot/content/ji-ben-te-xing/can-shu-bang-ding.html)
