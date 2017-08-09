@@ -71,7 +71,7 @@ class Books
     
 ### 2. 轻松支持 Swagger
 
-[Swagger](https://swagger.io)是目前最流行的接口文档框架。虽然很多框架都可以通过扩展支持Swagger, 但一般不是需要编写很多额外的注释, 就是只能导出基本的路由信息, 而不能导出详细的输入输出参数。目前只有 PhpBoot 可以在不增加额外编码负担的情况下, 更多内容请见[文档](https://caoym.gitbooks.io/phpboot/content/ji-ben-te-xing/wen-dang-shu-chu.html)和[在线 Demo](http://118.190.86.50:8007/index.html?url=http://118.190.86.50:8009/docs/swagger.json)。
+[Swagger](https://swagger.io)是目前最流行的接口文档框架。虽然很多框架都可以通过扩展支持Swagger, 但一般不是需要编写很多额外的注释, 就是只能导出基本的路由信息, 而不能导出详细的输入输出参数。而 PhpBoot 可以在不增加额外编码负担的情况下, 轻松去完成上述任务，下图为findBooks对应的文档。更多内容请见[文档](https://caoym.gitbooks.io/phpboot/content/ji-ben-te-xing/wen-dang-shu-chu.html)和[在线 Demo](http://118.190.86.50:8007/index.html?url=http://118.190.86.50:8009/docs/swagger.json)。
 
 <div>
 <img src="https://github.com/caoym/phpboot-book/raw/master/assets/WX20170809-184015.png" width="60%">
