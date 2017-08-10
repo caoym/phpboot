@@ -108,7 +108,7 @@ $res = MultiRpc::run([
 
 ### 4. IDE 友好  
 
-IDE 的代码提示功能可以让开发者轻松不少, 但很多框架在这方面做的并不好, 你必须看文档或者代码, 才能知道某个功能的用法。PhpBoot 在一开始就非常注重让代码保持IDE友好, 经可能让所有代码都能有正确的代码提示。比如下图是 DB 库在 PhpStorm IDE 下的使用:
+IDE 的代码提示功能可以让开发者轻松不少, 但很多框架在这方面做的并不好, 你必须看文档或者代码, 才能知道某个功能的用法。PhpBoot 在一开始就非常注重框架的 IDE 友好性, 尽可能让框架保持准确的代码提示。比如下图是 DB 库在 PhpStorm 下的使用:
 
 <div>
 <img src="https://github.com/caoym/phpboot-book/raw/master/assets/db.gif">
