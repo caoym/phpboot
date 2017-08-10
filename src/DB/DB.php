@@ -162,12 +162,12 @@ class DB{
     public function transaction(callable $callback)
     {
         if($this->inTransaction){
-            return $callback();
+            return $callback($this);
         }
         $this->getConnection()->beginTransaction() or \PhpBoot\abort('beginTransaction failed');
         $this->inTransaction = true;
         try{
-            $res = $callback();
+            $res = $callback($this);
             $this->getConnection()->commit() or \PhpBoot\abort('commit failed');
             return $res;
         }catch (\Exception $e){
