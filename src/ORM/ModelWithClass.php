@@ -89,15 +89,28 @@ class ModelWithClass
     }
 
     /**
-     * where 语法见 @see WhereRule
-     * @param array|string $expr
-     * @param mixed|null $_
-     * @return \PhpBoot\DB\rules\basic\WhereRule
+     * @param int|string $id
+     * @param array $values
+     * @return int updated row count
      */
-    public function update($expr, $_=null)
+    public function update($id, $values)
     {
-        $query =  $this->db->update($this->entity->getTable());
-        return call_user_func_array([$query, 'set'], func_get_args());
+        return $this->db->update($this->entity->getTable())
+            ->set($values)
+            ->where([$this->entity->getPK()=>$id])
+            ->exec();
+    }
+
+    /**
+     * @param array $values
+     * @param array|string|null $conditions  where 语法见 @see WhereRule
+     * @param string $_
+     * @return \PhpBoot\DB\rules\basic\OrderByRule
+     */
+    public function updateWhere($values, $conditions, $_=null)
+    {
+        $query =  $this->db->update($this->entity->getTable())->set($values);
+        return call_user_func_array([$query, 'where'], array_slice(func_get_args(),1));
     }
 
     protected function getColumns()

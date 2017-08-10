@@ -16,15 +16,24 @@ class ModelWithClassForTest
 
 class ModelWithClassTest extends TestCase
 {
+
     public function testUpdate()
     {
         $mock = new DBMock($this);
         $mock->setExpected('UPDATE `test_table` SET `name`=? WHERE `id` = ?', 'abc', 1);
         $db = new DB($this->app, $mock);
-        \PhpBoot\models($db, ModelWithObjectForTest::class)->update(
-            ['name'=>'abc']
-        )->where(['id'=>1])
-         ->exec();
+        \PhpBoot\models($db, ModelWithObjectForTest::class)->update(1, ['name'=>'abc']);
+    }
+
+    public function testUpdateWhere()
+    {
+        $mock = new DBMock($this);
+        $mock->setExpected('UPDATE `test_table` SET `name`=? WHERE `id` = ?', 'abc', 1);
+        $db = new DB($this->app, $mock);
+        \PhpBoot\models($db, ModelWithObjectForTest::class)->updateWhere(
+            ['name'=>'abc'],
+            ['id'=>1]
+        )->exec();
     }
 
     public function testFind()

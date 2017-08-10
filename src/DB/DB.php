@@ -7,6 +7,7 @@ use PhpBoot\DB\rules\insert\InsertRule;
 use PhpBoot\DB\rules\update\UpdateRule;
 use PhpBoot\DB\rules\delete\DeleteRule;
 use PhpBoot\DB\rules\replace\ReplaceIntoRule;
+use PhpBoot\Utils\Logger;
 
 require_once __DIR__.'/rules/select.php';
 require_once __DIR__.'/rules/insert.php';
@@ -154,6 +155,28 @@ class DB{
     }
 
     /**
+     * @param callable $callback
+     * @return mixed return
+     * @throws \Exception
+     */
+    public function transaction(callable $callback)
+    {
+        if($this->inTransaction){
+            return $callback();
+        }
+        $this->getConnection()->beginTransaction() or \PhpBoot\abort('beginTransaction failed');
+        $this->inTransaction = true;
+        try{
+            $res = $callback();
+            $this->getConnection()->commit() or \PhpBoot\abort('commit failed');
+            return $res;
+        }catch (\Exception $e){
+            $this->getConnection()->rollBack();
+            Logger::warning('commit failed with '.get_class($e).' '.$e->getMessage());
+            throw $e;
+        }
+    }
+    /**
      * @return \PDO
      */
     public function getConnection()
@@ -195,10 +218,12 @@ class DB{
     /**
      * @var \PDO
      */
-    private $connection;
+    protected $connection;
 
     /**
      * @var Application
      */
-    private $app;
+    protected $app;
+
+    protected $inTransaction = false;
 }
