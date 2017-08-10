@@ -114,6 +114,8 @@ IDE 的代码提示功能可以让开发者轻松不少, 但很多框架在这�
 <img src="https://github.com/caoym/phpboot-book/raw/master/assets/db.gif">
 </div>
 
+可以看到, IDE 的提示是符合 SQL 语法规则的, 并不是简单罗列所有 SQL 指令。
+
 ## 主要特性
    
    * [基于Annotation的路由定义](https://caoym.gitbooks.io/phpboot/content/ji-ben-te-xing/lu-you.html)

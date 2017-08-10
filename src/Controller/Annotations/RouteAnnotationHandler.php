@@ -118,10 +118,12 @@ class RouteAnnotationHandler
             $responseHandler->setMapping('response.content', new ReturnMeta('return','mixed','', new MixedTypeContainer()));
         }else{
             //当存在引用参数作为输出时, 默认将 return 数据绑定的到 data 下, 以防止和引用参数作为输出重叠
-            $responseHandler->setMapping('response.content.data', new ReturnMeta('return','mixed','', new MixedTypeContainer()));
+            $responseHandler->setMapping($this->returnTarget, new ReturnMeta('return','mixed','', new MixedTypeContainer()));
         }
 
 
         $container->addRoute($target, $route);
     }
+
+    public $returnTarget='response.content.data';
 }
