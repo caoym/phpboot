@@ -52,7 +52,7 @@ source_suffix = ['.rst', '.md']
 master_doc = 'index'
 
 # General information about the project.
-project = u'phpboot'
+project = u'PhpBoot'
 copyright = u'2017, caoyangmin'
 author = u'caoyangmin'
 github_doc_root = 'https://github.com/caoym/phpboot'
