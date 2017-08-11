@@ -1,4 +1,5 @@
-# 示例
+示例
+========
 
 下面将通过编写一个简单的图书管理系统接口，演示 PhpBoot 的使用。完整的示例可在[这里](https://github.com/caoym/phpboot-example)下载。
 
