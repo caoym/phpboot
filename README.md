@@ -71,10 +71,10 @@ class Books
     
 ### 2. 轻松支持 Swagger
 
-[Swagger](https://swagger.io)是目前最流行的接口文档框架。虽然很多框架都可以通过扩展支持Swagger, 但一般不是需要编写很多额外的注释, 就是只能导出基本的路由信息, 而不能导出详细的输入输出参数。而 PhpBoot 可以在不增加额外编码负担的情况下, 轻松去完成上述任务，下图为findBooks对应的文档。更多内容请见[文档](https://caoym.gitbooks.io/phpboot/content/ji-ben-te-xing/wen-dang-shu-chu.html)和[在线 Demo](http://118.190.86.50:8007/index.html?url=http://118.190.86.50:8009/docs/swagger.json)。
+[Swagger](https://swagger.io)是目前最流行的接口文档框架。虽然很多框架都可以通过扩展支持Swagger, 但一般不是需要编写很多额外的注释, 就是只能导出基本的路由信息, 而不能导出详细的输入输出参数。而 PhpBoot 可以在不增加额外编码负担的情况下, 轻松去完成上述任务，下图为findBooks对应的文档。更多内容请见[文档](http://phpboot.readthedocs.io/zh/latest/advanced/docgen.html)和[在线 Demo](http://118.190.86.50:8007/index.html?url=http://118.190.86.50:8009/docs/swagger.json)。
 
 <div>
-<img src="https://github.com/caoym/phpboot-book/raw/master/assets/WX20170809-184015.png" width="60%">
+<img src="https://github.com/caoym/phpboot/raw/master/docs/_static/WX20170809-184015.png" width="60%">
 </div>
 
 ### 3. 简单易用的分布式支持
@@ -104,30 +104,30 @@ $res = MultiRpc::run([
 ]);
 ```
 
-更多内容请查看[文档](https://caoym.gitbooks.io/phpboot/content/ji-ben-te-xing/fen-bu-shi.html)
+更多内容请查看[文档](http://phpboot.readthedocs.io/zh/latest/advanced/rpc.html)
 
 ### 4. IDE 友好  
 
 IDE 的代码提示功能可以让开发者轻松不少, 但很多框架在这方面做的并不好, 你必须看文档或者代码, 才能知道某个功能的用法。PhpBoot 在一开始就非常注重框架的 IDE 友好性, 尽可能让框架保持准确的代码提示。比如下图是 DB 库在 PhpStorm 下的使用:
 
 <div>
-<img src="https://github.com/caoym/phpboot-book/raw/master/assets/db.gif">
+<img src="https://github.com/caoym/phpboot/raw/master/docs/_static/db.gif">
 </div>
 
 可以看到, IDE 的提示是符合 SQL 语法规则的, 并不是简单罗列所有 SQL 指令。
 
 ## 主要特性
    
-   * [基于Annotation的路由定义](https://caoym.gitbooks.io/phpboot/content/ji-ben-te-xing/lu-you.html)
-   * [接口参数双向绑定](https://caoym.gitbooks.io/phpboot/content/ji-ben-te-xing/can-shu-bang-ding.html)
-   * [Validation](https://caoym.gitbooks.io/phpboot/content/ji-ben-te-xing/can-shu-xiao-yan.html)
-   * [依赖注入](https://caoym.gitbooks.io/phpboot/content/ji-ben-te-xing/yi-lai-zhu-ru.html)
-   * [DB](https://caoym.gitbooks.io/phpboot/content/ji-ben-te-xing/shu-ju-ku.html)
-   * [ORM](https://caoym.gitbooks.io/phpboot/content/ji-ben-te-xing/orm.html)
-   * [自动文档和接口工具](https://caoym.gitbooks.io/phpboot/content/ji-ben-te-xing/wen-dang-shu-chu.html)
-   * [分布式支持(RPC)](https://caoym.gitbooks.io/phpboot/content/ji-ben-te-xing/fen-bu-shi.html)
-   * [Hook](https://caoym.gitbooks.io/phpboot/content/ji-ben-te-xing/hook.html)
-   * [工作流引擎(开发中...)](https://caoym.gitbooks.io/phpboot/content/ji-ben-te-xing/gong-zuo-liu.html)
+   * [基于Annotation的路由定义](http://phpboot.readthedocs.io/zh/latest/basic/route.html)
+   * [接口参数双向绑定](http://phpboot.readthedocs.io/zh/latest/basic/params-bind.html)
+   * [Validation](http://phpboot.readthedocs.io/zh/latest/basic/validation.html)
+   * [依赖注入](http://phpboot.readthedocs.io/zh/latest/basic/di.html)
+   * [DB](http://phpboot.readthedocs.io/zh/latest/basic/db.html)
+   * [ORM](http://phpboot.readthedocs.io/zh/latest/advanced/orm.html)
+   * [自动文档和接口工具](http://phpboot.readthedocs.io/zh/latest/advanced/docgen.html)
+   * [分布式支持(RPC)](http://phpboot.readthedocs.io/zh/latest/advanced/rpc.html)
+   * [Hook](http://phpboot.readthedocs.io/zh/latest/advanced/hook.html)
+   * [工作流引擎(开发中...)](http://phpboot.readthedocs.io/zh/latest/advanced/workflow.html)
  
    
 ## 安装和配置
@@ -157,7 +157,7 @@ IDE 的代码提示功能可以让开发者轻松不少, 但很多框架在这�
    
 ## 帮助和文档
 
-   * **[在线文档](https://caoym.gitbooks.io/phpboot/content/)**
+   * **[在线文档](http://phpboot.readthedocs.io)**
    * **QQ 交流群:185193529**
    * 本人邮箱 caoyangmin@gmail.com
    

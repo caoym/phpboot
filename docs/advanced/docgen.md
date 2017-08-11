@@ -6,7 +6,7 @@ Swagger 是流行的 HTTP API 描述规范，同时 Swagger 官方还提供了�
 
 以 phpboot-example 为例，生成的文档如下。文档中除了描述了接口的路由、参数定义、参数校验，还提供了接口测试工具。[点击这里查看在线 Demo](http://118.190.86.50:8007/index.html?url=http://118.190.86.50:8009/docs/swagger.json)
 
-![](/assets/WX20170809-184015.png)
+![](/_static/WX20170809-184015.png)
 
 **PhpBoot 项目可以很方便的生成 Swagger 文档，无需添加额外的 Annotation**（很多框架为支持 Swagger，通常需要增加很多额外的注释，而这些注释只用于 Swagger。PhpBoot 生成 Swagger 的信息来自路由的标准注释，包括@route, @param, @return，@throws 等）
 
