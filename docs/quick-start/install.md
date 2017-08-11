@@ -1,4 +1,4 @@
-# 安装PhpBoot
+# 安装
 
 ## 1. 安装 Composer
 
