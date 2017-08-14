@@ -24,6 +24,7 @@ import sphinx_rtd_theme
 import recommonmark
 from recommonmark.transform import AutoStructify
 from sphinx.highlighting import lexers
+from pygments.lexers.web import PhpLexer
 
 # -- General configuration ------------------------------------------------
 
