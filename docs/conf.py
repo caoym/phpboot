@@ -23,8 +23,13 @@ from recommonmark.parser import CommonMarkParser
 import sphinx_rtd_theme
 import recommonmark
 from recommonmark.transform import AutoStructify
+from sphinx.highlighting import lexers
 
 # -- General configuration ------------------------------------------------
+
+lexers['php'] = PhpLexer(startinline=True, linenos=1)
+lexers['php-annotations'] = PhpLexer(startinline=True, linenos=1)
+primary_domain = 'php'
 
 # If your documentation needs a minimal Sphinx version, state it here.
 #
