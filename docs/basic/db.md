@@ -6,7 +6,7 @@
 
 在 App 的配置中指定配置，如：
 
-```
+```PHP
 return [
     'DB.connection'=> 'mysql:dbname=testdb;host=127.0.0.1',
     'DB.username'=> 'dbuser',
@@ -19,7 +19,7 @@ return [
 
 可通过依赖注入，获取数据库连接实例。如:
 
-```
+```PHP
 use PhpBoot\DB\DB;
 
 class Books
@@ -36,7 +36,7 @@ class Books
 
 有的时候，应用可能需要连接多个数据库。下面将展示如果给 Books 类单独指定数据库连接。
 
-```
+```PHP
 return [
     'Books.DB.connection'=> 'mysql:dbname=testdb;host=127.0.0.1',
     'Books.DB.username'=> 'dbuser',

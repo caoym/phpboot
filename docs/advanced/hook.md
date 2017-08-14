@@ -5,7 +5,7 @@ Hook 即钩子，说明待补充... 以下演示如果定义和使用 Hook
 ## 1. 定义 Hook
 
 演示如何通过 Hook 实现 Basic Authorization 登录校验
-```
+```PHP
 /**
  * 简单登录校验
  *
@@ -46,7 +46,7 @@ class BasicAuth implements HookInterface
 
 ### 2.1. 通过 @hook 添加 Hook
 
-```
+```PHP
 /**
  * @route POST /books/
  * @param Book $book {@bind request.request}
@@ -61,7 +61,7 @@ public function createBook(Book $bok)
 
 Application::addRoute()、Application::loadRoutes*() 方法添加路由时，可以指定 Hook ，如：
 
-```
+```PHP
 $app->loadRoutesFromPath($path, [BaseAuth::class]);
 ```
 
@@ -69,7 +69,7 @@ $app->loadRoutesFromPath($path, [BaseAuth::class]);
 
 Application::setGlobalHooks 用于设置全局 Hook， 如：
 
-```
+```PHP
 Application::setGlobalHooks([BaseAuth::class])；
 ```
 

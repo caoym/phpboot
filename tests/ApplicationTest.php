@@ -74,4 +74,15 @@ class ApplicationTest extends TestCase
         $res = $this->app->dispatch($req, false);
         self::assertEquals($res->getContent(), "\"route\"TestHook2TestHook1");
     }
+
+    public function testWithBadRequest()
+    {
+
+    }
+
+    public function testWithValidation()
+    {
+
+    }
+
 }

@@ -22,7 +22,7 @@
 
 index.php 作为项目入口， 通常只需要指定配置文件和 Controllers 目录的路径即可。最终项目对外提供的接口， 由不同的 Controllers 的实现类提供。
 
-```
+```PHP
 <?php
 require __DIR__.'/../vendor/autoload.php';
 
@@ -105,7 +105,7 @@ class Books
 
 示例中用到了数据库， 通过 config.php 配置：
 
-```
+```PHP
 <?php
 return [
     'DB.connection'=> 'sqlite:/tmp/phpboot-example.db'
