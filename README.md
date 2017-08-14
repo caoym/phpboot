@@ -51,6 +51,7 @@ class Books
      */
     public function findBooks($name, &$total=null, $offset=0, $limit=10)
     {
+        $total = ...
         ...
         return $books;
     }
