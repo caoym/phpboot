@@ -6,145 +6,9 @@ use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use PhpBoot\Controller\ControllerContainerBuilder;
 use PhpBoot\RPC\RpcProxy;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-
-class RpcTestEntity1
-{
-    /**
-     * @var int
-     */
-    public $intArg;
-    /**
-     * @var bool
-     */
-    public $boolArg;
-    /**
-     * @var float
-     */
-    public $floatArg;
-    /**
-     * @var string
-     */
-    public $strArg;
-
-    /**
-     * @var string
-     */
-    public $defaultArg = 'default';
-}
-
-class RpcTestEntity2
-{
-    public function __construct()
-    {
-        $this->objArg = new RpcTestEntity1();
-    }
-    /**
-     * @var int
-     */
-    public $intArg;
-    /**
-     * @var bool
-     */
-    public $boolArg;
-    /**
-     * @var float
-     */
-    public $floatArg;
-    /**
-     * @var string
-     */
-    public $strArg;
-    /**
-     * @var RpcTestEntity1
-     */
-    public $objArg;
-
-    /**
-     * @var RpcTestEntity1[]
-     */
-    public $arrArg;
-
-    /**
-     * @var string
-     */
-    public $defaultArg = 'default';
-}
-
-/**
- * @path /tests
- */
-class RpcTestController
-{
-    /**
-     * @route GET /{intArg}/get
-     * @param int $intArg
-     * @param bool $boolArg
-     * @param float $floatArg
-     * @param string $strArg
-     * @param $objArg
-     * @param string[] $arrArg
-     * @param $refArg
-     * @param string $defaultArg
-     * @param $mixedArg
-     */
-    public function testRequestGet($intArg, $boolArg, $floatArg, $strArg, $objArg, $arrArg, &$refArg, $mixedArg, $defaultArg='default')
-    {
-
-    }
-
-    /**
-     * @route POST /post
-     * @param int $intArg
-     * @param bool $boolArg
-     * @param float $floatArg
-     * @param string $strArg
-     * @param $objArg
-     * @param string[] $arrArg
-     * @param $refArg
-     * @param string $defaultArg
-     */
-    public function testRequestPost($intArg, $boolArg, $floatArg, $strArg, $objArg, $arrArg, &$refArg, $defaultArg='default')
-    {
-
-    }
-
-    /**
-     * @route POST /post
-     * @param int $intArg {@bind request.query.intArg}
-     * @param bool $boolArg {@bind request.headers.x-boolArg}
-     * @param float $floatArg {@bind request.cookies.x-floatArg}
-     * @param string $strArg {@bind request.request.strArg.strArg}
-     * @param RpcTestEntity1 $objArg
-     * @param string[] $arrArg
-     * @param $refArg
-     * @param string $defaultArg
-     */
-    public function testRequestPostWithBind($intArg, $boolArg, $floatArg, $strArg, $objArg, $arrArg, &$refArg, $defaultArg='default')
-    {
-
-    }
-
-
-    /**
-     * @route POST /post
-     * @param int $intArg
-     * @param bool $boolArg {@bind response.headers."x-boolArg"}
-     * @param float $floatArg {@bind response.headers."x-floatArg"}
-     * @param string $strArg {@bind response.content.bindArg.bindArg}
-     * @param RpcTestEntity1 $objArg
-     * @param string[] $arrStrArg
-     * @param $mixedArg
-     * @throws NotFoundHttpException
-     * @throws BadRequestHttpException
-     * @return RpcTestEntity2 response.content.data
-     */
-    public function testResponse($intArg, &$boolArg, &$floatArg, &$strArg, &$objArg, &$arrStrArg, &$mixedArg)
-    {
-
-    }
-}
+use PhpBoot\Tests\Utils\RpcTestController;
+use PhpBoot\Tests\Utils\RpcTestEntity1;
+use PhpBoot\Tests\Utils\RpcTestEntity2;
 
 class RpcProxyTest extends TestCase
 {
@@ -171,7 +35,7 @@ class RpcProxyTest extends TestCase
             &$refArg,
             'mixed'
         ]);
-        self::assertEquals(new Request('GET', 'http://localhost/tests/1/get?'.http_build_query([
+        self::assertEquals(new Request('GET', 'http://localhost/tests/1/testRequestGet?'.http_build_query([
                     'boolArg' => true,
                     'floatArg' => 3.1,
                     'strArg' => '4',
@@ -206,7 +70,7 @@ class RpcProxyTest extends TestCase
             &$refArg
         ]);
 
-        $expected = new Request('POST', 'http://localhost/tests/post', [], json_encode([
+        $expected = new Request('POST', 'http://localhost/tests/testRequestPost', [], json_encode([
             'intArg' => 1,
             'boolArg' => true,
             'floatArg' => 3.1,
@@ -245,7 +109,7 @@ class RpcProxyTest extends TestCase
             &$refArg
         ]);
 
-        $expected = new Request('POST', 'http://localhost/tests/post?intArg=1', [
+        $expected = new Request('POST', 'http://localhost/tests/testRequestPostWithBind?intArg=1', [
             'x-boolArg'=>1,
             'Cookie'=>'x-floatArg=3.1'
         ],
@@ -313,4 +177,6 @@ class RpcProxyTest extends TestCase
         self::assertSame($arrStrArg, ['6']);
         self::assertSame($mixedArg, 'any');
     }
+
+    // TODO 实现文件精确
 }

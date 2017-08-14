@@ -38,7 +38,7 @@ $app->dispatch();
 
 ### 3. 接口实现
 
-示例对外提供```GET /books/```接口，用于查找图书，发回图书列表。形式如下：
+示例对外提供```GET /books/```接口，用于查找图书，返回图书列表。形式如下：
 
 ```
 $ curl "http://localhost/books/?name=PHP&offset=0&limit=10"

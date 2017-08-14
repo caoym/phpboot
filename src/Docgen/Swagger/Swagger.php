@@ -144,15 +144,15 @@ class Swagger extends SwaggerObject
 
                 $status = 500;
             }
-            if (isset($res[$status])) {
+            if (isset($schemas[$status])) {
                 //$this->warnings[] = "status response $status has been used for $name, $desc";
-                $res = $res[$status];
+                $res = $schemas[$status];
             } else {
                 $res = new ResponseObject();
             }
             $shortName = self::getShortClassName($name);
             $desc = "$shortName: $desc";
-            $res->description = implode("\n", [$res->description, $desc]);
+            $res->description = self::implode("\n", [$res->description, $desc]);
             $error = $app->get(ExceptionRenderer::class)->render($ins)->getContent();
             if($error){
                 $res->examples = [$shortName => $error];
@@ -473,7 +473,7 @@ class Swagger extends SwaggerObject
                                     EntityContainer $container)
     {
         $schema = new SimpleModelSchemaObject();
-        $schema->description = implode("\n", [$container->getSummary(), $container->getDescription()]);
+        $schema->description = self::implode("\n", [$container->getSummary(), $container->getDescription()]);
 
         foreach ($container->getProperties() as $property) {
 
@@ -487,7 +487,7 @@ class Swagger extends SwaggerObject
             } else {
                 $propertySchema = new PrimitiveSchemaObject();
                 $propertySchema->type = self::mapType($property->type);
-                $propertySchema->description = implode("\n", [$property->summary, $property->description]);
+                $propertySchema->description = self::implode("\n", [$property->summary, $property->description]);
                 self::mapValidation($property->validation, $propertySchema);
                 unset($propertySchema->required);
             }
@@ -557,6 +557,7 @@ class Swagger extends SwaggerObject
         $map = [
             'int' => 'integer',
             'bool' => 'boolean',
+            'float' => 'number',
             'mixed' => null,
         ];
         if (array_key_exists($type, $map)) {
@@ -574,5 +575,11 @@ class Swagger extends SwaggerObject
         $className = explode('\\', $className);
         $className = $className[count($className) - 1];
         return $className;
+    }
+
+    static public function implode($glue , array $pieces )
+    {
+        $pieces = array_filter($pieces, function($i){return trim($i) !== '';});
+        return implode($glue, $pieces);
     }
 }
