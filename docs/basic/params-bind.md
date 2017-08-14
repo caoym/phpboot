@@ -9,7 +9,7 @@
 
 默认情况下，框架会从http请求中提取和方法的参数名同名的变量，作为函数的参数。比如：
 
-```PHP
+```php
 /**
  * @route GET /books/
  */
@@ -19,7 +19,7 @@ public function getBooks($offsit, $limit)
 
 * 如果路由 uri 中定义了变量，参数将优先选取 uri 变量。如：
 
- ```PHP
+ ```php
  /**
   * @route GET /books/{id}
   */
@@ -35,7 +35,7 @@ public function getBooks($offsit, $limit)
 
 如果在方法的注释中，标注了 @param，就会有用 @param 的绑定信息覆盖默认来自函数定义的绑定信息。@param 可以指定变量的类型，而原函数定义中只能在参数是数组或者对象时才能指定类型。@param 的语法为标准 PHP Document 的语法。
 
-```PHP
+```php
 /**
  * @route GET /books/
  * @param int $offsit
@@ -50,7 +50,7 @@ public function getBooks($offsit, $limit)
 
 输入参数除了是原生类型外，还可以是对象（这里我们把只有属性和 get、set 方法的对象，称为实体（Entity））。如：
 
-```PHP
+```php
 /**
  * @route POST /books/
  * @param Book $book {@bind request.request} 将$_POST 内容转换成Book实例
@@ -60,7 +60,7 @@ public function createBook(Book $bok)
 
 其中 Book 的的定义：
 
-```PHP
+```php
 /**
  * 图书信息
  */
@@ -103,7 +103,7 @@ class Book
 
 如果想指定某个输入参数可选，只需给方法参数设置一个默认值。比如:
 
-```PHP
+```php
 /**
  * @route GET /books/
  * @param int $offsit
@@ -119,7 +119,7 @@ public function getBooks($offsit=0, $limit=10)
 
 默认情况下，函数的返回值将 jsonencode 后，作为 body 输出。如
 
-```PHP
+```php
 /**
  * @route GET /books/{id}
  */
@@ -130,7 +130,7 @@ public function getBook($id)
 ```
 curl 请求将得到以下结果
 
-```PHP
+```php
 $ curl "http://localhost/books/1"
 {
     "name": "PhpBook",
@@ -144,7 +144,7 @@ $ curl "http://localhost/books/1"
 
 如果方法的参数是引用类型，则这个参数将不会从请求中获取，而是作为输出。比如：
 
-```PHP
+```php
 /**
  * @route GET /books/
  * @param int $offsit
@@ -179,7 +179,7 @@ $ curl "http://localhost/books"
 
 通过@bind，可以改变默认的绑定关系，将参数与其他输入项绑定，如：
 
-```PHP
+```php
 /**
  * @route GET /books/
  * @return Books[] {@bind response.content.books}

@@ -6,7 +6,7 @@
 
 实体对应数据库的表， 实体的属性名和数据库的列名一致。下面是一个典型的实体定义：
 
-```PHP
+```php
 /**
  * 图书信息
  * @table books
@@ -51,7 +51,7 @@ PhpBoot 提供量个组方法，```model``` 和 ```models```, 分别用于操作
 
 存储指定实体实例（对应 SQL 的 insert）
 
-```PHP
+```php
 $book = new Book();
 $book->name = ...
 ...
@@ -64,7 +64,7 @@ echo $book->id; //获取自增主键的值
 
 更新实体对应的数据库记录（对应 SQL 的 update）
 
-```PHP
+```php
 $book = new Book();
 $book->id = ...
 ...
@@ -76,7 +76,7 @@ $book->id = ...
 
 删除实体对应的数据库记录（对应 SQL 的 delete ）
 
-```PHP
+```php
 $book = new Book();
 $book->id = ...
 
@@ -91,7 +91,7 @@ $book->id = ...
 
 根据主键查找（对应 SQL 的 select ）
 
-```PHP
+```php
 $book = \PhpBoot\models($this->db, Book::class)->find($id);
 ```
 
@@ -99,7 +99,7 @@ $book = \PhpBoot\models($this->db, Book::class)->find($id);
 
 根据组合查询条件查找（对应 SQL 的 select ）
 
-```PHP
+```php
 $books = \PhpBoot\models($this->db, Book::class)
     ->findWhere(['name'=>'abc'])
     ->get();
@@ -109,7 +109,7 @@ $books = \PhpBoot\models($this->db, Book::class)
 
 根据主键更新（对应 SQL 的 update ）
 
-```PHP
+```php
 \PhpBoot\models($this->db, Book::class)
     ->update(1， ['name'=>'abc']);
 ```
@@ -118,7 +118,7 @@ $books = \PhpBoot\models($this->db, Book::class)
 
 根据组合查询条件更新（对应 SQL 的 update ）
 
-```PHP
+```php
 \PhpBoot\models($this->db, Book::class)
     ->updateWhere(['name'=>'abc'], ['id'=>1])
     ->exec();
@@ -128,7 +128,7 @@ $books = \PhpBoot\models($this->db, Book::class)
 
 根据主键删除（对应 SQL 的 delete ）
 
-```PHP
+```php
 \PhpBoot\models($this->db, Book::class)
     ->delete(1);
 ```
@@ -137,7 +137,7 @@ $books = \PhpBoot\models($this->db, Book::class)
 
 根据组合查询条件删除（对应 SQL 的 delete ）
 
-```PHP
+```php
 \PhpBoot\models($this->db, Book::class)
     ->deleteWhere(['id'=>1])
     ->exec();

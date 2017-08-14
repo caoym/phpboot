@@ -6,7 +6,7 @@
 
 在 App 的配置中指定配置，如：
 
-```PHP
+```php
 return [
     'DB.connection'=> 'mysql:dbname=testdb;host=127.0.0.1',
     'DB.username'=> 'dbuser',
@@ -19,7 +19,7 @@ return [
 
 可通过依赖注入，获取数据库连接实例。如:
 
-```PHP
+```php
 use PhpBoot\DB\DB;
 
 class Books
@@ -36,7 +36,7 @@ class Books
 
 有的时候，应用可能需要连接多个数据库。下面将展示如果给 Books 类单独指定数据库连接。
 
-```PHP
+```php
 return [
     'Books.DB.connection'=> 'mysql:dbname=testdb;host=127.0.0.1',
     'Books.DB.username'=> 'dbuser',
@@ -57,7 +57,7 @@ return [
 
 ### 2.1. SELECT
 
-```PHP
+```php
 $res = $db->select('a, b')
    ->from('table')
    ->leftJoin('table1')->on('table.id=table1.id')
@@ -71,7 +71,7 @@ $res = $db->select('a, b')
 
 ### 2.2. UPDATE
 
-```PHP
+```php
 $rows = $db->update('table')
    ->set('a', 1)
    ->where('b=?', 2)
@@ -82,7 +82,7 @@ $rows = $db->update('table')
 ```   
 ### 2.3. INSERT
 
-```PHP
+```php
 $newId = $db->insertInto('table')
    ->values(['a'=>1])
    ->exec()
@@ -91,7 +91,7 @@ $newId = $db->insertInto('table')
     
 ### 2.4. DELETE
 
-```PHP
+```php
 $rows = $db->deleteFrom('table')
    ->where('b=?', 2)
    ->exec()
@@ -100,7 +100,7 @@ $rows = $db->deleteFrom('table')
 
 ### 2.5. 存储过程
 
-```PHP
+```php
 $db->transaction(
 	function(DB $db){
 		$db->...;

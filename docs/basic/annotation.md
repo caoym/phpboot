@@ -11,7 +11,7 @@ PhpBoot 框架较多的使用了 Annotation。当然原生 PHP 语言并不支�
 ```
 语法严谨，易于扩展，但稍显啰嗦(PhpBoot 1.x 版本也使用此语法)。特别是PHP 由于先天不足（原生不支持Annotation），通过注释，在没有IDE语法提示和运行时检查机制的情况下。如果写 Annotation 过于复杂，那还不然直接写原生代码。所以 PhpBoot 使用了更简单的 Annotation 语法。如：
 
-```PHP
+```php
 /**
  * @route GET /books/{id}
  */

@@ -4,7 +4,7 @@
 
 ## 1. 将可以通过如下方式定义流程
 
-```PHP
+```php
 $engine = new ProcessEngine();
 $process = new Process();
 $builder = new ProcessBuilder($process);

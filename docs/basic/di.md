@@ -9,7 +9,7 @@ PhpBoot 使用开源项目 [PHP-DI](http://php-di.org/) 作为依赖注入的基
 
 ### 2.1. 构造函数注入
 
-```PHP
+```php
 class Books
 {
     /**
@@ -27,7 +27,7 @@ class Books
 
 ### 2.2. 属性注入
 
-```PHP
+```php
 class Books
 {
     use EnableDIAnnotations; //启用通过@inject标记注入依赖

@@ -6,7 +6,7 @@ PhpBoot 支持两种形式的路由定义， 分别是通过加载 Controller �
 
 你可以通过 Application::loadRoutesFromClass 或者 Application::loadRoutesFromPath 添加路由。框架扫描每个类的每个方法，如果方法标记了@route，将被自动添加为路由。被加载类的形式如下：
 
-```PHP
+```php
 /**
  * @path /books
  */
@@ -37,7 +37,7 @@ class Books
 
 你可以使用 Application::addRoute 手动加载路由，方法如下：
 
-```PHP
+```php
 $app->addRoute('GET', '/books/{id}', function(Request $request){
     $books = new Books();
     return $books->getBook($request->get('id'));
