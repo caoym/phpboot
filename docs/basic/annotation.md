@@ -2,7 +2,7 @@
 
 PhpBoot 框架较多的使用了 Annotation。当然原生 PHP 语言并不支持此项特性，所以实际是通过Reflection提取注释并解析实现，类似很多主流 PHP 框架的做法（如 symfony、doctrine 等）。但又有所不同的是，主流的Annotation 语法基本沿用了 java 中的形式，如：
 
-```PHP
+```php
 /**
  * @Route("/books/{id}", name="book_info")
  * @Method("GET")
