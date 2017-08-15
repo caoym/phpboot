@@ -94,7 +94,7 @@ class ControllerContainer
      * 获取uri前缀
      * @return string
      */
-    public function getPathPrefix()
+    public function getUriPrefix()
     {
         return $this->prefix;
     }
@@ -103,7 +103,7 @@ class ControllerContainer
      * 设置uri前缀
      * @param string $prefix
      */
-    public function setPathPrefix($prefix)
+    public function setUriPrefix($prefix)
     {
         $this->prefix = $prefix;
     }

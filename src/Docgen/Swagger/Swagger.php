@@ -66,12 +66,12 @@ class Swagger extends SwaggerObject
                 $op->responses['200'] = $returnSchema;
             }
             $op->responses += $this->getExceptionsSchema($app, $controller, $action, $route);
-
-            if (!isset($this->paths[$route->getUri()])) {
-                $this->paths[$route->getUri()] = [];
+            $uri = $app->getFullUri($route->getUri());
+            if (!isset($this->paths[$uri])) {
+                $this->paths[$uri] = [];
             }
             $method = strtolower($route->getMethod());
-            $this->paths[$route->getUri()][$method] = $op;
+            $this->paths[$uri][$method] = $op;
         }
     }
 

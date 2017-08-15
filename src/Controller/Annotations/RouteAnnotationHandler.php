@@ -48,7 +48,7 @@ class RouteAnnotationHandler
         $methodParams = $method->getParameters();
 
         $uri = $params->getParam(1);
-        $uri = rtrim($container->getPathPrefix(), '/').'/'.ltrim($uri, '/');
+        $uri = rtrim($container->getUriPrefix(), '/').'/'.ltrim($uri, '/');
         $requestHandler = new RequestHandler();
         $responseHandler = new ResponseHandler();
         $exceptionHandler = new ExceptionHandler();

@@ -46,10 +46,15 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
      * ```
      * return
      * [
+     *      'App.name'  => 'App',
+     *      'App.uriPrefix' => '/',
+     *
      *      'DB.connection' => 'mysql:dbname=default;host=localhost',
      *      'DB.username' => 'root',
      *      'DB.password' => 'root',
      *      'DB.options' => [],
+     *
+     *
      *      LoggerInterface::class => \DI\object(\Monolog\Logger::class)
      *          ->constructor(\DI\get('AppName')),
      *      // 注意, 系统缓存, 只使用 apc、文件缓存等本地缓存, 不要使用 redis 等分布式缓存
@@ -65,12 +70,17 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
         $builder = new DIContainerBuilder();
 
         $default = [
-            'AppName' => 'App',
+
+            'App.name' => 'App',
+            'App.uriPrefix' => '/',
 
             'DB.connection' => 'mysql:dbname=default;host=localhost',
             'DB.username' => 'root',
             'DB.password' => 'root',
             'DB.options' => [],
+
+            Application::class => \DI\object()
+                ->method('setUriPrefix', \DI\get('App.uriPrefix')),
 
             DB::class => \DI\factory([DB::class, 'connect'])
                 ->parameter('dsn', \DI\get('DB.connection'))
@@ -79,7 +89,7 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
                 ->parameter('options', \DI\get('DB.options')),
 
             LoggerInterface::class => \DI\object(\Monolog\Logger::class)
-                ->constructor(\DI\get('AppName')),
+                ->constructor(\DI\get('App.name')),
 
             Request::class => \DI\factory([Application::class, 'createRequestFromGlobals']),
         ];
@@ -308,6 +318,7 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
         $routeCollector = new RouteCollector(new Std(), new GroupCountBasedDataGenerator());
         foreach ($this->routes as $route) {
             list($method, $uri, $handler, $hooks) = $route;
+            $uri = $this->getFullUri($uri);
             $routeCollector->addRoute($method, $uri, [$handler, $hooks]);
         }
         return new GroupCountBasedDispatcher($routeCollector->getData());
@@ -394,6 +405,30 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
 
         return $request;
     }
+
+    public function getFullUri($uri)
+    {
+        return rtrim($this->getUriPrefix(), '/').'/'.ltrim($uri, '/');
+    }
+    /**
+     * @return string
+     */
+    public function getUriPrefix()
+    {
+        return $this->uriPrefix;
+    }
+
+    /**
+     * @param string $uriPrefix
+     */
+    public function setUriPrefix($uriPrefix)
+    {
+        $this->uriPrefix = $uriPrefix;
+    }
+    /**
+     * @var string
+     */
+    protected $uriPrefix = '/';
     /**
      * @inject
      * @var Container

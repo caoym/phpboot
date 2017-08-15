@@ -17,6 +17,6 @@ class PathAnnotationHandler
     public function __invoke(ControllerContainer $container, $ann)
     {
         $params = new AnnotationParams($ann->description, 2);
-        $container->setPathPrefix($params->getParam(0, ''));
+        $container->setUriPrefix($params->getParam(0, ''));
     }
 }

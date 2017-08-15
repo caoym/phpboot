@@ -52,7 +52,7 @@ class RequestHandler
                     $vld->rule($meta->validation, $meta->name);
                 }
             }else{
-                $meta->isOptional or \PhpBoot\abort(new BadRequestHttpException("param $source is required"));
+                $meta->isOptional or \PhpBoot\abort(new BadRequestHttpException("the parameter \"{$meta->source}\" is missing"));
                 $inputs[$meta->name] = $meta->default;
             }
         }
