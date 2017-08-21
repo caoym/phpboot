@@ -192,7 +192,7 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
      */
     public function loadRoutesFromPath($fromPath, $namespace = '', $hooks=[])
     {
-        $dir = @dir($fromPath);
+        $dir = @dir($fromPath) or abort("dir $fromPath not exist");
 
         $getEach = function () use ($dir) {
             $name = $dir->read();

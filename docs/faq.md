@@ -9,9 +9,9 @@ Cache::class => \DI\object(FilesystemCache::class)
     ->constructorParameter('directory', sys_get_temp_dir())
 ```
 
-## composer 更新失败
+## composer 更新失败怎么办
 
-packagist.org 国内访问不稳定，可以翻墙试试，或者用国内的镜像, 执行下面命令
+packagist.org 国内访问不稳定，可以翻墙试试，或者用国内的镜像[phpcomposer](phpcomposer.com), 执行下面命令
 
 ```
 composer config repo.packagist composer https://packagist.phpcomposer.com

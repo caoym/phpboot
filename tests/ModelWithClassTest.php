@@ -20,7 +20,7 @@ class ModelWithClassTest extends TestCase
     public function testUpdate()
     {
         $mock = new DBMock($this);
-        $mock->setExpected('UPDATE `test_table` SET `name`=? WHERE `id` = ?', 'abc', 1);
+        $mock->setExpected('UPDATE `test_table` SET `name`=? WHERE (`id` = ?)', 'abc', 1);
         $db = new DB($this->app, $mock);
         \PhpBoot\models($db, ModelWithObjectForTest::class)->update(1, ['name'=>'abc']);
     }
@@ -28,7 +28,7 @@ class ModelWithClassTest extends TestCase
     public function testUpdateWhere()
     {
         $mock = new DBMock($this);
-        $mock->setExpected('UPDATE `test_table` SET `name`=? WHERE `id` = ?', 'abc', 1);
+        $mock->setExpected('UPDATE `test_table` SET `name`=? WHERE (`id` = ?)', 'abc', 1);
         $db = new DB($this->app, $mock);
         \PhpBoot\models($db, ModelWithObjectForTest::class)->updateWhere(
             ['name'=>'abc'],
@@ -39,7 +39,7 @@ class ModelWithClassTest extends TestCase
     public function testFind()
     {
         $mock = new DBMock($this);
-        $mock->setExpected('SELECT `id`,`name`,`type` FROM `test_table` WHERE `id` = ?', 1);
+        $mock->setExpected('SELECT `id`,`name`,`type` FROM `test_table` WHERE (`id` = ?)', 1);
         $db = new DB($this->app, $mock);
         \PhpBoot\models($db, ModelWithObjectForTest::class)->find(1);
     }
@@ -47,7 +47,7 @@ class ModelWithClassTest extends TestCase
     public function testFindWhere()
     {
         $mock = new DBMock($this);
-        $mock->setExpected('SELECT `id`,`name`,`type` FROM `test_table` WHERE `name` = ?', 'abc');
+        $mock->setExpected('SELECT `id`,`name`,`type` FROM `test_table` WHERE (`name` = ?)', 'abc');
         $db = new DB($this->app, $mock);
         \PhpBoot\models($db, ModelWithObjectForTest::class)->findWhere(['name'=>'abc'])->get();
     }
@@ -63,7 +63,7 @@ class ModelWithClassTest extends TestCase
     public function testDelete()
     {
         $mock = new DBMock($this);
-        $mock->setExpected('DELETE FROM `test_table` WHERE `id` = ? LIMIT 1', 1);
+        $mock->setExpected('DELETE FROM `test_table` WHERE (`id` = ?) LIMIT 1', 1);
         $db = new DB($this->app, $mock);
         \PhpBoot\models($db, ModelWithObjectForTest::class)->delete(1);
     }
@@ -71,7 +71,7 @@ class ModelWithClassTest extends TestCase
     public function testDeleteWhere()
     {
         $mock = new DBMock($this);
-        $mock->setExpected('DELETE FROM `test_table` WHERE `name` = ?', 'abc');
+        $mock->setExpected('DELETE FROM `test_table` WHERE (`name` = ?)', 'abc');
         $db = new DB($this->app, $mock);
         \PhpBoot\models($db, ModelWithObjectForTest::class)->deleteWhere(['name'=>'abc'])->exec();
     }

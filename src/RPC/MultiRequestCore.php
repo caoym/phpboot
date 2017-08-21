@@ -34,14 +34,6 @@ class MultiRequestCore
         };
     }
 
-    /**
-     * @return array
-     */
-    public function getResults()
-    {
-        return $this->threadResults;
-    }
-
     public function wait($waitAble){
         array_push($this->waits, $waitAble);
         $this->run();
@@ -58,6 +50,14 @@ class MultiRequestCore
         }else{
             return $res[0];
         }
+    }
+
+    /**
+     * @return array
+     */
+    public function getResults()
+    {
+        return $this->threadResults;
     }
 
     /**

@@ -5,6 +5,7 @@ namespace PhpBoot\Tests;
 use PhpBoot\Application;
 use PhpBoot\DB\DB;
 use PhpBoot\DB\Raw;
+use PhpBoot\DB\rules\basic\SubQuery;
 use PhpBoot\Tests\Mocks\DBMock;
 
 
@@ -46,14 +47,14 @@ class DBTest extends TestCase
     {
         // SELECT col FROM tab WHERE a=1 AND b=now() AND c='c' AND d IN (1,'2', now())
         $this->db->setExpected(
-            'SELECT `col` FROM `tab` WHERE a = ? AND b = now() AND c = ? AND d IN (?,?,now()) AND e BETWEEN ? AND now()',
+            'SELECT `col` FROM `tab` WHERE (a = ? AND b = now() AND c = ? AND d IN (?,?,now()) AND e BETWEEN ? AND now())',
             1, 'c', 1, '2','e1');
         //      where()
         (new DB($this->app, $this->db))->select('col')->from('tab')->where('a = ? AND b = ? AND c = ? AND d IN (?) AND e BETWEEN ? AND now()',
             1, DB::raw('now()'), 'c', [1,'2', DB::raw('now()')],'e1')->get();
 
         $this->db->setExpected(
-            'SELECT `col` FROM `tab` WHERE `a` = ? AND `b` = now() AND `c` = ? AND `d` IN (?,?,now()) AND `e` BETWEEN ? AND now()',
+            'SELECT `col` FROM `tab` WHERE (`a` = ? AND `b` = now() AND `c` = ? AND `d` IN (?,?,now()) AND `e` BETWEEN ? AND now())',
             1, 'c', 1, '2','e1');
         //      whereArgs()
         (new DB($this->app, $this->db))->select('col')->from('tab')->where([
@@ -98,7 +99,7 @@ class DBTest extends TestCase
     public function testSelect9()
     {
         // SELECT col FROM tab JOIN tab1 ON tab.id=tab1.id WHERE col=1
-        $this->db->setExpected('SELECT `col` FROM `tab` JOIN `tab1` ON tab.id=tab1.id WHERE col=1');
+        $this->db->setExpected('SELECT `col` FROM `tab` JOIN `tab1` ON tab.id=tab1.id WHERE (col=1)');
         (new DB($this->app, $this->db))->select('col')->from('tab')->join('tab1')->on('tab.id=tab1.id')->where('col=1')->get();
     }
     public function testSelect10()
@@ -110,13 +111,13 @@ class DBTest extends TestCase
     public function testSelect11()
     {
         // SELECT SUM(col) FROM tab GROUP BY col1 HAVING SUM(col)>0
-        $this->db->setExpected('SELECT SUM(col) FROM `tab` GROUP BY `col1` HAVING SUM(col)>?', 0);
+        $this->db->setExpected('SELECT SUM(col) FROM `tab` GROUP BY `col1` HAVING (SUM(col)>?)', 0);
         (new DB($this->app, $this->db))->select(DB::raw('SUM(col)'))->from('tab')->groupBy('col1')->having('SUM(col)>?',0)->get();
     }
     public function testSelect12()
     {     
         // SELECT SUM(col) FROM tab WHERE col=1 GROUP BY col1 HAVING SUM(col)>0
-        $this->db->setExpected('SELECT SUM(col) FROM `tab` WHERE col=? GROUP BY `col1` HAVING SUM(col)>?', 1,0);
+        $this->db->setExpected('SELECT SUM(col) FROM `tab` WHERE (col=?) GROUP BY `col1` HAVING (SUM(col)>?)', 1,0);
         (new DB($this->app, $this->db))->select(DB::raw('SUM(col)'))->from('tab')->where('col=?',1)->groupBy('col1')->having('SUM(col)>?',0)->get();
         
     }
@@ -209,32 +210,29 @@ class DBTest extends TestCase
         //UPDATE `tab` SET a=1,b='2',c=now()
         $this->db->setExpected('UPDATE `tab` SET `a`=?,`b`=?,`c`=now()', 1,'2');
         (new DB($this->app, $this->db))->update('tab')->set(['a'=>1,'b'=>'2','c'=>DB::raw('now()')])->exec();
-        (new DB($this->app, $this->db))->update('tab')->set(['a'=>1])->set(['b'=>'2'])->set(['c'=>DB::raw('now()')])->exec();
-        (new DB($this->app, $this->db))->update('tab')->set(['a'=>1])->set(['b'=>'2','c'=>DB::raw('now()')])->exec();
-        (new DB($this->app, $this->db))->update('tab')->set(['a'=>1,'b'=>'2'])->set(['c'=>DB::raw('now()')])->exec();;
     }
     public function testUpdate1()
     {
         //UPDATE `tab` SET a=1 WHERE b='2'
-        $this->db->setExpected('UPDATE `tab` SET `a`=? WHERE b=?', 1,'2');
+        $this->db->setExpected('UPDATE `tab` SET `a`=? WHERE (b=?)', 1,'2');
         (new DB($this->app, $this->db))->update('tab')->set(['a'=>1])->where('b=?',2)->exec();;
     }
     public function testUpdate2()
     {
         //UPDATE `tab` SET a=1 WHERE b='2'
-        $this->db->setExpected('UPDATE `tab` SET `a`=? WHERE b=?', 1,'2');
+        $this->db->setExpected('UPDATE `tab` SET `a`=? WHERE (b=?)', 1,'2');
         (new DB($this->app, $this->db))->update('tab')->set(['a'=>1])->where('b=?',2)->exec();;
     }
     public function testUpdate3()
     {
         //UPDATE `tab` SET a=1 WHERE b='2' ORDER BY c
-        $this->db->setExpected('UPDATE `tab` SET `a`=? WHERE b=? ORDER BY `c`', 1,'2');
+        $this->db->setExpected('UPDATE `tab` SET `a`=? WHERE (b=?) ORDER BY `c`', 1,'2');
         (new DB($this->app, $this->db))->update('tab')->set(['a'=>1])->where('b=?',2)->orderBy('c')->exec();;
     }
     public function testUpdate4()
     {
         //UPDATE `tab` SET a=1 WHERE b='2' ORDER BY c limit 1
-        $this->db->setExpected('UPDATE `tab` SET `a`=? WHERE b=? ORDER BY `c` LIMIT 1', 1,'2');
+        $this->db->setExpected('UPDATE `tab` SET `a`=? WHERE (b=?) ORDER BY `c` LIMIT 1', 1,'2');
         (new DB($this->app, $this->db))->update('tab')->set(['a'=>1])->where('b=?',2)->orderBy('c')->limit(1)->exec();
     }
     public function testDelete0(){
@@ -244,17 +242,17 @@ class DBTest extends TestCase
     }
     public function testDelete1(){
         // DELETE FROM tab WHERE a=1
-        $this->db->setExpected('DELETE FROM `tab` WHERE a=?',1);
+        $this->db->setExpected('DELETE FROM `tab` WHERE (a=?)',1);
         (new DB($this->app, $this->db))->deleteFrom('tab')->where('a=?',1)->exec();
     }
     public function testDelete2(){
         // DELETE FROM tab WHERE a=1 ORDER BY b
-        $this->db->setExpected('DELETE FROM `tab` WHERE a=? ORDER BY `b`',1);
+        $this->db->setExpected('DELETE FROM `tab` WHERE (a=?) ORDER BY `b`',1);
         (new DB($this->app, $this->db))->deleteFrom('tab')->where('a=?',1)->orderBy('b')->exec();
     }
     public function testDelete3(){
         // DELETE FROM tab WHERE a=1 ORDER BY b LIMIT 1
-        $this->db->setExpected('DELETE FROM `tab` WHERE a=? ORDER BY `b` LIMIT 1',1);
+        $this->db->setExpected('DELETE FROM `tab` WHERE (a=?) ORDER BY `b` LIMIT 1',1);
         (new DB($this->app, $this->db))->deleteFrom('tab')->where('a=?',1)->orderBy('b')->limit(1)->exec();
     }
 	 
@@ -270,6 +268,96 @@ class DBTest extends TestCase
         $this->db->setExpected('REPLACE INTO `tab` VALUES(?,?,now())', 1,2);
         (new DB($this->app, $this->db))->replaceInto('tab')->values([1, 2, DB::raw('now()')])->exec();
     }
+
+    public function testSelectWhere()
+    {
+        $this->db->setExpected('SELECT * FROM `tab` WHERE (`a` = ?) AND (`b` = ?) OR (`c` = ?)', 1,2,3);
+        (new DB($this->app, $this->db))
+            ->select()
+            ->from('tab')
+            ->where(['a'=>1])
+            ->where(['b'=>2])
+            ->orWhere(['c'=>3])
+            ->get();
+    }
+
+    public function testSelectSubWhere()
+    {
+        $this->db->setExpected('SELECT * FROM `tab` WHERE ( (`a` = ?) ) AND ( (`b` = ?) AND (`c` = ?) OR (`d` = ?) )', 1,2,3,4);
+        (new DB($this->app, $this->db))
+            ->select()
+            ->from('tab')
+            ->where(function(SubQuery $query){
+                $query->where(['a'=>1]);
+            })
+            ->where(function(SubQuery $query){
+                $query->where(['b'=>2])
+                    ->where(['c'=>3])
+                    ->orWhere(['d'=>4]);
+            })
+            ->get();
+    }
+
+    public function testUpdateWhere()
+    {
+        $this->db->setExpected('UPDATE `tab` SET `a`=? WHERE (`b` = ?) AND (`c` = ?) OR (`d` = ?)', 1, 2, 3, 4);
+        (new DB($this->app, $this->db))
+            ->update('tab')
+            ->set(['a'=>1])
+            ->where(['b'=>2])
+            ->where(['c'=>3])
+            ->orWhere(['d'=>4])
+            ->exec();
+    }
+
+    public function testUpdateSubWhere()
+    {
+        $this->db->setExpected('UPDATE `tab` SET `a`=? WHERE ( (`b` = ?) ) AND ( (`c` = ?) AND (`d` = ?) OR (`e` = ?) )', 1,2,3,4,5);
+        (new DB($this->app, $this->db))
+            ->update('tab')
+            ->set(['a'=>1])
+            ->where(function(SubQuery $query){
+                $query->where(['b'=>2]);
+            })
+            ->where(function(SubQuery $query){
+                $query->where(['c'=>3])
+                    ->where(['d'=>4])
+                    ->orWhere(['e'=>5]);
+            })
+            ->exec();
+    }
+
+
+
+    public function testSelectHanving()
+    {
+        $this->db->setExpected('SELECT * FROM `tab` GROUP BY `g` HAVING (`a` = ?) AND (`b` = ?) OR (`c` = ?)', 1,2,3);
+        (new DB($this->app, $this->db))
+            ->select()
+            ->from('tab')
+            ->groupBy('g')
+            ->having(['a'=>1])
+            ->having(['b'=>2])
+            ->orHaving(['c'=>3])
+            ->get();
+    }
+
+    public function testSelectSubHanving()
+    {
+        $this->db->setExpected('SELECT * FROM `tab` GROUP BY `g` HAVING (`a` = ?) AND ( (`b` = ?) AND (`c` = ?) OR (`d` = ?) )', 1,2,3,4);
+        (new DB($this->app, $this->db))
+            ->select()
+            ->from('tab')
+            ->groupBy('g')
+            ->having(['a'=>1])
+            ->having(function(SubQuery $query){
+                $query->where(['b'=>2])
+                    ->where(['c'=>3])
+                    ->orWhere(['d'=>4]);
+            })
+            ->get();
+    }
+
     /**
      * 
      * @var DBMock

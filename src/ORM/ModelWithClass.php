@@ -103,7 +103,7 @@ class ModelWithClass
 
     /**
      * @param array $values
-     * @param array|string|null $conditions  where 语法见 @see WhereRule
+     * @param array|string|callable $conditions  where 语法见 @see WhereRule
      * @param string $_
      * @return \PhpBoot\DB\rules\basic\OrderByRule
      */

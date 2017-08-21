@@ -25,7 +25,7 @@ class ModelWithObjectTest extends TestCase
         $obj->type = '123';
 
         $mock = new DBMock($this);
-        $mock->setExpected('UPDATE `test_table` SET `name`=?,`type`=? WHERE `id` = ?', 'abc', '123', 1);
+        $mock->setExpected('UPDATE `test_table` SET `name`=?,`type`=? WHERE (`id` = ?)', 'abc', '123', 1);
         $db = new DB($this->app, $mock);
         \PhpBoot\model($db, $obj)->update();
     }
@@ -38,7 +38,7 @@ class ModelWithObjectTest extends TestCase
         $obj->type = '123';
 
         $mock = new DBMock($this);
-        $mock->setExpected('UPDATE `test_table` SET `name`=? WHERE `id` = ?', 'abc', 1);
+        $mock->setExpected('UPDATE `test_table` SET `name`=? WHERE (`id` = ?)', 'abc', 1);
         $db = new DB($this->app, $mock);
         \PhpBoot\model($db, $obj)->update(['name']);
     }
@@ -64,7 +64,7 @@ class ModelWithObjectTest extends TestCase
         $obj->type = '123';
 
         $mock = new DBMock($this);
-        $mock->setExpected('DELETE FROM `test_table` WHERE `id` = ?',1);
+        $mock->setExpected('DELETE FROM `test_table` WHERE (`id` = ?)',1);
         $db = new DB($this->app, $mock);
         \PhpBoot\model($db, $obj)->delete();
     }

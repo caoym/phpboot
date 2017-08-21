@@ -22,6 +22,8 @@ class RpcProxy
      *
      * 如果需要使用引用参数, 可以继承RpcProxy, 并重对应方法。
      *
+     * TODO 支持鉴权
+     *
      * RpcProxy constructor.
      * @param Application $app
      * @param ControllerContainerBuilder $builder

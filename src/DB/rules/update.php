@@ -22,7 +22,7 @@ class UpdateRule extends BasicRule
     }
 }
 
-class UpdateSetRule extends WhereRule
+class UpdateSetRule extends BasicRule
 {
     public function __construct($context){
         parent::__construct($context);
@@ -30,16 +30,15 @@ class UpdateSetRule extends WhereRule
     }
     /**
      * update('table')->set(['a'=>1]) => "UPDATE table SET a=1"
-     * update('table')->set(['a'=>1])->set(['b', DB::raw('now()')]) => "UPDATE table SET a=1,b=now()"
-     *
+
      * update('table')->set('a=?',1) => "UPDATE table SET a=1"
      * @param array|string $expr
      * @param mixed $_
-     * @return \PhpBoot\DB\rules\update\UpdateSetRule
+     * @return WhereRule
      */
     public function set($expr, $_=null) {
         $this->impl->set($this->context, $expr, array_slice(func_get_args(), 1));
-        return $this;
+        return new WhereRule($this->context);
     }
     private $impl;
 }

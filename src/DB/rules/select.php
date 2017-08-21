@@ -1,5 +1,6 @@
 <?php
 namespace PhpBoot\DB\rules\select;
+use PhpBoot\DB\Context;
 use PhpBoot\DB\rules\basic\BasicRule;
 use PhpBoot\DB\impls\ExecImpl;
 use PhpBoot\DB\impls\SelectImpl;
@@ -12,6 +13,7 @@ use PhpBoot\DB\impls\OrderByImpl;
 use PhpBoot\DB\impls\LimitImpl;
 use PhpBoot\DB\impls\ForUpdateOfImpl;
 use PhpBoot\DB\impls\ForUpdateImpl;
+use PhpBoot\DB\rules\basic\SubQuery;
 
 require_once dirname(__DIR__).'/impls.php';
 require_once __DIR__.'/basic.php';
@@ -147,6 +149,11 @@ class OrderByRule extends LimitRule
 
 class HavingRule extends OrderByRule
 {
+    public function __construct(Context $context, $isTheFirst = true)
+    {
+        parent::__construct($context);
+        $this->isTheFirst = $isTheFirst;
+    }
     /**
      *
      * having('SUM(a)=?', 1) => "HAVING SUM(a)=1"
@@ -163,25 +170,60 @@ class HavingRule extends OrderByRule
      *      =>
      *      "HAVING a=1 AND b IN(1,2) AND c BETWEEN 1 AND 2 AND d<>1"
      *
-     * @param string|array $expr
+     * @param string|array|callable $expr
      * @param string $_
-     * @return \PhpBoot\DB\rules\select\OrderByRule
+     * @return \PhpBoot\DB\rules\select\HavingRule
      */
     public function having($expr, $_=null) {
-        WhereImpl::having($this->context, $expr, array_slice(func_get_args(), 1));
-        return new OrderByRule($this->context);
+        if(is_callable($expr)){
+            $callback = function ($context)use($expr){
+                $rule = new SubQuery($context);
+                $expr($rule);
+            };
+            $expr = $callback;
+        }
+        if($this->isTheFirst){
+            WhereImpl::where($this->context, 'HAVING', $expr, array_slice(func_get_args(), 1));
+        }else{
+            WhereImpl::where($this->context, 'AND', $expr, array_slice(func_get_args(), 1));
+        }
+
+        return new HavingRule($this->context, false);
     }
-//    /**
-//     *
-//     *
-//     *
-//     * @param array $args
-//     * @return \PhpBoot\DB\rules\select\OrderByRule
-//     */
-//    public function havingArgs($args) {
-//        WhereImpl::havingArgs($this->context, $args);
-//        return new OrderByRule($this->context);
-//    }
+
+    /**
+     *
+     * orHaving('SUM(a)=?', 1) => "OR SUM(a)=1"
+     * orHaving('a>?', Sql::raw('now()')) => "OR a>now()"
+     * orHaving('a IN (?)',  [1, 2]) => "OR a IN (1,2)"
+     *
+     * orHaving([
+     *      'a'=>1,
+     *      'b'=>['IN'=>[1,2]]
+     *      'c'=>['BETWEEN'=>[1,2]]
+     *      'd'=>['<>'=>1]
+     *      ])
+     *
+     *      =>
+     *      "OR (a=1 AND b IN(1,2) AND c BETWEEN 1 AND 2 AND d<>1)"
+     *
+     * @param string|array|callable $expr
+     * @param string $_
+     * @return \PhpBoot\DB\rules\select\HavingRule
+     */
+    public function orHaving($expr, $_=null) {
+        if(is_callable($expr)){
+            $callback = function ($context)use($expr){
+                $rule = new SubQuery($context);
+                $expr($rule);
+            };
+            $expr = $callback;
+        }
+        WhereImpl::where($this->context, 'OR', $expr, array_slice(func_get_args(), 1));
+        return new HavingRule($this->context, false);
+    }
+
+    private $isTheFirst;
 }
 class GroupByRule extends OrderByRule
 {
@@ -195,8 +237,15 @@ class GroupByRule extends OrderByRule
         return new HavingRule($this->context);
     }
 }
+
 class WhereRule extends GroupByRule
 {
+    public function __construct(Context $context, $isTheFirst = true)
+    {
+        parent::__construct($context);
+        $this->isTheFirst = $isTheFirst;
+    }
+
     /**
      * where('a=?', 1) => "WHERE a=1"
      * where('a=?', Sql::raw('now()')) => "WHERE a=now()"
@@ -209,15 +258,56 @@ class WhereRule extends GroupByRule
      *      ])
      *      =>
      *      "WHERE a=1 AND b IN(1,2) AND c BETWEEN 1 AND 2 AND d<>1"
-     * @param string|array $conditions
-     * //TODO where(callable $query)
+     *
+     * @param string|array|callable $conditions
      * @param mixed $_
-     * @return \PhpBoot\DB\rules\select\GroupByRule
+     * @return \PhpBoot\DB\rules\select\WhereRule
      */
     public function where($conditions=null, $_=null) {
-        WhereImpl::where($this->context, $conditions, array_slice(func_get_args(), 1));
-        return new GroupByRule($this->context);
+        if(is_callable($conditions)){
+            $callback = function ($context)use($conditions){
+                $rule = new SubQuery($context);
+                $conditions($rule);
+            };
+            $conditions = $callback;
+        }
+        if($this->isTheFirst){
+            WhereImpl::where($this->context, 'WHERE' ,$conditions, array_slice(func_get_args(), 1));
+        }else{
+            WhereImpl::where($this->context, 'AND', $conditions, array_slice(func_get_args(), 1));
+        }
+        return new WhereRule($this->context, false);
     }
+
+    /**
+     * orWhere('a=?', 1) => "OR a=1"
+     * orWhere('a=?', Sql::raw('now()')) => "OR a=now()"
+     * orWhere('a IN (?)',  [1, 2]) => "OR a IN (1,2)"
+     * orWhere([
+     *      'a'=>1,
+     *      'b'=>['IN'=>[1,2]]
+     *      'c'=>['BETWEEN'=>[1,2]]
+     *      'd'=>['<>'=>1]
+     *      ])
+     *      =>
+     *      "OR (a=1 AND b IN(1,2) AND c BETWEEN 1 AND 2 AND d<>1)"
+     *
+     * @param string|array|callable $conditions
+     * @param mixed $_
+     * @return \PhpBoot\DB\rules\select\WhereRule
+     */
+    public function orWhere($conditions=null, $_=null) {
+        if(is_callable($conditions)){
+            $callback = function ($context)use($conditions){
+                $rule = new SubQuery($context);
+                $conditions($rule);
+            };
+            $conditions = $callback;
+        }
+        WhereImpl::where($this->context, 'OR', $conditions, array_slice(func_get_args(), 1));
+        return new WhereRule($this->context, false);
+    }
+    private $isTheFirst;
 }
 
 class JoinRule extends WhereRule

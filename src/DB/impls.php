@@ -260,34 +260,33 @@ class LimitImpl
 
 class WhereImpl{
 
-    static private function  findQ($str,$offset = 0,$no=0){
+    static private function findQ($str,$offset = 0,$no=0){
         $found = strpos($str, '?', $offset);
         if($no == 0 || $found === false){
             return $found;
         }
         return self::findQ($str, $found+1, $no-1);
     }
-    static public function having(Context $context, $expr, $args){
-        if(is_string($expr)){
-            self::condition($context, 'HAVING', $expr, $args);
-        }else{
-            self::conditionArgs($context, 'HAVING', $expr);
-        }
-        //TODO 支持 OR 、 闭包
 
-    }
-    static public function where(Context $context, $expr, $args){
+    static public function where(Context $context, $prefix, $expr, $args){
         if(empty($expr)){
             return;
         }
-        if (is_string($expr)){
-            self::condition($context, 'WHERE', $expr, $args);
+        if(is_callable($expr)){
+            self::conditionClosure($context,$prefix, $expr);
+        }elseif (is_string($expr)){
+            self::condition($context, $prefix, $expr, $args);
         }else{
-            self::conditionArgs($context, 'WHERE', $expr);
+            self::conditionArgs($context, $prefix, $expr);
         }
-        //TODO 支持 OR 、 闭包
+
     }
 
+    static public function conditionClosure(Context $context, $prefix, callable $callback){
+        $context->appendSql($prefix.' (');
+        $callback($context);
+        $context->appendSql(')');
+    }
     /**
      * find like Mongodb query glossary
      * whereArray(
@@ -376,6 +375,7 @@ class WhereImpl{
     }
     static public function condition(Context $context, $prefix, $expr, $args){
         if(!empty($expr)){
+            $expr = "($expr)";
             if($args){
                 //因为PDO不支持绑定数组变量, 这里需要手动展开数组
                 //也就是说把 where("id IN(?)", [1,2])  展开成 where("id IN(?,?)", 1,2)
@@ -427,7 +427,12 @@ class WhereImpl{
                     $args = $newArgs;
                 }
             }
-            $context->appendSql($prefix.' '.$expr);
+            if($prefix){
+                $context->appendSql($prefix.' '.$expr);
+            }else{
+                $context->appendSql($expr);
+            }
+
             if($args){
                 $context->appendParams($args);
             }

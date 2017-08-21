@@ -52,15 +52,6 @@ class OrderByRule extends LimitRule
         parent::__construct($context);
         $this->impl = new OrderByImpl();
     }
-//    /**
-//     * orderByArgs(['column0', 'column1'=>Sql::ORDER_BY_ASC]) => "ORDER BY column0,column1 ASC"
-//     * @param array $orders
-//     * @return \PhpBoot\DB\rules\basic\LimitRule
-//     */
-//    public function orderByArgs($orders) {
-//        $this->impl->orderByArgs($this->context, $orders);
-//        return new LimitRule($this->context);
-//    }
     /**
      * 
      * orderBy('column') => "ORDER BY column"
@@ -81,12 +72,16 @@ class OrderByRule extends LimitRule
 
 class WhereRule extends OrderByRule
 {
+    public function __construct(Context $context, $isTheFirst = true)
+    {
+        parent::__construct($context);
+        $this->isTheFirst = $isTheFirst;
+    }
+
     /**
-     * 
      * where('a=?', 1) => "WHERE a=1"
      * where('a=?', Sql::raw('now()')) => "WHERE a=now()"
      * where('a IN (?)',  [1, 2]) => "WHERE a IN (1,2)"
-     *
      * where([
      *      'a'=>1,
      *      'b'=>['IN'=>[1,2]]
@@ -96,12 +91,102 @@ class WhereRule extends OrderByRule
      *      =>
      *      "WHERE a=1 AND b IN(1,2) AND c BETWEEN 1 AND 2 AND d<>1"
      *
-     * @param string|array $expr
+     * @param string|array|callable $conditions
      * @param mixed $_
-     * @return \PhpBoot\DB\rules\basic\OrderByRule
+     * @return WhereRule
      */
-    public function where($expr, $_= null) {
-        WhereImpl::where($this->context, $expr, array_slice(func_get_args(), 1));
-        return new OrderByRule($this->context);
+    public function where($conditions=null, $_=null) {
+        if(is_callable($conditions)){
+            $callback = function ($context)use($conditions){
+                $rule = new SubQuery($context);
+                $conditions($rule);
+            };
+            $conditions = $callback;
+        }
+        if($this->isTheFirst){
+            WhereImpl::where($this->context, 'WHERE' ,$conditions, array_slice(func_get_args(), 1));
+        }else{
+            WhereImpl::where($this->context, 'AND', $conditions, array_slice(func_get_args(), 1));
+        }
+        return new WhereRule($this->context, false);
     }
+
+    /**
+     * orWhere('a=?', 1) => "OR a=1"
+     * orWhere('a=?', Sql::raw('now()')) => "OR a=now()"
+     * orWhere('a IN (?)',  [1, 2]) => "OR a IN (1,2)"
+     * orWhere([
+     *      'a'=>1,
+     *      'b'=>['IN'=>[1,2]]
+     *      'c'=>['BETWEEN'=>[1,2]]
+     *      'd'=>['<>'=>1]
+     *      ])
+     *      =>
+     *      "OR (a=1 AND b IN(1,2) AND c BETWEEN 1 AND 2 AND d<>1)"
+     *
+     * @param string|array|callable $conditions
+     * @param mixed $_
+     * @return WhereRule
+     */
+    public function orWhere($conditions=null, $_=null) {
+        if(is_callable($conditions)){
+            $callback = function ($context)use($conditions){
+                $rule = new SubQuery($context);
+                $conditions($rule);
+            };
+            $conditions = $callback;
+        }
+        WhereImpl::where($this->context, 'OR', $conditions, array_slice(func_get_args(), 1));
+        return new WhereRule($this->context, false);
+    }
+    private $isTheFirst;
+}
+
+class SubQuery extends BasicRule
+{
+
+    public function __construct(Context $context, $isTheFirst = true)
+    {
+        parent::__construct($context);
+        $this->isTheFirst = $isTheFirst;
+    }
+
+    /**
+     * @param $expr
+     * @param null $_
+     * @return SubQuery
+     */
+    public function where($expr, $_= null){
+        if(is_callable($expr)){
+            $callback = function ($context)use($expr){
+                $rule = new SubQuery($context, true);
+                $expr($rule);
+            };
+            $expr = $callback;
+        }
+        if($this->isTheFirst){
+            WhereImpl::where($this->context, '', $expr, array_slice(func_get_args(), 1));
+        }else{
+            WhereImpl::where($this->context, 'AND', $expr, array_slice(func_get_args(), 1));
+        }
+        return new SubQuery($this->context, false);
+    }
+    /**
+     * @param $expr
+     * @param null $_
+     * @return SubQuery
+     */
+    public function orWhere($expr, $_= null){
+        if(is_callable($expr)){
+            $callback = function ($context)use($expr){
+                $rule = new SubQuery($context, true);
+                $expr($rule);
+            };
+            $expr = $callback;
+        }
+        WhereImpl::where($this->context, 'OR', $expr, array_slice(func_get_args(), 1));
+        return new SubQuery($this->context, false);
+    }
+
+    private $isTheFirst;
 }

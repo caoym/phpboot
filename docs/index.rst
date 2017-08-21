@@ -33,3 +33,8 @@ PhpBoot
    advanced/rpc.md
    advanced/workflow.md
 
+.. toctree::
+   :maxdepth: 1
+   :caption: FAQ
+
+   faq.md
