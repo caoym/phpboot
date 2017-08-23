@@ -51,7 +51,7 @@ class ModelWithClass
      * where 语法见 @see WhereRule
      * @param array|string $expr
      * @param mixed|null $_
-     * @return \PhpBoot\DB\rules\basic\OrderByRule
+     * @return \PhpBoot\DB\rules\basic\WhereRule
      */
     public function deleteWhere($conditions, $_=null)
     {
@@ -71,9 +71,9 @@ class ModelWithClass
 
     /**
      * where 语法见 @see WhereRule
-     * @param array|string|null $conditions
+     * @param array|string|callable|null $conditions
      * @param string $_
-     * @return \PhpBoot\DB\rules\select\GroupByRule
+     * @return \PhpBoot\DB\rules\select\WhereRule
      */
     public function findWhere($conditions=null, $_=null)
     {
@@ -105,7 +105,7 @@ class ModelWithClass
      * @param array $values
      * @param array|string|callable $conditions  where 语法见 @see WhereRule
      * @param string $_
-     * @return \PhpBoot\DB\rules\basic\OrderByRule
+     * @return \PhpBoot\DB\rules\basic\WhereRule
      */
     public function updateWhere($values, $conditions, $_=null)
     {

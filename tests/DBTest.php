@@ -11,53 +11,42 @@ use PhpBoot\Tests\Mocks\DBMock;
 
 class DBTest extends TestCase
 {
-    protected function setUp()
-    {
-        parent::setUp();
-        $this->db = new DBMock($this);
-    }
-    
-    /**
-     * Cleans up the environment after running a test.
-     */
-    protected function tearDown()
-    {
-        $this->db = null;
-        parent::tearDown();
-    }
     /**
      * Tests SqlBuilder->select()
      */
     public function testSelect0()
     {
+        $db = new DBMock($this);
         // SELECT c=1
-        $this->db->setExpected('SELECT c=1');
-        (new DB($this->app, $this->db))->select(DB::raw('c=1'))->get();
+        $db->setExpected('SELECT c=1');
+        (new DB($this->app, $db))->select(DB::raw('c=1'))->get();
         
-        $this->db->setExpected('SELECT *');
-        (new DB($this->app,$this->db))->select()->get();
+        $db->setExpected('SELECT *');
+        (new DB($this->app,$db))->select()->get();
     }
     public function testSelect1()
     {
+        $db = new DBMock($this);
         // SELECT col FROM tab
-        $this->db->setExpected('SELECT `col` FROM `tab`');
-        (new DB($this->app,$this->db))->select('col')->from('tab')->get();
+        $db->setExpected('SELECT `col` FROM `tab`');
+        (new DB($this->app,$db))->select('col')->from('tab')->get();
     }
     public function testSelect2()
     {
+        $db = new DBMock($this);
         // SELECT col FROM tab WHERE a=1 AND b=now() AND c='c' AND d IN (1,'2', now())
-        $this->db->setExpected(
+        $db->setExpected(
             'SELECT `col` FROM `tab` WHERE (a = ? AND b = now() AND c = ? AND d IN (?,?,now()) AND e BETWEEN ? AND now())',
             1, 'c', 1, '2','e1');
         //      where()
-        (new DB($this->app, $this->db))->select('col')->from('tab')->where('a = ? AND b = ? AND c = ? AND d IN (?) AND e BETWEEN ? AND now()',
+        (new DB($this->app, $db))->select('col')->from('tab')->where('a = ? AND b = ? AND c = ? AND d IN (?) AND e BETWEEN ? AND now()',
             1, DB::raw('now()'), 'c', [1,'2', DB::raw('now()')],'e1')->get();
 
-        $this->db->setExpected(
+        $db->setExpected(
             'SELECT `col` FROM `tab` WHERE (`a` = ? AND `b` = now() AND `c` = ? AND `d` IN (?,?,now()) AND `e` BETWEEN ? AND now())',
             1, 'c', 1, '2','e1');
         //      whereArgs()
-        (new DB($this->app, $this->db))->select('col')->from('tab')->where([
+        (new DB($this->app, $db))->select('col')->from('tab')->where([
             'a'=>['='=>1],
             'b'=>DB::raw('now()'), 
             'c'=>'c', 
@@ -74,78 +63,89 @@ class DBTest extends TestCase
     }
     public function testSelect5()
     {
+        $db = new DBMock($this);
         // SELECT col FROM tab LEFT JOIN tab1 ON tab.id=tab1.id
-        $this->db->setExpected('SELECT `col` FROM `tab` LEFT JOIN `tab1` ON tab.id=tab1.id');
-        (new DB($this->app, $this->db))->select('col')->from('tab')->leftJoin('tab1')->on('tab.id=tab1.id')->get();
+        $db->setExpected('SELECT `col` FROM `tab` LEFT JOIN `tab1` ON tab.id=tab1.id');
+        (new DB($this->app, $db))->select('col')->from('tab')->leftJoin('tab1')->on('tab.id=tab1.id')->get();
     }
     public function testSelect6()
     {
+        $db = new DBMock($this);
         // SELECT col FROM tab RIGHT JOIN tab1 ON tab.id=tab1.id
-        $this->db->setExpected('SELECT `col` FROM `tab` RIGHT JOIN `tab1` ON tab.id=tab1.id');
-        (new DB($this->app, $this->db))->select('col')->from('tab')->rightJoin('tab1')->on('tab.id=tab1.id')->get();
+        $db->setExpected('SELECT `col` FROM `tab` RIGHT JOIN `tab1` ON tab.id=tab1.id');
+        (new DB($this->app, $db))->select('col')->from('tab')->rightJoin('tab1')->on('tab.id=tab1.id')->get();
     }
     public function testSelect7()
     {
+        $db = new DBMock($this);
         // SELECT col FROM tab INNER JOIN tab1 ON tab.id=tab1.id
-        $this->db->setExpected('SELECT `col` FROM `tab` INNER JOIN `tab1` ON tab.id=tab1.id');
-        (new DB($this->app, $this->db))->select('col')->from('tab')->innerJoin('tab1')->on('tab.id=tab1.id')->get();
+        $db->setExpected('SELECT `col` FROM `tab` INNER JOIN `tab1` ON tab.id=tab1.id');
+        (new DB($this->app, $db))->select('col')->from('tab')->innerJoin('tab1')->on('tab.id=tab1.id')->get();
     }
     public function testSelect8()
     {
+        $db = new DBMock($this);
         // SELECT col FROM tab JOIN tab1 ON tab.id=tab1.id
-        $this->db->setExpected('SELECT `col` FROM `tab` JOIN `tab1` ON tab.id=tab1.id');
-        (new DB($this->app, $this->db))->select('col')->from('tab')->join('tab1')->on('tab.id=tab1.id')->get();
+        $db->setExpected('SELECT `col` FROM `tab` JOIN `tab1` ON tab.id=tab1.id');
+        (new DB($this->app, $db))->select('col')->from('tab')->join('tab1')->on('tab.id=tab1.id')->get();
     }
     public function testSelect9()
     {
+        $db = new DBMock($this);
         // SELECT col FROM tab JOIN tab1 ON tab.id=tab1.id WHERE col=1
-        $this->db->setExpected('SELECT `col` FROM `tab` JOIN `tab1` ON tab.id=tab1.id WHERE (col=1)');
-        (new DB($this->app, $this->db))->select('col')->from('tab')->join('tab1')->on('tab.id=tab1.id')->where('col=1')->get();
+        $db->setExpected('SELECT `col` FROM `tab` JOIN `tab1` ON tab.id=tab1.id WHERE (col=1)');
+        (new DB($this->app, $db))->select('col')->from('tab')->join('tab1')->on('tab.id=tab1.id')->where('col=1')->get();
     }
     public function testSelect10()
     {
+        $db = new DBMock($this);
         // SELECT * FROM tab GROUP BY col
-        $this->db->setExpected('SELECT * FROM `tab` GROUP BY `col`');
-        (new DB($this->app, $this->db))->select('*')->from('tab')->groupBy('col')->get();
+        $db->setExpected('SELECT * FROM `tab` GROUP BY `col`');
+        (new DB($this->app, $db))->select('*')->from('tab')->groupBy('col')->get();
     }
     public function testSelect11()
     {
+        $db = new DBMock($this);
         // SELECT SUM(col) FROM tab GROUP BY col1 HAVING SUM(col)>0
-        $this->db->setExpected('SELECT SUM(col) FROM `tab` GROUP BY `col1` HAVING (SUM(col)>?)', 0);
-        (new DB($this->app, $this->db))->select(DB::raw('SUM(col)'))->from('tab')->groupBy('col1')->having('SUM(col)>?',0)->get();
+        $db->setExpected('SELECT SUM(col) FROM `tab` GROUP BY `col1` HAVING (SUM(col)>?)', 0);
+        (new DB($this->app, $db))->select(DB::raw('SUM(col)'))->from('tab')->groupBy('col1')->having('SUM(col)>?',0)->get();
     }
     public function testSelect12()
-    {     
+    {
+        $db = new DBMock($this);
         // SELECT SUM(col) FROM tab WHERE col=1 GROUP BY col1 HAVING SUM(col)>0
-        $this->db->setExpected('SELECT SUM(col) FROM `tab` WHERE (col=?) GROUP BY `col1` HAVING (SUM(col)>?)', 1,0);
-        (new DB($this->app, $this->db))->select(DB::raw('SUM(col)'))->from('tab')->where('col=?',1)->groupBy('col1')->having('SUM(col)>?',0)->get();
+        $db->setExpected('SELECT SUM(col) FROM `tab` WHERE (col=?) GROUP BY `col1` HAVING (SUM(col)>?)', 1,0);
+        (new DB($this->app, $db))->select(DB::raw('SUM(col)'))->from('tab')->where('col=?',1)->groupBy('col1')->having('SUM(col)>?',0)->get();
         
     }
     public function testSelect13()
     {
+        $db = new DBMock($this);
         // SELECT * FROM tab ORDER BY col
-        $this->db->setExpected('SELECT * FROM `tab` ORDER BY `col`');
-        (new DB($this->app, $this->db))->select('*')->from('tab')->orderBy('col')->get();
-        (new DB($this->app, $this->db))->select('*')->from('tab')->orderBy(['col'])->get();
+        $db->setExpected('SELECT * FROM `tab` ORDER BY `col`');
+        (new DB($this->app, $db))->select('*')->from('tab')->orderBy('col')->get();
+        (new DB($this->app, $db))->select('*')->from('tab')->orderBy(['col'])->get();
     }
     public function testSelect14()
     {
+        $db = new DBMock($this);
         // SELECT * FROM tab ORDER BY col ASC
-        $this->db->setExpected('SELECT * FROM `tab` ORDER BY `col` ASC');
-        (new DB($this->app, $this->db))->select('*')->from('tab')->orderBy('col', DB::ORDER_BY_ASC)->get();
-        (new DB($this->app, $this->db))->select('*')->from('tab')->orderBy(['col'=>DB::ORDER_BY_ASC])->get();
+        $db->setExpected('SELECT * FROM `tab` ORDER BY `col` ASC');
+        (new DB($this->app, $db))->select('*')->from('tab')->orderBy('col', DB::ORDER_BY_ASC)->get();
+        (new DB($this->app, $db))->select('*')->from('tab')->orderBy(['col'=>DB::ORDER_BY_ASC])->get();
     }
     public function testSelect15()
     {
+        $db = new DBMock($this);
         // SELECT * FROM tab ORDER BY col ASC, col1 DESC, col2
-        $this->db->setExpected('SELECT * FROM `tab` ORDER BY `col` ASC,`col1` DESC,`col2`');
-        (new DB($this->app, $this->db))->select('*')
+        $db->setExpected('SELECT * FROM `tab` ORDER BY `col` ASC,`col1` DESC,`col2`');
+        (new DB($this->app, $db))->select('*')
             ->from('tab')
             ->orderBy('col', DB::ORDER_BY_ASC)
             ->orderBy('col1', DB::ORDER_BY_DESC)
             ->orderBy('col2')
             ->get();
-        (new DB($this->app, $this->db))->select('*')
+        (new DB($this->app, $db))->select('*')
         ->from('tab')
         ->orderBy(['col'=>DB::ORDER_BY_ASC,
             'col1'=> DB::ORDER_BY_DESC,
@@ -155,51 +155,58 @@ class DBTest extends TestCase
     }
     public function testSelect16()
     {
+        $db = new DBMock($this);
         // SELECT * FROM tab LIMIT 0,1
-        $this->db->setExpected('SELECT * FROM `tab` LIMIT 0,1');
-        (new DB($this->app, $this->db))->select('*')->from('tab')->limit(0,1)->get();
+        $db->setExpected('SELECT * FROM `tab` LIMIT 0,1');
+        (new DB($this->app, $db))->select('*')->from('tab')->limit(0,1)->get();
     }
     public function testSelect17()
     {
+        $db = new DBMock($this);
         // SELECT * FROM tab FOR UPDATE
-        $this->db->setExpected('SELECT * FROM `tab` FOR UPDATE');
-        (new DB($this->app, $this->db))->select('*')->from('tab')->forUpdate()->get();
+        $db->setExpected('SELECT * FROM `tab` FOR UPDATE');
+        (new DB($this->app, $db))->select('*')->from('tab')->forUpdate()->get();
     }
     public function testSelect18()
     {
+        $db = new DBMock($this);
         // SELECT * FROM tab FOR UPDATE of col
-        $this->db->setExpected('SELECT * FROM `tab` FOR UPDATE OF `col`');
-        (new DB($this->app, $this->db))->select('*')->from('tab')->forUpdate()->of('col')->get();
+        $db->setExpected('SELECT * FROM `tab` FOR UPDATE OF `col`');
+        (new DB($this->app, $db))->select('*')->from('tab')->forUpdate()->of('col')->get();
     }
     public function testForInsert0()
     {
+        $db = new DBMock($this);
         //INSERT INTO tab VALUES(1,2,3)
-        $this->db->setExpected('INSERT INTO `tab` VALUES(?,?,?)', 1,2,3);
-        (new DB($this->app, $this->db))->insertInto('tab')->values([1,2,3])->exec();
+        $db->setExpected('INSERT INTO `tab` VALUES(?,?,?)', 1,2,3);
+        (new DB($this->app, $db))->insertInto('tab')->values([1,2,3])->exec();
     }
     public function testForInsert1()
     {
+        $db = new DBMock($this);
         //INSERT INTO tab VALUES(1,2,now())
-        $this->db->setExpected('INSERT INTO `tab` VALUES(?,?,now())', 1,2);
-        (new DB($this->app, $this->db))->insertInto('tab')->values([1, 2, DB::raw('now()')])->exec();
+        $db->setExpected('INSERT INTO `tab` VALUES(?,?,now())', 1,2);
+        (new DB($this->app, $db))->insertInto('tab')->values([1, 2, DB::raw('now()')])->exec();
     }
     public function testForInsert2()
     {
+        $db = new DBMock($this);
         //INSERT INTO tab(a,b,c)VALUES(1,2,now())
-        $this->db->setExpected('INSERT INTO `tab`(`a`,`b`,`c`) VALUES(?,?,now())', 1,2);
-        (new DB($this->app, $this->db))->insertInto('tab')->values(['a'=>1, 'b'=>2, 'c'=>DB::raw('now()')])->exec();
+        $db->setExpected('INSERT INTO `tab`(`a`,`b`,`c`) VALUES(?,?,now())', 1,2);
+        (new DB($this->app, $db))->insertInto('tab')->values(['a'=>1, 'b'=>2, 'c'=>DB::raw('now()')])->exec();
     }
     public function testForInsert3()
     {
+        $db = new DBMock($this);
         //INSERT INTO tab(a,b,c)VALUES(1,2,now())
-        $this->db->setExpected('INSERT INTO `tab`(`a`,`b`,`c`) VALUES(?,?,now()) ON DUPLICATE KEY UPDATE `a`=a+1', 1,2);
+        $db->setExpected('INSERT INTO `tab`(`a`,`b`,`c`) VALUES(?,?,now()) ON DUPLICATE KEY UPDATE `a`=a+1', 1,2);
 
-        (new DB($this->app, $this->db))->insertInto('tab')
+        (new DB($this->app, $db))->insertInto('tab')
             ->values(['a'=>1, 'b'=>2, 'c'=>DB::raw('now()')])
             ->onDuplicateKeyUpdate(['a'=>DB::raw('a+1')])
             ->exec();
 
-        (new DB($this->app, $this->db))->insertInto('tab')
+        (new DB($this->app, $db))->insertInto('tab')
             ->values(['a'=>1, 'b'=>2, 'c'=>DB::raw('now()')])
             ->onDuplicateKeyUpdate('`a`=a+1')
             ->exec();
@@ -207,72 +214,84 @@ class DBTest extends TestCase
 
     public function testUpdate0()
     {
+        $db = new DBMock($this);
         //UPDATE `tab` SET a=1,b='2',c=now()
-        $this->db->setExpected('UPDATE `tab` SET `a`=?,`b`=?,`c`=now()', 1,'2');
-        (new DB($this->app, $this->db))->update('tab')->set(['a'=>1,'b'=>'2','c'=>DB::raw('now()')])->exec();
+        $db->setExpected('UPDATE `tab` SET `a`=?,`b`=?,`c`=now()', 1,'2');
+        (new DB($this->app, $db))->update('tab')->set(['a'=>1,'b'=>'2','c'=>DB::raw('now()')])->exec();
     }
     public function testUpdate1()
     {
+        $db = new DBMock($this);
         //UPDATE `tab` SET a=1 WHERE b='2'
-        $this->db->setExpected('UPDATE `tab` SET `a`=? WHERE (b=?)', 1,'2');
-        (new DB($this->app, $this->db))->update('tab')->set(['a'=>1])->where('b=?',2)->exec();;
+        $db->setExpected('UPDATE `tab` SET `a`=? WHERE (b=?)', 1,'2');
+        (new DB($this->app, $db))->update('tab')->set(['a'=>1])->where('b=?',2)->exec();;
     }
     public function testUpdate2()
     {
+        $db = new DBMock($this);
         //UPDATE `tab` SET a=1 WHERE b='2'
-        $this->db->setExpected('UPDATE `tab` SET `a`=? WHERE (b=?)', 1,'2');
-        (new DB($this->app, $this->db))->update('tab')->set(['a'=>1])->where('b=?',2)->exec();;
+        $db->setExpected('UPDATE `tab` SET `a`=? WHERE (b=?)', 1,'2');
+        (new DB($this->app, $db))->update('tab')->set(['a'=>1])->where('b=?',2)->exec();;
     }
     public function testUpdate3()
     {
+        $db = new DBMock($this);
         //UPDATE `tab` SET a=1 WHERE b='2' ORDER BY c
-        $this->db->setExpected('UPDATE `tab` SET `a`=? WHERE (b=?) ORDER BY `c`', 1,'2');
-        (new DB($this->app, $this->db))->update('tab')->set(['a'=>1])->where('b=?',2)->orderBy('c')->exec();;
+        $db->setExpected('UPDATE `tab` SET `a`=? WHERE (b=?) ORDER BY `c`', 1,'2');
+        (new DB($this->app, $db))->update('tab')->set(['a'=>1])->where('b=?',2)->orderBy('c')->exec();;
     }
     public function testUpdate4()
     {
+        $db = new DBMock($this);
         //UPDATE `tab` SET a=1 WHERE b='2' ORDER BY c limit 1
-        $this->db->setExpected('UPDATE `tab` SET `a`=? WHERE (b=?) ORDER BY `c` LIMIT 1', 1,'2');
-        (new DB($this->app, $this->db))->update('tab')->set(['a'=>1])->where('b=?',2)->orderBy('c')->limit(1)->exec();
+        $db->setExpected('UPDATE `tab` SET `a`=? WHERE (b=?) ORDER BY `c` LIMIT 1', 1,'2');
+        (new DB($this->app, $db))->update('tab')->set(['a'=>1])->where('b=?',2)->orderBy('c')->limit(1)->exec();
     }
     public function testDelete0(){
+        $db = new DBMock($this);
         // DELETE FROM tab
-        $this->db->setExpected('DELETE FROM `tab`');
-        (new DB($this->app, $this->db))->deleteFrom('tab')->exec();
+        $db->setExpected('DELETE FROM `tab`');
+        (new DB($this->app, $db))->deleteFrom('tab')->exec();
     }
     public function testDelete1(){
+        $db = new DBMock($this);
         // DELETE FROM tab WHERE a=1
-        $this->db->setExpected('DELETE FROM `tab` WHERE (a=?)',1);
-        (new DB($this->app, $this->db))->deleteFrom('tab')->where('a=?',1)->exec();
+        $db->setExpected('DELETE FROM `tab` WHERE (a=?)',1);
+        (new DB($this->app, $db))->deleteFrom('tab')->where('a=?',1)->exec();
     }
     public function testDelete2(){
+        $db = new DBMock($this);
         // DELETE FROM tab WHERE a=1 ORDER BY b
-        $this->db->setExpected('DELETE FROM `tab` WHERE (a=?) ORDER BY `b`',1);
-        (new DB($this->app, $this->db))->deleteFrom('tab')->where('a=?',1)->orderBy('b')->exec();
+        $db->setExpected('DELETE FROM `tab` WHERE (a=?) ORDER BY `b`',1);
+        (new DB($this->app, $db))->deleteFrom('tab')->where('a=?',1)->orderBy('b')->exec();
     }
     public function testDelete3(){
+        $db = new DBMock($this);
         // DELETE FROM tab WHERE a=1 ORDER BY b LIMIT 1
-        $this->db->setExpected('DELETE FROM `tab` WHERE (a=?) ORDER BY `b` LIMIT 1',1);
-        (new DB($this->app, $this->db))->deleteFrom('tab')->where('a=?',1)->orderBy('b')->limit(1)->exec();
+        $db->setExpected('DELETE FROM `tab` WHERE (a=?) ORDER BY `b` LIMIT 1',1);
+        (new DB($this->app, $db))->deleteFrom('tab')->where('a=?',1)->orderBy('b')->limit(1)->exec();
     }
 	 
     public function testForReplace0()
     {
+        $db = new DBMock($this);
         //REPLACE INTO tab VALUES(1,2,3)
-        $this->db->setExpected('REPLACE INTO `tab` VALUES(?,?,?)', 1,2,3);
-        (new DB($this->app, $this->db))->replaceInto('tab')->values([1,2,3])->exec();
+        $db->setExpected('REPLACE INTO `tab` VALUES(?,?,?)', 1,2,3);
+        (new DB($this->app, $db))->replaceInto('tab')->values([1,2,3])->exec();
     }
     public function testForReplace1()
     {
+        $db = new DBMock($this);
         //REPLACE INTO tab VALUES(1,2,now())
-        $this->db->setExpected('REPLACE INTO `tab` VALUES(?,?,now())', 1,2);
-        (new DB($this->app, $this->db))->replaceInto('tab')->values([1, 2, DB::raw('now()')])->exec();
+        $db->setExpected('REPLACE INTO `tab` VALUES(?,?,now())', 1,2);
+        (new DB($this->app, $db))->replaceInto('tab')->values([1, 2, DB::raw('now()')])->exec();
     }
 
     public function testSelectWhere()
     {
-        $this->db->setExpected('SELECT * FROM `tab` WHERE (`a` = ?) AND (`b` = ?) OR (`c` = ?)', 1,2,3);
-        (new DB($this->app, $this->db))
+        $db = new DBMock($this);
+        $db->setExpected('SELECT * FROM `tab` WHERE (`a` = ?) AND (`b` = ?) OR (`c` = ?)', 1,2,3);
+        (new DB($this->app, $db))
             ->select()
             ->from('tab')
             ->where(['a'=>1])
@@ -283,8 +302,9 @@ class DBTest extends TestCase
 
     public function testSelectSubWhere()
     {
-        $this->db->setExpected('SELECT * FROM `tab` WHERE ( (`a` = ?) ) AND ( (`b` = ?) AND (`c` = ?) OR (`d` = ?) )', 1,2,3,4);
-        (new DB($this->app, $this->db))
+        $db = new DBMock($this);
+        $db->setExpected('SELECT * FROM `tab` WHERE ( (`a` = ?) ) AND ( (`b` = ?) AND (`c` = ?) OR (`d` = ?) )', 1,2,3,4);
+        (new DB($this->app, $db))
             ->select()
             ->from('tab')
             ->where(function(SubQuery $query){
@@ -300,8 +320,9 @@ class DBTest extends TestCase
 
     public function testUpdateWhere()
     {
-        $this->db->setExpected('UPDATE `tab` SET `a`=? WHERE (`b` = ?) AND (`c` = ?) OR (`d` = ?)', 1, 2, 3, 4);
-        (new DB($this->app, $this->db))
+        $db = new DBMock($this);
+        $db->setExpected('UPDATE `tab` SET `a`=? WHERE (`b` = ?) AND (`c` = ?) OR (`d` = ?)', 1, 2, 3, 4);
+        (new DB($this->app, $db))
             ->update('tab')
             ->set(['a'=>1])
             ->where(['b'=>2])
@@ -312,8 +333,9 @@ class DBTest extends TestCase
 
     public function testUpdateSubWhere()
     {
-        $this->db->setExpected('UPDATE `tab` SET `a`=? WHERE ( (`b` = ?) ) AND ( (`c` = ?) AND (`d` = ?) OR (`e` = ?) )', 1,2,3,4,5);
-        (new DB($this->app, $this->db))
+        $db = new DBMock($this);
+        $db->setExpected('UPDATE `tab` SET `a`=? WHERE ( (`b` = ?) ) AND ( (`c` = ?) AND (`d` = ?) OR (`e` = ?) )', 1,2,3,4,5);
+        (new DB($this->app, $db))
             ->update('tab')
             ->set(['a'=>1])
             ->where(function(SubQuery $query){
@@ -331,8 +353,9 @@ class DBTest extends TestCase
 
     public function testSelectHanving()
     {
-        $this->db->setExpected('SELECT * FROM `tab` GROUP BY `g` HAVING (`a` = ?) AND (`b` = ?) OR (`c` = ?)', 1,2,3);
-        (new DB($this->app, $this->db))
+        $db = new DBMock($this);
+        $db->setExpected('SELECT * FROM `tab` GROUP BY `g` HAVING (`a` = ?) AND (`b` = ?) OR (`c` = ?)', 1,2,3);
+        (new DB($this->app, $db))
             ->select()
             ->from('tab')
             ->groupBy('g')
@@ -344,8 +367,9 @@ class DBTest extends TestCase
 
     public function testSelectSubHanving()
     {
-        $this->db->setExpected('SELECT * FROM `tab` GROUP BY `g` HAVING (`a` = ?) AND ( (`b` = ?) AND (`c` = ?) OR (`d` = ?) )', 1,2,3,4);
-        (new DB($this->app, $this->db))
+        $db = new DBMock($this);
+        $db->setExpected('SELECT * FROM `tab` GROUP BY `g` HAVING (`a` = ?) AND ( (`b` = ?) AND (`c` = ?) OR (`d` = ?) )', 1,2,3,4);
+        (new DB($this->app, $db))
             ->select()
             ->from('tab')
             ->groupBy('g')
@@ -358,6 +382,13 @@ class DBTest extends TestCase
             ->get();
     }
 
+    public function testWrap()
+    {
+        self::assertEquals('`abc`', DB::wrap('abc'));
+        self::assertEquals('abc', DB::wrap(DB::raw('abc')));
+        self::assertEquals('abc.123', DB::wrap('abc.123'));
+        self::assertEquals('`abc.123 456`', DB::wrap('abc.123 456'));
+    }
     /**
      * 
      * @var DBMock

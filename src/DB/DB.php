@@ -196,11 +196,16 @@ class DB{
     }
     static public function wrap($value)
     {
+        if($value instanceof Raw){
+            return $value->get();
+        }
+        $value = trim($value);
         if ($value === '*') {
             return $value;
         }
-        if($value instanceof Raw){
-            return $value->get();
+
+        if(strpos($value, '.') !== false && !preg_match('/\\s+/', $value)){
+            return $value;
         }
         return '`'.str_replace('`', '``', $value).'`';
     }
