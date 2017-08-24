@@ -316,20 +316,32 @@ class WhereImpl{
         $params = array();
         foreach ($args as $k => $v){
             $k = DB::wrap($k);
-            if(is_array($v)){
-                $ops = ['=', '>', '<', '<>', '>=', '<=', 'IN', 'NOT IN', 'BETWEEN', 'LIKE'];
-                $op = array_keys($v)[0];
-                $op = strtoupper($op);
+            if(!is_array($v)){
+                $v = ['='=>$v];
+            }
 
-                false !== array_search($op, $ops) or \PhpBoot\abort(
-                    new \InvalidArgumentException("invalid param $op for whereArgs"));
+            $ops = ['=', '>', '<', '<>', '>=', '<=', 'IN', 'NOT IN', 'BETWEEN', 'LIKE'];
+            $op = array_keys($v)[0];
+            $op = strtoupper($op);
 
-                $var = array_values($v)[0];
-                if($op == 'IN' || $op == 'NOT IN'){
-                    $stubs = [];
+            false !== array_search($op, $ops) or \PhpBoot\abort(
+                new \InvalidArgumentException("invalid param $op for whereArgs"));
+
+            $var = array_values($v)[0];
+            if($op == 'IN' || $op == 'NOT IN'){
+                $stubs = [];
+
+                if($var instanceof BasicRule){
+                    $stubs = "({$var->context->sql})";
+                    $params = array_merge($params, $var->context->params);
+                    $exprs[] = "$k $op $stubs";
+                }else{
                     foreach ($var as $i){
                         if(is_a($i, Raw::class)){
                             $stubs[]=strval($i);
+                        }elseif($i instanceof BasicRule){
+                            $stubs = "({$i->context->sql})";
+                            $params = array_merge($params, $i->context->params);
                         }else{
                             $stubs[]='?';
                             $params[] = $i;
@@ -337,36 +349,37 @@ class WhereImpl{
                     }
                     $stubs = implode(',', $stubs);
                     $exprs[] = "$k $op ($stubs)";
-                }else if($op == 'BETWEEN'){
-                    $cond = "$k BETWEEN";
-                    if(is_a($var[0], Raw::class)){
-                        $cond = "$cond ".strval($var[0]);
-                    }else{
-                        $cond = "$cond ?";
-                        $params[] = $var[0];
-                    }
-                    if(is_a($var[1], Raw::class)){
-                        $cond = "$cond AND ".strval($var[1]);
-                    }else{
-                        $cond = "$cond AND ?";
-                        $params[] = $var[1];
-                    }
-                    $exprs[] = $cond;
-                }else{
-                    if(is_a($var, Raw::class)){
-                        $exprs[] = "$k $op ".strval($var);
-                    }else{
-                        $exprs[] = "$k $op ?";
-                        $params[] = $var;
-                    }
                 }
-            }else{
-                if(is_a($v, Raw::class)){
-                    $exprs[] = "$k = ".strval($v);
-
+            }else if($op == 'BETWEEN'){
+                $cond = "$k BETWEEN";
+                if(is_a($var[0], Raw::class)){
+                    $cond = "$cond ".strval($var[0]);
+                }elseif($var[0] instanceof BasicRule){
+                    $cond = "$cond ({$var[0]->context->sql})";
+                    $params = array_merge($params, $var[0]->context->params);
                 }else{
-                    $exprs[] = "$k = ?";
-                    $params[] = $v;
+                    $cond = "$cond ?";
+                    $params[] = $var[0];
+                }
+                if(is_a($var[1], Raw::class)){
+                    $cond = "$cond AND ".strval($var[1]);
+                }elseif($var[1] instanceof BasicRule){
+                    $cond = "$cond AND ({$var[1]->context->sql})";
+                    $params = array_merge($params, $var[1]->context->params);
+                }else{
+                    $cond = "$cond AND ?";
+                    $params[] = $var[1];
+                }
+                $exprs[] = $cond;
+            }else{
+                if(is_a($var, Raw::class)){
+                    $exprs[] = "$k $op ".strval($var);
+                }elseif($var instanceof BasicRule){
+                    $exprs[] = "$k $op {$var->context->sql}";
+                    $params = array_merge($params, $var->context->params);
+                }else{
+                    $exprs[] = "$k $op ?";
+                    $params[] = $var;
                 }
             }
         }
@@ -386,7 +399,8 @@ class WhereImpl{
                 $newArgs=array();
                 //找到所有数组对应的?符位置
                 foreach ($args as $k =>$arg){
-                    if(is_array($arg) || is_a($arg, Raw::class)){
+                    if(is_array($arg) || is_a($arg, Raw::class) || is_a($arg, BasicRule::class)){
+
                         if(!$cutted){
                             $cut = new NestedStringCut($expr);
                             $cutted = $cut->getText();
@@ -408,6 +422,9 @@ class WhereImpl{
                                 }
                             }
                             $stubs = implode(',', $stubs);
+                        }elseif($arg instanceof BasicRule){
+                            $stubs = "({$arg->context->sql})";
+                            $newArgs = array_merge($newArgs, $arg->context->params);
                         }else{
                             $stubs = strval($arg);
                         }
@@ -422,7 +439,7 @@ class WhereImpl{
                     $toReplace = array_reverse($toReplace);
                     foreach ($toReplace as $i){
                         list($pos, $v) = $i;
-                        $expr = substr($expr, 0, $pos).$v. substr($expr, $pos+1);
+                        $expr = substr($expr, 0, $pos).$v.substr($expr, $pos+1);
                     }
                     $args = $newArgs;
                 }

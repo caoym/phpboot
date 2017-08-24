@@ -98,7 +98,7 @@ class WhereRule extends OrderByRule
     public function where($conditions=null, $_=null) {
         if(is_callable($conditions)){
             $callback = function ($context)use($conditions){
-                $rule = new SubQuery($context);
+                $rule = new ScopedQuery($context);
                 $conditions($rule);
             };
             $conditions = $callback;
@@ -131,7 +131,7 @@ class WhereRule extends OrderByRule
     public function orWhere($conditions=null, $_=null) {
         if(is_callable($conditions)){
             $callback = function ($context)use($conditions){
-                $rule = new SubQuery($context);
+                $rule = new ScopedQuery($context);
                 $conditions($rule);
             };
             $conditions = $callback;
@@ -142,7 +142,7 @@ class WhereRule extends OrderByRule
     private $isTheFirst;
 }
 
-class SubQuery extends BasicRule
+class ScopedQuery extends BasicRule
 {
 
     public function __construct(Context $context, $isTheFirst = true)
@@ -154,12 +154,12 @@ class SubQuery extends BasicRule
     /**
      * @param $expr
      * @param null $_
-     * @return SubQuery
+     * @return ScopedQuery
      */
     public function where($expr, $_= null){
         if(is_callable($expr)){
             $callback = function ($context)use($expr){
-                $rule = new SubQuery($context, true);
+                $rule = new ScopedQuery($context, true);
                 $expr($rule);
             };
             $expr = $callback;
@@ -169,23 +169,23 @@ class SubQuery extends BasicRule
         }else{
             WhereImpl::where($this->context, 'AND', $expr, array_slice(func_get_args(), 1));
         }
-        return new SubQuery($this->context, false);
+        return new ScopedQuery($this->context, false);
     }
     /**
      * @param $expr
      * @param null $_
-     * @return SubQuery
+     * @return ScopedQuery
      */
     public function orWhere($expr, $_= null){
         if(is_callable($expr)){
             $callback = function ($context)use($expr){
-                $rule = new SubQuery($context, true);
+                $rule = new ScopedQuery($context, true);
                 $expr($rule);
             };
             $expr = $callback;
         }
         WhereImpl::where($this->context, 'OR', $expr, array_slice(func_get_args(), 1));
-        return new SubQuery($this->context, false);
+        return new ScopedQuery($this->context, false);
     }
 
     private $isTheFirst;

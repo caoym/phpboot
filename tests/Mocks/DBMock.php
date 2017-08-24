@@ -17,7 +17,8 @@ class DBMock{
     public function prepare($sql){
         $this->prepared = true;
         print ".............\n";
-        print $this->expectedSql."\n";
+        print $this->expectedSql." , ";
+        print_r($this->expectedParams);
         print $sql."\n";
 
         $this->test->assertEquals($this->expectedSql, $sql);
@@ -28,6 +29,7 @@ class DBMock{
     }
     public function execute($params){
         $this->executed = true;
+        print_r($params);
         $this->test->assertEquals($this->expectedParams, $params);
     }
     public function fetchAll($arg){

@@ -9,12 +9,6 @@ use PhpBoot\DB\rules\delete\DeleteRule;
 use PhpBoot\DB\rules\replace\ReplaceIntoRule;
 use PhpBoot\Utils\Logger;
 
-require_once __DIR__.'/rules/select.php';
-require_once __DIR__.'/rules/insert.php';
-require_once __DIR__.'/rules/update.php';
-require_once __DIR__.'/rules/delete.php';
-require_once __DIR__.'/rules/replace.php';
-
 /**
  * 
  * How-to-use:
@@ -90,10 +84,9 @@ class DB{
     }
 
     /**
-     * select('column0,column1') => "SELECT column0,column1"
-     *   
      * select('column0', 'column1') => "SELECT column0,column1"
-     * 
+     * select(['column0', 'column1']) => "SELECT column0,column1"
+     *
      * @param string $column0
      * @return \PhpBoot\DB\rules\select\FromRule
      */
@@ -111,7 +104,6 @@ class DB{
             if($arg == '*'){
                 continue;
             }
-
         }
         return $obj->select(implode(',', $args));
     }

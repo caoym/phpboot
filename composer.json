@@ -36,7 +36,13 @@
             "PhpBoot\\Tests\\": "tests/"
         },
         "files": [
-            "src/functions.php"
+            "src/functions.php",
+            "src/DB/rules/basic.php",
+            "src/DB/rules/delete.php",
+            "src/DB/rules/insert.php",
+            "src/DB/rules/replace.php",
+            "src/DB/rules/select.php",
+            "src/DB/rules/update.php"
         ]
     },
     "autoload-dev": {

@@ -13,7 +13,7 @@ use PhpBoot\DB\impls\OrderByImpl;
 use PhpBoot\DB\impls\LimitImpl;
 use PhpBoot\DB\impls\ForUpdateOfImpl;
 use PhpBoot\DB\impls\ForUpdateImpl;
-use PhpBoot\DB\rules\basic\SubQuery;
+use PhpBoot\DB\rules\basic\ScopedQuery;
 
 require_once dirname(__DIR__).'/impls.php';
 require_once __DIR__.'/basic.php';
@@ -177,7 +177,7 @@ class HavingRule extends OrderByRule
     public function having($expr, $_=null) {
         if(is_callable($expr)){
             $callback = function ($context)use($expr){
-                $rule = new SubQuery($context);
+                $rule = new ScopedQuery($context);
                 $expr($rule);
             };
             $expr = $callback;
@@ -214,7 +214,7 @@ class HavingRule extends OrderByRule
     public function orHaving($expr, $_=null) {
         if(is_callable($expr)){
             $callback = function ($context)use($expr){
-                $rule = new SubQuery($context);
+                $rule = new ScopedQuery($context);
                 $expr($rule);
             };
             $expr = $callback;
@@ -266,7 +266,7 @@ class WhereRule extends GroupByRule
     public function where($conditions=null, $_=null) {
         if(is_callable($conditions)){
             $callback = function ($context)use($conditions){
-                $rule = new SubQuery($context);
+                $rule = new ScopedQuery($context);
                 $conditions($rule);
             };
             $conditions = $callback;
@@ -299,7 +299,7 @@ class WhereRule extends GroupByRule
     public function orWhere($conditions=null, $_=null) {
         if(is_callable($conditions)){
             $callback = function ($context)use($conditions){
-                $rule = new SubQuery($context);
+                $rule = new ScopedQuery($context);
                 $conditions($rule);
             };
             $conditions = $callback;

@@ -5,7 +5,7 @@ namespace PhpBoot\Tests;
 use PhpBoot\Application;
 use PhpBoot\DB\DB;
 use PhpBoot\DB\Raw;
-use PhpBoot\DB\rules\basic\SubQuery;
+use PhpBoot\DB\rules\basic\ScopedQuery;
 use PhpBoot\Tests\Mocks\DBMock;
 
 
@@ -307,10 +307,10 @@ class DBTest extends TestCase
         (new DB($this->app, $db))
             ->select()
             ->from('tab')
-            ->where(function(SubQuery $query){
+            ->where(function(ScopedQuery $query){
                 $query->where(['a'=>1]);
             })
-            ->where(function(SubQuery $query){
+            ->where(function(ScopedQuery $query){
                 $query->where(['b'=>2])
                     ->where(['c'=>3])
                     ->orWhere(['d'=>4]);
@@ -338,10 +338,10 @@ class DBTest extends TestCase
         (new DB($this->app, $db))
             ->update('tab')
             ->set(['a'=>1])
-            ->where(function(SubQuery $query){
+            ->where(function(ScopedQuery $query){
                 $query->where(['b'=>2]);
             })
-            ->where(function(SubQuery $query){
+            ->where(function(ScopedQuery $query){
                 $query->where(['c'=>3])
                     ->where(['d'=>4])
                     ->orWhere(['e'=>5]);
@@ -374,7 +374,7 @@ class DBTest extends TestCase
             ->from('tab')
             ->groupBy('g')
             ->having(['a'=>1])
-            ->having(function(SubQuery $query){
+            ->having(function(ScopedQuery $query){
                 $query->where(['b'=>2])
                     ->where(['c'=>3])
                     ->orWhere(['d'=>4]);
@@ -389,6 +389,59 @@ class DBTest extends TestCase
         self::assertEquals('abc.123', DB::wrap('abc.123'));
         self::assertEquals('`abc.123 456`', DB::wrap('abc.123 456'));
     }
+    public function testSubQueryWithFrom()
+    {
+        $mock = new DBMock($this);
+        $mock->setExpected('SELECT * FROM (SELECT * FROM `tab` WHERE (`a` = ?))', 1);
+        $db = new DB($this->app, $mock);
+        $db->select()
+            ->from($db->select()->from('tab')->where(['a'=>1]))
+            ->get();
+    }
+
+    public function testSubQueryWithWhereIn1()
+    {
+        $mock = new DBMock($this);
+        $mock->setExpected('SELECT * FROM `tab` WHERE (`a` = ? AND `b` IN (SELECT * FROM `tab` WHERE (`a` = ?)) AND `c` = ?)', 1, 2, 3);
+        $db = new DB($this->app, $mock);
+        $db->select()
+            ->from('tab')
+            ->where([
+                'a'=>1,
+                'b'=>['IN'=>$db->select()->from('tab')->where(['a'=>2])],
+                'c'=>3
+            ])
+            ->get();
+
+    }
+
+    public function testSubQueryWithWhereIn2()
+    {
+        $mock = new DBMock($this);
+        $mock->setExpected('SELECT * FROM `tab` WHERE (b IN (SELECT * FROM `tab` WHERE (`a` = ?)))', 1);
+        $db = new DB($this->app, $mock);
+        $db->select()
+            ->from('tab')
+            ->where('b IN ?', $db->select()->from('tab')->where(['a'=>1]))
+            ->get();
+
+    }
+
+    public function testSubQueryWithBetween()
+    {
+        $mock = new DBMock($this);
+        $mock->setExpected('SELECT * FROM `tab` WHERE (`a` BETWEEN (SELECT * FROM `tab` WHERE (`b` = ?)) AND (SELECT * FROM `tab` WHERE (`c` = ?)))', 1, 2);
+        $db = new DB($this->app, $mock);
+        $db->select()
+            ->from('tab')
+            ->where(['a'=>['BETWEEN'=>[
+                $db->select()->from('tab')->where(['b'=>1]),
+                $db->select()->from('tab')->where(['c'=>2])]
+            ]])
+            ->get();
+
+    }
+
     /**
      * 
      * @var DBMock
