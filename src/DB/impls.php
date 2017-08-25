@@ -530,7 +530,7 @@ class ExecImpl
         $st = $context->connection->prepare($sql);
         if($st->execute($context->params)){
             $res = $st->fetchAll(\PDO::FETCH_ASSOC);
-            return $res[0]['count'];
+            return intval($res[0]['count']);
         }else{
             return false;
         }
