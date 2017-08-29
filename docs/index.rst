@@ -62,11 +62,11 @@ PhpBoot 框架提供许多主流的特性, 如ORM、依赖注入等。 这些特
         }
     }
 
-上面两份代码执行的效果是一样的。可以看到 PhpBoot 编写的代码更符合面向对象编程的原则, 以上代码完整版本请见`phpboot-example <https://github.com/caoym/phpboot-example>`_ 。
+上面两份代码执行的效果是一样的。可以看到 PhpBoot 编写的代码更符合面向对象编程的原则, 以上代码完整版本请见 `phpboot-example <https://github.com/caoym/phpboot-example>`_ 。
     
 **2. 轻松支持 Swagger**
 
-`Swagger <https://swagger.io>`_ 是目前最流行的接口文档框架。虽然很多框架都可以通过扩展支持Swagger, 但一般不是需要编写很多额外的注释, 就是只能导出基本的路由信息, 而不能导出详细的输入输出参数。而 PhpBoot 可以在不增加额外编码负担的情况下, 轻松去完成上述任务，下图为findBooks对应的文档。更多内容请见`文档 <http://phpboot.org/zh/latest/advanced/docgen.html>`_ 和`在线 Demo <http://swagger.phpboot.org/?url=http%3a%2f%2fexample.phpboot.org%2fdocs%2fswagger.json>`_ 。
+`Swagger <https://swagger.io>`_ 是目前最流行的接口文档框架。虽然很多框架都可以通过扩展支持Swagger, 但一般不是需要编写很多额外的注释, 就是只能导出基本的路由信息, 而不能导出详细的输入输出参数。而 PhpBoot 可以在不增加额外编码负担的情况下, 轻松去完成上述任务，下图为findBooks对应的文档。更多内容请见 `文档 <http://phpboot.org/zh/latest/advanced/docgen.html>`_ 和 `在线 Demo <http://swagger.phpboot.org/?url=http%3a%2f%2fexample.phpboot.org%2fdocs%2fswagger.json>`_ 。
 
 .. image:: https://github.com/caoym/phpboot/raw/master/docs/_static/WX20170809-184015.png
 
@@ -96,7 +96,7 @@ PhpBoot 框架提供许多主流的特性, 如ORM、依赖注入等。 这些特
     ]);
 
 
-更多内容请查看`文档 <http://phpboot.org/zh/latest/advanced/rpc.html>`_
+更多内容请查看 `文档 <http://phpboot.org/zh/latest/advanced/rpc.html>`_
 
 **4. IDE 友好**
 
@@ -109,8 +109,8 @@ IDE 的代码提示功能可以让开发者轻松不少, 但很多框架在这�
 
 帮助
 ------
-   * **QQ 交流群:185193529**
-   * **本人邮箱 caoyangmin@gmail.com**
+* **QQ 交流群:185193529**
+* **本人邮箱 caoyangmin@gmail.com**
   
 文档
 ------
