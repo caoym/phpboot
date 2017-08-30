@@ -34,6 +34,7 @@ PhpBoot 框架提供许多主流的特性, 如ORM、依赖注入等。 这些特
 很多主流框架都需要用类似代码编写接口。但这种代码的一个问题是, 方法的输入输出隐藏在实现里, 这不是通常我们提倡的编码方式。如果你对代码要求更高, 你可能还会实现一层 Service 接口, 而在 Controller 里只是简单的去调用 Service 接口。而使用 PhpBoot, 你可以用更自然的方式去定义和实现接口。上面的例子, 在 PhpBoot 框架中实现是这样的:
 
 .. code-block:: php
+
     /**
      * @path /books/
      */
@@ -75,6 +76,7 @@ PhpBoot 框架提供许多主流的特性, 如ORM、依赖注入等。 这些特
 使用 PhpBoot 可以很简单的构建分布式应用。通过如下代码, 即可轻松远程访问上面示例中的 Books 接口:
 
 .. code-block:: php
+
     $books = $app->make(RpcProxy::class, [
             'interface'=>Books::class,
             'prefix'=>'http://x.x.x.x/'
@@ -86,6 +88,7 @@ PhpBoot 框架提供许多主流的特性, 如ORM、依赖注入等。 这些特
 同时还可以方便的发起并发请求, 如:
 
 .. code-block:: php
+
     $res = MultiRpc::run([
         function()use($service1){
             return $service1->doSomething();
