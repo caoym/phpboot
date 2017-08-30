@@ -261,7 +261,7 @@ class WhereRule extends GroupByRule
      *
      * @param string|array|callable $conditions
      * @param mixed $_
-     * @return \PhpBoot\DB\rules\select\WhereRule
+     * @return \PhpBoot\DB\rules\select\NextWhereRule
      */
     public function where($conditions=null, $_=null) {
         if(is_callable($conditions)){
@@ -276,9 +276,15 @@ class WhereRule extends GroupByRule
         }else{
             WhereImpl::where($this->context, 'AND', $conditions, array_slice(func_get_args(), 1));
         }
-        return new WhereRule($this->context, false);
+        return new NextWhereRule($this->context, false);
     }
 
+    protected $isTheFirst;
+}
+
+
+class NextWhereRule extends WhereRule
+{
     /**
      * orWhere('a=?', 1) => "OR a=1"
      * orWhere('a=?', Sql::raw('now()')) => "OR a=now()"
@@ -294,7 +300,9 @@ class WhereRule extends GroupByRule
      *
      * @param string|array|callable $conditions
      * @param mixed $_
-     * @return \PhpBoot\DB\rules\select\WhereRule
+     * @return \PhpBoot\DB\rules\select\NextWhereRule
+     *
+     * @TODO orWhere 只能跟在 Where 后
      */
     public function orWhere($conditions=null, $_=null) {
         if(is_callable($conditions)){
@@ -305,9 +313,9 @@ class WhereRule extends GroupByRule
             $conditions = $callback;
         }
         WhereImpl::where($this->context, 'OR', $conditions, array_slice(func_get_args(), 1));
-        return new WhereRule($this->context, false);
+        return new NextWhereRule($this->context, false);
     }
-    private $isTheFirst;
+
 }
 
 class JoinRule extends WhereRule

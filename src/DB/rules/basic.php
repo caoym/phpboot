@@ -93,7 +93,7 @@ class WhereRule extends OrderByRule
      *
      * @param string|array|callable $conditions
      * @param mixed $_
-     * @return WhereRule
+     * @return NextWhereRule
      */
     public function where($conditions=null, $_=null) {
         if(is_callable($conditions)){
@@ -108,9 +108,14 @@ class WhereRule extends OrderByRule
         }else{
             WhereImpl::where($this->context, 'AND', $conditions, array_slice(func_get_args(), 1));
         }
-        return new WhereRule($this->context, false);
+        return new NextWhereRule($this->context, false);
     }
 
+    protected $isTheFirst;
+}
+
+class NextWhereRule extends WhereRule
+{
     /**
      * orWhere('a=?', 1) => "OR a=1"
      * orWhere('a=?', Sql::raw('now()')) => "OR a=now()"
@@ -139,7 +144,6 @@ class WhereRule extends OrderByRule
         WhereImpl::where($this->context, 'OR', $conditions, array_slice(func_get_args(), 1));
         return new WhereRule($this->context, false);
     }
-    private $isTheFirst;
 }
 
 class ScopedQuery extends BasicRule
@@ -154,7 +158,7 @@ class ScopedQuery extends BasicRule
     /**
      * @param $expr
      * @param null $_
-     * @return ScopedQuery
+     * @return NextScopedQuery
      */
     public function where($expr, $_= null){
         if(is_callable($expr)){
@@ -169,8 +173,14 @@ class ScopedQuery extends BasicRule
         }else{
             WhereImpl::where($this->context, 'AND', $expr, array_slice(func_get_args(), 1));
         }
-        return new ScopedQuery($this->context, false);
+        return new NextScopedQuery($this->context, false);
     }
+
+    protected $isTheFirst;
+}
+
+class NextScopedQuery extends ScopedQuery
+{
     /**
      * @param $expr
      * @param null $_
@@ -185,8 +195,7 @@ class ScopedQuery extends BasicRule
             $expr = $callback;
         }
         WhereImpl::where($this->context, 'OR', $expr, array_slice(func_get_args(), 1));
-        return new ScopedQuery($this->context, false);
+        return new NextScopedQuery($this->context, false);
     }
 
-    private $isTheFirst;
 }
