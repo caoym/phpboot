@@ -11,7 +11,7 @@
 
 [查看中文说明](https://github.com/caoym/phpboot/blob/master/README.zh.md)
 
-**[PhpBoot](https://github.com/caoym/phpboot)** is an easy and powerful PHP framework for building RESTful APIs.
+**[PhpBoot](https://github.com/caoym/phpboot)** is an easy and powerful PHP framework for building RESTful/Microservices APIs.
 
 ## Specialities
 
