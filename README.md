@@ -15,7 +15,7 @@
 
 ## Specialities
 
-PhpBoot provides mainstream features, such as ORM, DI, Validation, etc. But the most striking features are:
+PhpBoot provides mainstream features, such as IOC, AOP, ORM, Validation, etc. But the most striking features are:
 
 ### 1. Designing object-oriented APIs
 
@@ -120,12 +120,12 @@ Read more: [RPC](http://phpboot.org/zh/latest/advanced/rpc.html)
    * [Route](http://phpboot.org/zh/latest/basic/route.html)
    * [Parameters binding ](http://phpboot.org/zh/latest/basic/params-bind.html)
    * [Validation](http://phpboot.org/zh/latest/basic/validation.html)
-   * [Dependency Injection](http://phpboot.org/zh/latest/basic/di.html)
+   * [Dependency Injection(IOC)](http://phpboot.org/zh/latest/basic/di.html)
    * [DB](http://phpboot.org/zh/latest/basic/db.html)
    * [ORM](http://phpboot.org/zh/latest/advanced/orm.html)
-   * [Docgen](http://phpboot.org/zh/latest/advanced/docgen.html)
+   * [Docgen(Swagger)](http://phpboot.org/zh/latest/advanced/docgen.html)
    * [RPC](http://phpboot.org/zh/latest/advanced/rpc.html)
-   * [Hook](http://phpboot.org/zh/latest/advanced/hook.html)
+   * [AOP(Hook)](http://phpboot.org/zh/latest/advanced/hook.html)
    
 ## Installation
 
