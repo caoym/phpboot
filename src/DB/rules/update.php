@@ -52,11 +52,10 @@ class UpdateSetWhereRule extends WhereRule
     }
     /**
      * update('table')->set(['a'=>1]) => "UPDATE table SET a=1"
-
      * update('table')->set('a=?',1) => "UPDATE table SET a=1"
      * @param array|string $expr
      * @param mixed $_
-     * @return WhereRule
+     * @return UpdateSetWhereRule
      */
     public function set($expr, $_=null) {
         $this->impl->set($this->context, $expr, array_slice(func_get_args(), 1));
