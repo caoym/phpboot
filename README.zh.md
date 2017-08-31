@@ -9,11 +9,11 @@
 
 > phprs-restful 2.x 版本改名为PhpBoot。当前版本由于改动较大, 与1.x 版本不兼容。下载1.x版本请前往 [phprs-restful v1.x](https://github.com/caoym/phprs-restful/tree/v1.2.4)
 
-**[PhpBoot](https://github.com/caoym/phpboot)** 是为快速开发 RESTful API 设计的PHP框架。它可以帮助开发者更聚焦在业务本身, 而将原来开发中不得不做, 但又重复枯燥的事情丢给框架, 比如编写接口文档、参数校验和远程调用代码等。
+**[PhpBoot](https://github.com/caoym/phpboot)** 是为快速开发**微服务**/**RESTful API** 设计的PHP框架。它可以帮助开发者更聚焦在业务本身, 而将原来开发中不得不做, 但又重复枯燥的事情丢给框架, 比如编写接口文档、参数校验和远程调用代码等。
 
 ## 特色
 
-PhpBoot 框架提供许多主流的特性, 如ORM、依赖注入等。 这些特性都经过精心设计和选择(有些是第三方开源代码,如 PHP-DI)，但和其他框架相比较, PhpBoot 最显著的特色是:
+PhpBoot 框架提供许多主流的特性, 如IOC、AOP、ORM等。 这些特性都经过精心设计和选择(有些是第三方开源代码,如 PHP-DI)，但和其他框架相比较, PhpBoot 最显著的特色是:
 
 ### 1. 以面向对象的方式编写接口
 
@@ -128,7 +128,7 @@ IDE 的代码提示功能可以让开发者轻松不少, 但很多框架在这�
    * [ORM](http://phpboot.org/zh/latest/advanced/orm.html)
    * [自动文档和接口工具](http://phpboot.org/zh/latest/advanced/docgen.html)
    * [分布式支持(RPC)](http://phpboot.org/zh/latest/advanced/rpc.html)
-   * [Hook](http://phpboot.org/zh/latest/advanced/hook.html)
+   * [AOP(Hook)](http://phpboot.org/zh/latest/advanced/hook.html)
    * [工作流引擎(开发中...)](http://phpboot.org/zh/latest/advanced/workflow.html)
  
    
