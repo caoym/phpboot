@@ -230,15 +230,16 @@ DB::class => \DI\factory([DB::class, 'connect'])
 	
 2. 在需要的地方注入此连接
 
-	```php
-	use PhpBoot\DB;
+    ```php
+    use PhpBoot\DB;
 	
-	class Books
-	{
-	    /**
-	     * @inject another_db
-	     * @var DB
-	     */
-	    private $db2;
-	}
-	```	
+    class Books
+    {
+        use EnableDIAnnotations; //启用通过@inject标记注入依赖
+        /**
+         * @inject another_db
+         * @var DB
+        */
+        private $db2;
+    }
+    ```
