@@ -33,8 +33,19 @@ class ValuesRule extends BasicRule
      * @param array $values
      * @return \PhpBoot\DB\rules\insert\OnDuplicateKeyUpdateRule
      */
-    public function values($values) {
+    public function values(array $values) {
         ValuesImpl::values($this->context, $values);
+        return new OnDuplicateKeyUpdateRule($this->context);
+    }
+
+    /**
+     * insertInto('table')->batchValues([[1,2],[3,4]]) => "INSERT INTO table VALUES(1,2), (3,2)"
+     *
+     * @param array $values
+     * @return \PhpBoot\DB\rules\insert\OnDuplicateKeyUpdateRule
+     */
+    public function batchValues(array $values){
+        ValuesImpl::batchValues($this->context, $values);
         return new OnDuplicateKeyUpdateRule($this->context);
     }
 }
