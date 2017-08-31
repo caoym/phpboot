@@ -56,7 +56,7 @@ class FromImpl
             $context->appendSql("FROM ".DB::wrap($tables));
         }
         if($as){
-            $context->appendSql("as ".DB::wrap($as));
+            $context->appendSql("AS ".DB::wrap($as));
         }
     }
 }
@@ -119,7 +119,7 @@ class ReplaceImpl
 }
 class ValuesImpl
 {
-    static public function values($context, $values){
+     static public function values(Context $context, array $values){
         $params = [];
         $stubs = [];
         foreach ($values as $v){
@@ -143,7 +143,54 @@ class ValuesImpl
         }
         $context->appendParams($params);
     }
-    private $sql = null;
+    static public function batchValues(Context $context, array $values)
+    {
+        $count = count($values);
+        if($count == 0){
+            return;
+        }
+        $keys = array_keys($values[0]);
+        $row = implode(',', self::toSql(array_values($values[0])));
+        if($keys === range(0, count($keys) - 1)){
+            //VALUES(val0, val1, val2)
+            $context->appendSql("VALUES($row)");
+        }else{
+            //(col0, col1, col2) VALUES(val0, val1, val2)
+            $columns = implode(',', array_map(function($k){return DB::wrap($k);}, $keys));
+            $context->appendSql("($columns) VALUES($row)",false);
+        }
+        for($i=1; $i<$count; $i++){
+            $value = self::pick($keys, $values[$i]);
+            $row = implode(',', self::toSql($value));
+            $context->appendSql(", ($row)",false);
+        }
+    }
+
+    static protected function pick(array $keys, array $values)
+    {
+        $res = [];
+        foreach ($keys as $key){
+            array_key_exists($key, $values) or \PhpBoot\abort("key $key not exist from the given array");
+            $res[$key] = $values[$key];
+        }
+        return $res;
+    }
+    static protected function toSql(array $values)
+    {
+        foreach ($values as &$v){
+            if($v instanceof Raw){
+                $v = $v->get();
+            }elseif(is_bool($v)){
+                $v = $v?'true':'false';
+            }elseif(!in_array(gettype($v), ['integer', 'boolean', 'double', 'float'])){
+                $v = (string)$v;
+                $v = str_replace("\\", "\\\\", $v);
+                $v = str_replace("'", "\\'", $v);
+                $v = "'$v'";
+            }
+        }
+        return $values;
+    }
 }
 
 class UpdateImpl
