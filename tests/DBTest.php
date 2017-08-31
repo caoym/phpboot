@@ -441,6 +441,40 @@ class DBTest extends TestCase
             ->get();
 
     }
+    public function testInsertWithBatchValues()
+    {
+        $mock = new DBMock($this);
+        $mock->setExpected("INSERT INTO `tab` VALUES(false,1,'2\\'\\\\',3.1,'',now())");
+        $db = new DB($this->app, $mock);
+        $db->insertInto('tab')
+            ->batchValues([[
+                false, 1, "2'\\", 3.1, null, DB::raw('now()'),
+            ]])
+            ->exec();
+    }
+    public function testInsertWithBatchValues2()
+    {
+        $mock = new DBMock($this);
+        $mock->setExpected("INSERT INTO `tab`(`a`,`b`,`c`,`d`,`e`,`f`) VALUES(false,1,'2\\'\\\\',3.1,'',now())");
+        $db = new DB($this->app, $mock);
+        $db->insertInto('tab')
+            ->batchValues([[
+                'a'=>false, 'b'=>1, 'c'=>"2'\\", 'd'=>3.1, 'e'=>null, 'f'=>DB::raw('now()')
+            ]])
+            ->exec();
+    }
+    public function testInsertWithBatchValues3()
+    {
+        $mock = new DBMock($this);
+        $mock->setExpected("INSERT INTO `tab` VALUES(false,1,'2\\'\\\\',3.1,'',now()), (true,2,'3\\'\\\\',4.1,'',now())");
+        $db = new DB($this->app, $mock);
+        $db->insertInto('tab')
+            ->batchValues([
+                [false, 1, "2'\\", 3.1, null, DB::raw('now()')],
+                [true, 2, "3'\\", 4.1, null, DB::raw('now()')],
+            ])
+            ->exec();
+    }
 
     /**
      * 
