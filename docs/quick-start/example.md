@@ -2,11 +2,11 @@
 
 下面将通过编写一个简单的图书管理系统接口，演示 PhpBoot 的使用。完整的示例可在[这里](https://github.com/caoym/phpboot-example)下载。
 
-## 关于 RESTful
+## 1. 关于 RESTful
 
 当前 RESTful 已经不是新鲜的名词了，抛开抽象的定义，我认为一个通俗的解释可以是：按文件系统的方式去设计接口，即把接口提供的功能，当做是对“目录”的“操作”。比如一个登录接口，按 RESTful 设计，可以是```POST /tokens/```，即把登录，当做新建一个令牌，这里的```/tokens/```就是“目录”，```POST```就是对目录的“操作”。关于 RESTful 比较准确的定义，可以看[这里](https://www.ibm.com/developerworks/cn/webservices/ws-restful/index.html)。关于 RESTful 最佳实践，可以看[这里](http://restpatterns.mindtouch.us/HTTP_Methods/MOVE)。
 
-## 示例接口
+## 2. 示例接口
 
 下面我将演示如何用 PhpBoot 编写一组“图书管理”接口，这些接口包括：
 
@@ -17,7 +17,7 @@
 |新建图书|POST| /books/|POST /books/<br><br>{<br>  "id": 0,<br>  "name": "string",<br>  "brief": "string",<br>  "pictures": [<br>    "string"<br>  ]<br>}|123|
 |删除图书| DELETE| /books/{id}|DELETE /books/1| |
 
-## 项目目录结构
+## 3. 项目目录结构
 
 + app
     * Controllers
@@ -30,7 +30,7 @@
     + **index.php** _入口_
 + vendor _依赖包_
     
-## 入口
+## 4. 入口
 
 index.php 作为项目入口， 通常只需要指定配置文件和 Controllers 目录的路径即可。最终项目对外提供的接口， 由不同的 Controllers 的实现类提供。
 
@@ -48,9 +48,9 @@ $app->dispatch();
 
 ```
 
-## 接口实现
+## 5. 接口实现
 
-### 定义 Book 实体
+### 5.1. 定义 Book 实体
 
 为了在不同接口间共享“图书信息”的数据结构，我们定义一个实体如下：
 
@@ -81,7 +81,7 @@ class Book
 }
 ```
 
-### 定义 Controller
+### 5.2. 定义 Controller
 
 这里定义了 Books 类作为 Controller，后续接口将实现在此 Books 类中。
 
@@ -98,7 +98,7 @@ class Books
 
 上述代码中的注释```@path /books/``` 表示 Books 下所有接口，都使用/books/ 作为前缀。
 
-### 查询图书接口
+### 5.3. 查询图书接口
 
 ```php
 /**
@@ -148,7 +148,7 @@ public function findBooks($name, &$total, $offset=0, $limit=100)
 7. ```$offset=0, $limit=100```定义了默认值，如果请求中不包含这些参数，将使用默认值。
 8. 注释 ```@return Book[]``` 和 ```@throws BadRequestHttpException``` 并不会对接口的返回有任何影响， 但是会影响文档输出和远程调用（RPC）。
 
-### 获取图书详情接口
+### 5.4. 获取图书详情接口
 
 ```php
 /**
@@ -170,7 +170,7 @@ public function getBook($id)
 路由 ```@route GET /{id}``` 指定了 url 的 path 有一个变量```{id}```，变量的值可以通过函数参数 ```$id``` 获取
 
 
-### 新建图书
+### 5.5. 新建图书
 
 ```php
 /**
@@ -203,7 +203,7 @@ public function createBook(Book $book)
 }
 ```
 
-### 删除图书
+### 5.6. 删除图书
 
 ```php
 /**
@@ -223,10 +223,9 @@ public function deleteBook($id)
 
 如果函数没有返回值，则响应的 http body 会是 ```void```， 而不是空字符串, 因为 基于PhpBoot 实现的接口，默认情况下，http body 总是 json，而空字符串并不是合法的 json。
 
-## 更多
+## 6. 更多
 
 更多内容见:
 
 * [完整示例代码](https://github.com/caoym/phpboot-example)
-
 * [在线 Demo](http://swagger.phpboot.org/?url=http%3a%2f%2fexample.phpboot.org%2fdocs%2fswagger.json)。
