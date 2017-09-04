@@ -10,12 +10,12 @@
 
 下面我将演示如何用 PhpBoot 编写一组“图书管理”接口，这些接口包括：
 
-|接口名|METHOD|URI|请求示例|响应示例|
-|:--|:--|:--|:--|:--|
-|查询图书|GET| /books/| GET /books/?name=php&offset=0&limit=1|{<br>  "total": 0,<br>  "data": [<br>    {<br>      "id": 0,<br>      "name": "string",<br>      "brief": "string",<br>      "pictures": [<br>        "string"<br>      ]<br>    }<br>  ]<br>}|
-|获取图书详情|GET| /books/{id} | GET /books/1|{<br>  "id": 0,<br>  "name": "string",<br>  "brief": "string",<br>  "pictures": [<br>    "string"<br>  ]<br>}|
-|新建图书|POST| /books/|POST /books/<br><br>{<br>  "id": 0,<br>  "name": "string",<br>  "brief": "string",<br>  "pictures": [<br>    "string"<br>  ]<br>}|123|
-|删除图书| DELETE| /books/{id}|DELETE /books/1| |
+|接口名|METHOD|URI|请求示例|
+|:--|:--|:--|:--|
+|查询图书|GET| /books/| GET /books/?name=php&offset=0&limit=1|
+|获取图书详情|GET| /books/{id} | GET /books/1|
+|新建图书|POST| /books/|POST /books/|
+|删除图书| DELETE| /books/{id}|DELETE /books/1|
 
 ## 3. 项目目录结构
 
