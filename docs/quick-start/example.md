@@ -10,12 +10,49 @@
 
 下面我将演示如何用 PhpBoot 编写一组“图书管理”接口，这些接口包括：
 
-|接口名|METHOD|URI|请求示例|
-|:--|:--|:--|:--|
-|查询图书|GET| /books/| GET /books/?name=php&offset=0&limit=1|
-|获取图书详情|GET| /books/{id} | GET /books/1|
-|新建图书|POST| /books/|POST /books/|
-|删除图书| DELETE| /books/{id}|DELETE /books/1|
+<div>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">接口名</th>
+<th style="text-align:left">METHOD</th>
+<th style="text-align:left">URI</th>
+<th style="text-align:left">请求示例</th>
+<th style="text-align:left">响应示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">查询图书</td>
+<td style="text-align:left">GET</td>
+<td style="text-align:left">/books/</td>
+<td style="text-align:left">GET /books/?name=php&amp;offset=0&amp;limit=1</td>
+<td style="text-align:left">{<br>  "total": 0,<br>  "data": [<br>    {<br>      "id": 0,<br>      "name": "string",<br>      "brief": "string",<br>      "pictures": [<br>        "string"<br>      ]<br>    }<br>  ]<br>}</td>
+</tr>
+<tr>
+<td style="text-align:left">获取图书详情</td>
+<td style="text-align:left">GET</td>
+<td style="text-align:left">/books/{id}</td>
+<td style="text-align:left">GET /books/1</td>
+<td style="text-align:left">{<br>  "id": 0,<br>  "name": "string",<br>  "brief": "string",<br>  "pictures": [<br>    "string"<br>  ]<br>}</td>
+</tr>
+<tr>
+<td style="text-align:left">新建图书</td>
+<td style="text-align:left">POST</td>
+<td style="text-align:left">/books/</td>
+<td style="text-align:left">POST /books/<br><br>{<br>  "id": 0,<br>  "name": "string",<br>  "brief": "string",<br>  "pictures": [<br>    "string"<br>  ]<br>}</td>
+<td style="text-align:left">123</td>
+</tr>
+<tr>
+<td style="text-align:left">删除图书</td>
+<td style="text-align:left">DELETE</td>
+<td style="text-align:left">/books/{id}</td>
+<td style="text-align:left">DELETE /books/1</td>
+<td style="text-align:left"></td>
+</tr>
+</tbody>
+</table>
+</div>
 
 ## 3. 项目目录结构
 
