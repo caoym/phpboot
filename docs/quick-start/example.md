@@ -50,7 +50,18 @@
 <td style="text-align:left">GET</td>
 <td style="text-align:left">/books/{id}</td>
 <td style="text-align:left">GET /books/1</td>
-<td style="text-align:left">{<br>  "id": 0,<br>  "name": "string",<br>  "brief": "string",<br>  "pictures": [<br>    "string"<br>  ]<br>}</td>
+<td style="text-align:left">
+<pre>
+{
+    "id": 0,
+    "name": "string",
+    "brief": "string",
+    "pictures": [
+        "string"
+    ]
+}
+</pre>
+</td>
 </tr>
 <tr>
 <td style="text-align:left">新建图书</td>
