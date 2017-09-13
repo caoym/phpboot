@@ -11,7 +11,7 @@
 下面我将演示如何用 PhpBoot 编写一组“图书管理”接口，这些接口包括：
 
 <div>
-<table>
+<table border="1" cellspacing="0">
 <thead>
 <tr>
 <th style="text-align:left">接口名</th>
@@ -27,7 +27,23 @@
 <td style="text-align:left">GET</td>
 <td style="text-align:left">/books/</td>
 <td style="text-align:left">GET /books/?name=php&amp;offset=0&amp;limit=1</td>
-<td style="text-align:left">{<br>  "total": 0,<br>  "data": [<br>    {<br>      "id": 0,<br>      "name": "string",<br>      "brief": "string",<br>      "pictures": [<br>        "string"<br>      ]<br>    }<br>  ]<br>}</td>
+<td style="text-align:left">
+<pre>
+{
+"total": 0,
+"data": [
+    {
+        "id": 0,
+        "name": "string",
+        "brief": "string",
+        "pictures": [
+            "string"
+        ]
+    }
+]
+}
+<pre>
+</td>
 </tr>
 <tr>
 <td style="text-align:left">获取图书详情</td>
