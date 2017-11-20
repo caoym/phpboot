@@ -46,9 +46,10 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
      * ```
      * return
      * [
-     *      'App.name'  => 'App',
-     *      'App.uriPrefix' => '/',
+     *      'App.name'  => 'App', //The App's name, default is "App", use by \Monolog\Logger as the logging channel
+     *      'App.uriPrefix' => '/',  // The prefix of api uri path, default is "/"
      *
+     *       //DB.* are the params for PDO::__construct, @see http://php.net/manual/en/pdo.construct.php
      *      'DB.connection' => 'mysql:dbname=default;host=localhost',
      *      'DB.username' => 'root',
      *      'DB.password' => 'root',
@@ -56,7 +57,7 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
      *
      *
      *      LoggerInterface::class => \DI\object(\Monolog\Logger::class)
-     *          ->constructor(\DI\get('AppName')),
+     *          ->constructor(\DI\get('App.name')),
      *      // 注意, 系统缓存, 只使用 apc、文件缓存等本地缓存, 不要使用 redis 等分布式缓存
      *      Cache::class => \DI\object(FilesystemCache::class)
      *          ->constructorParameter('directory', sys_get_temp_dir())
