@@ -15,7 +15,7 @@ class ExceptionRenderer
     public function render(\Exception $e)
     {
         if($e instanceof HttpException){
-            return new Response($e->getMessage(), $e->getStatusCode());
+            return new Response($e->getMessage(), $e->getStatusCode(), $e->getHeaders());
         } if($e instanceof \InvalidArgumentException){
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }else{
