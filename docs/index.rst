@@ -137,6 +137,7 @@ IDE 的代码提示功能可以让开发者轻松不少, 但很多框架在这�
     basic/validation.md
     basic/di.md
     basic/db.md
+    basic/cache.md
 
 .. toctree::
     :maxdepth: 1
