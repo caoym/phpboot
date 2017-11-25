@@ -4,7 +4,7 @@ PhpBoot 使用[doctrine/cache](http://doctrine-orm.readthedocs.io/projects/doctr
 
 ## 业务缓存 
 
-如果需要在代码中使用缓存, 此处Redis以为例, 演示基本用法。
+如果需要在业务代码中使用缓存, 此处以Redis为例, 演示基本用法。
 
 1. 在修改配置文件 config.php, 增加以下代码:
 
