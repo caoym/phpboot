@@ -1,6 +1,5 @@
-# AOP(Hook)
+# Hook
 
-PhpBoot 通过 Hook 的方式实现 AOP(面向切面编程)，说明待补充... 以下演示如果定义和使用 Hook
 
 ## 1. 定义 Hook
 

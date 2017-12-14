@@ -13,7 +13,7 @@
 
 ## 特色
 
-PhpBoot 框架提供许多主流的特性, 如IOC、AOP、ORM等。 这些特性都经过精心设计和选择(有些是第三方开源代码,如 PHP-DI)，但和其他框架相比较, PhpBoot 最显著的特色是:
+PhpBoot 框架提供许多主流的特性, 如IOC、HOOK、ORM等。 这些特性都经过精心设计和选择(有些是第三方开源代码,如 PHP-DI)，但和其他框架相比较, PhpBoot 最显著的特色是:
 
 ### 1. 以面向对象的方式编写接口
 
@@ -128,7 +128,7 @@ IDE 的代码提示功能可以让开发者轻松不少, 但很多框架在这�
    * [ORM](http://phpboot.org/zh/latest/advanced/orm.html)
    * [自动文档和接口工具](http://phpboot.org/zh/latest/advanced/docgen.html)
    * [分布式支持(RPC)](http://phpboot.org/zh/latest/advanced/rpc.html)
-   * [AOP(Hook)](http://phpboot.org/zh/latest/advanced/hook.html)
+   * [Hook](http://phpboot.org/zh/latest/advanced/hook.html)
    * [工作流引擎(开发中...)](http://phpboot.org/zh/latest/advanced/workflow.html)
  
    
