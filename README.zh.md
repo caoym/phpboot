@@ -20,7 +20,9 @@ PhpBoot 框架提供许多主流的特性, 如IOC、HOOK、ORM等。 这些特�
 你肯定看到过这样的代码:
 
 ```PHP
-// **不用** PhpBoot 的代码
+// ** 不使用 PhpBoot 的代码 **
+// ** 不使用 PhpBoot 的代码 **
+// ** 此为反模式 **
 class BookController
 {
     public function findBooks(Request $request)
