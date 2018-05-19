@@ -22,7 +22,7 @@ class ClassModifiedChecker extends FileModifiedChecker
             return;
         }
         if($parent->getFileName()){
-            $files[] = $parent->getParentClass();
+            $files[] = $parent->getFileName();
             self::getParentFileName($parent, $files);
         }
         foreach ($class->getInterfaces() as $interface){
