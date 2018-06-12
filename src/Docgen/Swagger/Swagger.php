@@ -135,13 +135,17 @@ class Swagger extends SwaggerObject
         foreach ($handler->getExceptions() as $exception) {
             list($name, $desc) = $exception;
 
-            $ins = $app->make($name);
+            $ins = null;
+            try{
+                $ins = $app->make($name);
+            }catch (\Exception $e){
+
+            }
 
             //TODO status 重复怎么办
-            if ($ins instanceof HttpException) {
+            if ($ins instanceof HttpExceptio) {
                 $status = $ins->getStatusCode();
             } else {
-
                 $status = 500;
             }
             if (isset($schemas[$status])) {
@@ -153,9 +157,11 @@ class Swagger extends SwaggerObject
             $shortName = self::getShortClassName($name);
             $desc = "$shortName: $desc";
             $res->description = self::implode("\n", [$res->description, $desc]);
-            $error = $app->get(ExceptionRenderer::class)->render($ins)->getContent();
-            if($error){
-                $res->examples = [$shortName => $error];
+            if($ins){
+                $error = $app->get(ExceptionRenderer::class)->render($ins)->getContent();
+                if($error){
+                    $res->examples = [$shortName => $error];
+                }
             }
             //$res->schema = new RefSchemaObject("#/definitions/$name");
             $schemas[$status] = $res;
