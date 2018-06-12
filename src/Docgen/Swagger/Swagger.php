@@ -255,7 +255,9 @@ class Swagger extends SwaggerObject
                 $schema->properties[$k] = $this->makeTempSchema($app, $controller, $action, $route, $v, $suffix);
             } elseif ($v instanceof ReturnMeta) {
                 $sub = $this->getAnySchema($app, $controller, $action, $route, $v->container);
-                $sub->description = $v->description;
+                if($sub){
+                    $sub->description = $v->description;
+                }
                 $schema->properties[$k] = $sub;
             } elseif ($v instanceof ParamMeta) {
                 if ($v->container instanceof ArrayContainer) {
@@ -270,8 +272,10 @@ class Swagger extends SwaggerObject
                     self::mapValidation($v->validation, $sub);
                     unset($sub->required);
                 }
-                $sub->description = $v->description;
-                $sub->default = $v->default;
+                if($sub){
+                    $sub->description = $v->description;
+                    $sub->default = $v->default;
+                }
                 if (!$v->isOptional) {
                     $schema->required[] = $k;
                 }
