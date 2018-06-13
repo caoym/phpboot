@@ -139,7 +139,11 @@ class Swagger extends SwaggerObject
             try{
                 $ins = $app->make($name);
             }catch (\Exception $e){
+                try{
+                    $ins = new $name("");
+                }catch (\Exception $e){
 
+                }
             }
 
             //TODO status 重复怎么办
