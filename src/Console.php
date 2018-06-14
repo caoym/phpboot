@@ -8,6 +8,7 @@
 
 namespace PhpBoot;
 
+use DI\FactoryInterface;
 use PhpBoot\Console\ConsoleContainer;
 use PhpBoot\Console\ConsoleContainerBuilder;
 use PhpBoot\DI\Traits\EnableDIAnnotations;
@@ -25,7 +26,16 @@ class Console extends \Symfony\Component\Console\Application
      */
     protected $consoleContainerBuilder;
 
-
+    /**
+     * @param FactoryInterface $factory
+     * @return Console
+     * @throws \DI\DependencyException
+     * @throws \DI\NotFoundException
+     */
+    static public function create(FactoryInterface $factory)
+    {
+        return $factory->make(self::class);
+    }
     /**
      * @param $className
      * @throws \Exception
