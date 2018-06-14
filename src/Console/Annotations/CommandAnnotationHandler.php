@@ -30,7 +30,7 @@ class CommandAnnotationHandler
         $methodParams = $method->getParameters();
 
         $command = new Command($target, $name);
-        $command->setDescription($ann->parent->summary);
+        $command->setDescription($container->getSummary().' : '.$ann->parent->summary);
         $command->setHelp($ann->parent->description);
 
         //设置参数列表
