@@ -89,11 +89,7 @@ class Command extends \Symfony\Component\Console\Command\Command
         $params = [];
         $reference = [];
         $this->bindInput($input, $params,$reference);
-        ob_start(function ($test)use($output){
-            $output->write($test);
-        });
         $code = call_user_func_array([$container->getInstance($factory), $this->actionName], $params);
-        ob_end_clean();
         return $code;
     }
 

@@ -45,9 +45,10 @@ class ConsoleTest extends TestCase
         /**@var Console $console*/
         $console->loadCommandsFromClass(TestCommand::class);
         $console->setAutoExit(false);
-        $output = new BufferedOutput();
-        $console->run(new StringInput("test.run 11 22 33"), $output);
-
-        self::assertEquals($output->fetch(), print_r(["11", "22", ["33"]], true));
+        ob_start();
+        $console->run(new StringInput("test.run 11 22 33"));
+        $output = ob_get_contents();
+        ob_end_clean();
+        self::assertEquals($output, print_r(["11", "22", ["33"]], true));
     }
 }
