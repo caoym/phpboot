@@ -147,7 +147,7 @@ class Swagger extends SwaggerObject
             }
 
             //TODO status 重复怎么办
-            if ($ins instanceof HttpExceptio) {
+            if ($ins instanceof HttpException) {
                 $status = $ins->getStatusCode();
             } else {
                 $status = 500;

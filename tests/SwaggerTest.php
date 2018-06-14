@@ -13,7 +13,7 @@ class SwaggerTest extends TestCase
         $app = Application::createByDefault();
         $app->loadRoutesFromClass(RpcTestController::class);
 
-        $swagger = new Swagger($app);
+        $swagger = new Swagger();
         $swagger->info->title = 'test title';
         $swagger->info->description = 'the test description';
 
