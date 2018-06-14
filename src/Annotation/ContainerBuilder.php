@@ -67,7 +67,10 @@ abstract class ContainerBuilder
      */
     abstract protected function createContainer($className);
 
+    protected function postCreateContainer($object)
+    {
 
+    }
     protected function handleAnnotation($handlerName, $container, $ann){
         $handler = new $handlerName();
         return $handler($container, $ann);
@@ -92,6 +95,7 @@ abstract class ContainerBuilder
                 $this->handleAnnotation($class, $container, $found);
             }
         }
+        $this->postCreateContainer($container);
         return $container;
     }
 
