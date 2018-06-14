@@ -37,14 +37,9 @@ class ConsoleContainer
      * @var object
      */
     private $instance;
-    /**
-     * @var FactoryInterface
-     */
-    private $factory;
 
-    public function __construct(FactoryInterface $factory, $className)
+    public function __construct($className)
     {
-        $this->factory = $factory;
         $this->className = $className;
     }
 
@@ -116,10 +111,10 @@ class ConsoleContainer
      * @throws \DI\DependencyException
      * @throws \DI\NotFoundException
      */
-    public function getInstance()
+    public function getInstance(FactoryInterface $factory)
     {
         if(!$this->instance ){
-            $this->instance  = $this->factory->make($this->getClassName());
+            $this->instance  = $factory->make($this->getClassName());
         }
         return $this->instance;
     }

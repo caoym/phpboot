@@ -9,6 +9,7 @@
 namespace PhpBoot;
 
 use DI\FactoryInterface;
+use DI\InvokerInterface;
 use PhpBoot\Console\ConsoleContainer;
 use PhpBoot\Console\ConsoleContainerBuilder;
 use PhpBoot\DI\Traits\EnableDIAnnotations;
@@ -25,6 +26,12 @@ class Console extends \Symfony\Component\Console\Application
      * @var ConsoleContainerBuilder
      */
     protected $consoleContainerBuilder;
+
+    /**
+     * @inject
+     * @var InvokerInterface
+     */
+    private $diInvoker;
 
     /**
      * @param FactoryInterface $factory
@@ -49,7 +56,7 @@ class Console extends \Symfony\Component\Console\Application
         /**@var ConsoleContainer $container*/
         foreach ($container->getCommands() as $name => $command) {
             $command->setCode(function (InputInterface $input, OutputInterface $output)use ($container, $command){
-                return $command->invoke($container, $input, $output);
+                return $this->diInvoker->call([$command, 'invoke'], ['container'=>$container, 'input'=>$input, 'output'=>$output]);
             });
             $this->add($command);
         }

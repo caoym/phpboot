@@ -9,6 +9,7 @@
 namespace PhpBoot\Console;
 
 
+use DI\FactoryInterface;
 use PhpBoot\Entity\ArrayContainer;
 use PhpBoot\Entity\EntityContainer;
 use PhpBoot\Metas\ParamMeta;
@@ -74,13 +75,22 @@ class Command extends \Symfony\Component\Console\Command\Command
         return null;
     }
 
-    public function invoke(ConsoleContainer $container, InputInterface $input, OutputInterface $output)
+    /**
+     * @param FactoryInterface $factory
+     * @param ConsoleContainer $container
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return mixed
+     * @throws \DI\DependencyException
+     * @throws \DI\NotFoundException
+     */
+    public function invoke(FactoryInterface $factory,ConsoleContainer $container, InputInterface $input, OutputInterface $output)
     {
         $params = [];
         $reference = [];
         $this->bindInput($input, $params,$reference);
         ob_start();
-        $code = call_user_func_array([$container->getInstance(), $this->actionName], $params);
+        $code = call_user_func_array([$container->getInstance($factory), $this->actionName], $params);
         $out = ob_get_contents();
         ob_end_clean();
         $output->write($out);
