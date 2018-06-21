@@ -19,7 +19,7 @@ class SafeFileWriter
     static public function write($path, $data, $overwrite = true){
         $path = str_replace('\\', '/', $path);
         $fileDir = dirname($path);
-        $tmpFile = tempnam($fileDir);
+        $tmpFile = @tempnam($fileDir);
         false !== @file_put_contents($tmpFile, $data) or \PhpBoot\abort("write to file: $tmpFile failed");
         if($overwrite){
             @unlink($path); //删除原始文件

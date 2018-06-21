@@ -30,7 +30,10 @@ class LocalAutoLock
             //嵌套加锁
             self::$currentLock[$key]++;
         }catch (\Exception $e){
-            return $error($e);
+            if($error){
+                return $error();
+            }
+            return;
         }
         $res = null;
         try{
