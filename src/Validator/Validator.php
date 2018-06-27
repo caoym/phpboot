@@ -61,7 +61,9 @@ class Validator extends \Valitron\Validator
                 $params = explode(':', trim($r));
                 $rule = $params[0];
                 $params = isset($params[1])?explode(',', $params[1]):[];
-
+                if($rule == 'in' || $rule == 'notIn'){
+                    $params = [$params];
+                }
                 call_user_func_array([$this, 'parent::rule'], array_merge([$rule, $fields], $params));
 
             }
