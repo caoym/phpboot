@@ -67,7 +67,7 @@ class Console extends \Symfony\Component\Console\Application
      * @param string $namespace
      * @throws \Exception
      */
-    public function loadRoutesFromPath($fromPath, $namespace = '')
+    public function loadCommandsFromPath($fromPath, $namespace = '')
     {
         $dir = @dir($fromPath) or abort("dir $fromPath not exist");
 
