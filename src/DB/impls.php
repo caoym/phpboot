@@ -2,6 +2,7 @@
 
 namespace PhpBoot\DB\impls;
 use PhpBoot\DB\DB;
+use PhpBoot\DB\Exceptions\DBException;
 use PhpBoot\DB\NestedStringCut;
 use PhpBoot\DB\Raw;
 use PhpBoot\DB\rules\basic\BasicRule;
@@ -518,39 +519,53 @@ class ExecImpl
      * @param Context $context
      * @param $exceOnError boolean whether throw exceptions
      * @return ExecResult
+     * @throws DBException|\Exception
      */
     static public function exec($context) {
-        $st = $context->connection->prepare($context->sql);
-        $success = $st->execute($context->params);
-        return new ExecResult($success, $context->connection, $st);
+        try{
+            $st = $context->connection->prepare($context->sql);
+            $success = $st->execute($context->params);
+            return new ExecResult($success, $context->connection, $st);
+        }catch (\Exception $e){
+            \PhpBoot\abort(new DBException($context, $e->getMessage(),$e->getCode(), $e), ['sql'=>$context->sql, 'params'=>$context->params] );
+            return null;
+        }
     }
     /**
      *
      * @param Context $context
      * @param string|false $asDict return  as dict or array
      * @return false|array
+     * @throws DBException|\Exception
      */
     static public function get($context, $dictAs=false){
 
-        $st = $context->connection->prepare($context->sql);
-        if($st->execute($context->params)){
-            $res = $st->fetchAll(\PDO::FETCH_ASSOC);
-            if ($dictAs){
-                $dict= [];
-                foreach ($res as $i){
-                    $dict[$i[$dictAs]]=$i;
+        try{
+            $st = $context->connection->prepare($context->sql);
+            if($st->execute($context->params)){
+                $res = $st->fetchAll(\PDO::FETCH_ASSOC);
+                if ($dictAs){
+                    $dict= [];
+                    foreach ($res as $i){
+                        $dict[$i[$dictAs]]=$i;
+                    }
+                    return $context->handleResult($dict);
                 }
-                return $context->handleResult($dict);
+                return $context->handleResult($res);
+            }else{
+                return false;
             }
-            return $context->handleResult($res);
-        }else{
+        }catch (\Exception $e){
+            \PhpBoot\abort(new DBException($context, $e->getMessage(),$e->getCode(), $e), ['sql'=>$context->sql, 'params'=>$context->params] );
             return false;
         }
+
     }
 
     /**
      * @param Context $context
      * @return int|false
+     * @throws DBException|\Exception
      */
     static public function count($context){
 
@@ -564,24 +579,28 @@ class ExecImpl
 
         $columnEnd = 0;
         $found = [];
-        if(!preg_match('/\bfrom\b/i', $context->sql, $found, PREG_OFFSET_CAPTURE) ||
-            count($found)==0){
-            $columnEnd = strlen($context->sql);
-        }else{
-            list($chars, $columnEnd) = $found[0];
-        }
-        $sql = substr($context->sql, 0, $columnBegin);
-        $sql .= ' COUNT(*) as `count` ';
-        $sql .= substr($context->sql, $columnEnd);
+        try{
+            if(!preg_match('/\bfrom\b/i', $context->sql, $found, PREG_OFFSET_CAPTURE) ||
+                count($found)==0){
+                $columnEnd = strlen($context->sql);
+            }else{
+                list($chars, $columnEnd) = $found[0];
+            }
+            $sql = substr($context->sql, 0, $columnBegin);
+            $sql .= ' COUNT(*) as `count` ';
+            $sql .= substr($context->sql, $columnEnd);
 
-        $st = $context->connection->prepare($sql);
-        if($st->execute($context->params)){
-            $res = $st->fetchAll(\PDO::FETCH_ASSOC);
-            return intval($res[0]['count']);
-        }else{
+            $st = $context->connection->prepare($sql);
+            if($st->execute($context->params)){
+                $res = $st->fetchAll(\PDO::FETCH_ASSOC);
+                return intval($res[0]['count']);
+            }else{
+                return false;
+            }
+        }catch (\Exception $e){
+            \PhpBoot\abort(new DBException($context, $e->getMessage(),$e->getCode(), $e), ['sql'=>$context->sql, 'params'=>$context->params] );
             return false;
         }
-
     }
 }
 class OnDuplicateKeyUpdateImpl
