@@ -148,7 +148,12 @@ class RpcProxy
         if($body !== null){
             $body = json_encode($body, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         }
-        $uri = $this->uriPrefix.ltrim($uri, '/').'?'.http_build_query($query);
+        $uri = $this->uriPrefix.ltrim($uri, '/');
+        if(strpos($uri,'?') === false){
+            $uri = $uri.'?'.http_build_query($query);
+        }else{
+            $uri = $uri.'&'.http_build_query($query);
+        }
         return new \GuzzleHttp\Psr7\Request(
             $httpMethod,
             $uri,
