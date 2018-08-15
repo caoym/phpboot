@@ -82,6 +82,17 @@ class ModelWithObject
             ->exec()->rows;
     }
 
+    /**
+     * set entity table name
+     * @param string $tableName
+     * @return $this
+     */
+    public function withTable($tableName)
+    {
+        $this->entity->setTable($tableName);
+        return $this;
+    }
+
     protected function getColumns()
     {
         $columns = [];
