@@ -113,6 +113,17 @@ class ModelWithClass
         return call_user_func_array([$query, 'where'], array_slice(func_get_args(),1));
     }
 
+    /**
+     * set entity table name
+     * @param string $tableName
+     * @return $this
+     */
+    public function withTable($tableName)
+    {
+        $this->entity->setTable($tableName);
+        return $this;
+    }
+
     protected function getColumns()
     {
         $columns = [];
