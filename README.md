@@ -126,7 +126,7 @@ Read more: [RPC](http://phpboot.org/zh/latest/advanced/rpc.html)
    * [Docgen(Swagger)](http://phpboot.org/zh/latest/advanced/docgen.html)
    * [RPC](http://phpboot.org/zh/latest/advanced/rpc.html)
    * [Hook](http://phpboot.org/zh/latest/advanced/hook.html)
-   
+   * [CLI](http://phpboot.org/zh/latest/advanced/cli.html)
 ## Installation
 
    1. Install composer

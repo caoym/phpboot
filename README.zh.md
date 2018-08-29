@@ -131,7 +131,7 @@ IDE 的代码提示功能可以让开发者轻松不少, 但很多框架在这�
    * [自动文档和接口工具](http://phpboot.org/zh/latest/advanced/docgen.html)
    * [分布式支持(RPC)](http://phpboot.org/zh/latest/advanced/rpc.html)
    * [Hook](http://phpboot.org/zh/latest/advanced/hook.html)
-   * [工作流引擎(开发中...)](http://phpboot.org/zh/latest/advanced/workflow.html)
+   * [命令行](http://phpboot.org/zh/latest/advanced/cli.html)
  
    
 ## 安装和配置
