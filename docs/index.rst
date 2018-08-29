@@ -147,7 +147,7 @@ IDE 的代码提示功能可以让开发者轻松不少, 但很多框架在这�
     advanced/orm.md
     advanced/hook.md
     advanced/rpc.md
-    advanced/workflow.md
+    advanced/cli.md
 
 .. toctree::
     :maxdepth: 1
