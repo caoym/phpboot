@@ -527,7 +527,7 @@ class ExecImpl
             $success = $st->execute($context->params);
             return new ExecResult($success, $context->connection, $st);
         }catch (\Exception $e){
-            \PhpBoot\abort(new DBException($context, $e->getMessage(),$e->getCode(), $e), ['sql'=>$context->sql, 'params'=>$context->params] );
+            \PhpBoot\abort(new DBException($context, $e->getMessage(),$e->getCode()), ['sql'=>$context->sql, 'params'=>$context->params] );
             return null;
         }
     }
@@ -556,7 +556,7 @@ class ExecImpl
                 return false;
             }
         }catch (\Exception $e){
-            \PhpBoot\abort(new DBException($context, $e->getMessage(),$e->getCode(), $e), ['sql'=>$context->sql, 'params'=>$context->params] );
+            \PhpBoot\abort(new DBException($context, $e->getMessage(),$e->getCode()), ['sql'=>$context->sql, 'params'=>$context->params] );
             return false;
         }
 
@@ -598,7 +598,7 @@ class ExecImpl
                 return false;
             }
         }catch (\Exception $e){
-            \PhpBoot\abort(new DBException($context, $e->getMessage(),$e->getCode(), $e), ['sql'=>$context->sql, 'params'=>$context->params] );
+            \PhpBoot\abort(new DBException($context, $e->getMessage(),$e->getCode()), ['sql'=>$context->sql, 'params'=>$context->params] );
             return false;
         }
     }
