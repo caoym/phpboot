@@ -97,7 +97,7 @@ class RpcProxy
 
         $query = [];
         $body = null;
-        $headers = [];
+        $headers = ['Content-Type'=>'application/json'];
 
         if(isset($request['query'])){
             $query += $request['query'];
