@@ -306,7 +306,11 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
             return $response;
 
         }catch (\Exception $e){
-            $renderer->render($e);
+            $response = $renderer->render($e);
+            if ($send) {
+                $response->send();
+            }
+            return $response;
         }
 
     }
