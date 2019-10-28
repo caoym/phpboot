@@ -122,7 +122,7 @@ class RpcProxy
             if($body === null){
                 $body = [];
             }
-            $body += $request['request'];
+            $body += is_object($request['request'])?get_object_vars($request['request']):$request['request'];
         }
         unset($request['request']);
 
