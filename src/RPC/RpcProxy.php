@@ -51,11 +51,11 @@ class RpcProxy
         $request = $this->createRequest($method, $route, $args);
 
         if(MultiRpc::isRunning()){
-            $op = $this->http->sendAsync($request);
+            $op = $this->http->sendAsync($request,['http_errors' => false]);
             $res = MultiRpc::wait($op);
             return $this->mapResponse($method, $route, $res, $args);
         }else{
-            $res = $this->http->send($request);
+            $res = $this->http->send($request,['http_errors' => false]);
             return $this->mapResponse($method, $route, $res, $args);
         }
     }
@@ -122,7 +122,7 @@ class RpcProxy
             if($body === null){
                 $body = [];
             }
-            $body += $request['request'];
+            $body += is_object($request['request'])?get_object_vars($request['request']):$request['request'];
         }
         unset($request['request']);
 
@@ -220,12 +220,10 @@ class RpcProxy
             $errName = null;
             foreach ($exceptions as $err){
 
-                $renderer = $this->app->get(ExceptionRenderer::class);
-                $exec = $renderer->render(
-                    $this->app->make($err, ['message'=>(string)$response->getContent()])
-                );
-
-                if( $exec->getStatusCode() == $response->getStatusCode()){
+                //$renderer = $this->app->get(ExceptionRenderer::class);
+                $exec  = $this->app->make($err[0], ['message'=>(string)$response->getContent()]);
+                /**@var $exec \Exception*/
+                if( $exec->getCode() == $response->getStatusCode()){
                     throw $exec;
                 }
             }

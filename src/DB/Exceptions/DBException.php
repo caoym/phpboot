@@ -23,9 +23,9 @@ class DBException extends \RuntimeException
      */
     private $params;
 
-    public function __construct(Context $context, $message = "", $code = 0, Throwable $previous = null)
+    public function __construct(Context $context, $message = "", $code = 0,$previous = null)
     {
-        parent::__construct($message, $code, $previous);
+        parent::__construct($message, $code, ($previous instanceof Throwable)?$previous:null);
         $this->sql = $context->sql;
         $this->params = $context->params;
     }
