@@ -114,6 +114,17 @@ class ModelWithClass
     }
 
     /**
+     * @param array $values
+     * @return int
+     */
+    public function insertBatch(array $values)
+    {
+        return $this->db->insertInto($this->entity->getTable())
+            ->batchValues($values)
+            ->exec()->rows;
+    }
+
+    /**
      * set entity table name
      * @param string $tableName
      * @return $this
