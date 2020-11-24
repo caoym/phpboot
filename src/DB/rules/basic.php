@@ -96,6 +96,9 @@ class WhereRule extends OrderByRule
      * @return NextWhereRule
      */
     public function where($conditions=null, $_=null) {
+        if(empty($conditions)){
+            return new NextWhereRule($this->context, $this->isTheFirst);
+        }
         if(is_callable($conditions)){
             $callback = function ($context)use($conditions){
                 $rule = new ScopedQuery($context);
