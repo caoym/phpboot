@@ -3,6 +3,7 @@ namespace PhpBoot\RPC;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Psr7\Request;
 use PhpBoot\Application;
 use PhpBoot\Controller\ControllerContainer;
 use PhpBoot\Controller\ControllerContainerBuilder;
@@ -50,12 +51,17 @@ class RpcProxy
 
         $request = $this->createRequest($method, $route, $args);
 
+        $options = [
+            'http_errors' => false,
+            'headers' => $request->getHeaders(),
+            'body' => $request->getBody()
+        ];
         if(MultiRpc::isRunning()){
-            $op = $this->http->sendAsync($request,['http_errors' => false]);
+            $op = $this->http->requestAsync($request->getMethod(), $request->getUri(), $options);
             $res = MultiRpc::wait($op);
             return $this->mapResponse($method, $route, $res, $args);
         }else{
-            $res = $this->http->send($request,['http_errors' => false]);
+            $res = $this->http->request($request->getMethod(), $request->getUri(), $options);
             return $this->mapResponse($method, $route, $res, $args);
         }
     }
@@ -64,7 +70,7 @@ class RpcProxy
      * @param $actionName
      * @param Route $route
      * @param array $args
-     * @return RequestInterface
+     * @return Request
      */
     public function createRequest($actionName, Route $route, array $args)
     {
@@ -105,7 +111,10 @@ class RpcProxy
         unset($request['query']);
 
         if(isset($request['headers'])){
-            $headers += $request['headers'];
+            // 下划线转中划线，保持接口参数绑定一致
+            foreach ($request['headers'] as $headerKey => $headerValue) {
+                $headers += [str_replace('_', '-', $headerKey) => $headerValue];
+            }
         }
         unset($request['headers']);
 
