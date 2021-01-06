@@ -404,7 +404,7 @@ class Application implements ContainerInterface, FactoryInterface, \DI\InvokerIn
         if (0 === strpos($request->headers->get('CONTENT_TYPE'), 'application/json')
             && in_array(strtoupper($request->server->get('REQUEST_METHOD', 'GET')), array('POST', 'PUT', 'DELETE', 'PATCH'))
         ) {
-            $data = json_decode($request->getContent(), true);
+            $data = json_decode($request->getContent(), true)?:[];
             $request->request = new ParameterBag($data);
         }
 
