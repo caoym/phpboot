@@ -145,6 +145,10 @@ class RpcProxy
                 }
             }
         }
+        if ($body === null && $headers['Content-Type'] == 'application/json') {
+            // 解决body为空的json请求，接口报错：Uncaught TypeError: Argument 1 passed to Symfony\\Component\\HttpFoundation\\ParameterBag::__construct() must be of the type array, null given
+            $body = new \stdClass();
+        }
         if($body !== null){
             $body = json_encode($body, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         }
